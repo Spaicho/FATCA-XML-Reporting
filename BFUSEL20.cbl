@@ -1,6 +1,6 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. BFUSEL20.
-       AUTHOR. CGI EBAI.
+       AUTHOR. Essadiq BAICH.
 
       ******************************************************************
       *      ____________________________________________________      *
@@ -18,31 +18,19 @@
       *      |_____||____| |____||_____|   `.____ .'|____| |____|      *
       *                                                                *
       *                                                                *
-      *               APPLICATION   : FUS                              *
       *               DATE          : 27/10/2014                       *
       *               COMPOSANT     : BFUSEL20                         *
       *               TYPE          : BATCH                            *
-      *               CHAINE        : FUSEL                            *
-      *               AUTEUR        : EBAI - ESSADIQ BAICH - CGI       *
-      *               REFERENCE     : GAMA - 20141525                  *
+      *               AUTEUR        : ESSADIQ BAICH                    *
       *                                                                *
       *             __________________________________________         *
       *                                                                *
       *                                                                *
       * DESCRIPTION   : Ce Batch permet de produire le reporting FATCA *
       *                 sous format XML en exploitant le fichier des   *
-      *                 informations FUS et en utilisant le module     *
+      *                 informations et en utilisant le module de      *
       *                 de formatage XML.                              *
-      *                                                                *
-      *             __________________________________________         *
-      *                                                                *
-      *                                                                *
-      * CINéMATIQUE   :                                                *
-      *                                                                *
-      *                                                                *
-      *             __________________________________________         *
-      *                                                                *
-      *                                                                *
+      *
       * MODULES UTILISES :                                             *
       *                                                                *
       *________________________________________________________________*
@@ -63,7 +51,7 @@
       *__________|_________________________________________|___________*
       *                                                                *
       *                                                                *
-      * Fichiers manipulés :                                           *
+      * Fichiers manipulÃ©s :                                           *
       *                                                                *
       *________________________________________________________________*
       *          |                                      |   |          *
@@ -80,7 +68,7 @@
       *__________|______________________________________|___|__________*
       *                                                                *
       *                                                                *
-      * Liste des ABENDS émis  par le programme :                      *
+      * Liste des ABENDS Ã©mis  par le programme :                      *
       *                                                                *
       *________________________________________________________________*
       *          |                                                     *
@@ -120,10 +108,10 @@
 150978*  CGI   !16/04/2015!20150978!Prises en compte des adaptations   *
 150978*        !          !        !pour suivantes :                   *
 150978*        !          !        !- Gestion du fichier vide          *
-150978*        !          !        !- Récupération des références      *
-150978*        !          !        !- Gestion de ruptures sur enntité  *
-150978*        !          !        !- Gestion des clients récalcitrants*
-150978*        !          !        !- Préparation de la MAJ des tables *
+150978*        !          !        !- RÃ©cupÃ©ration des rÃ©fÃ©rences      *
+150978*        !          !        !- Gestion de ruptures sur enntitÃ©  *
+150978*        !          !        !- Gestion des clients rÃ©calcitrants*
+150978*        !          !        !- PrÃ©paration de la MAJ des tables *
 150978*        !          !        !  TBREPFUS, TBRBRFUS et TBFIDFUS   *
       *================================================================*
 151197*  SBOU  !22/04/2015!20151197!MAJ ECV et Historique pour FATCA3  *
@@ -203,1051 +191,14 @@
        WORKING-STORAGE SECTION.
 
 
-      **********************************
-      *                                *
-      *   Structure de données FATCA   *
-      *                                *
-      **********************************
 
       *   *******************************
-      *   * Indicateurs de multiplicité *
+      *   *  variables pour prÃ©fixes    *
       *   *                             *
       *   *******************************
 
-
-
-       01 COUNTERS--C.
-        03 MessageSpec-COUNTERS.
-          05 SendingCompanyIN--C PIC 9(9) COMP-5.
-          05 Warning--C PIC 9(9) COMP-5.
-          05 Contact--C PIC 9(9) COMP-5.
-          05 CorrMessageRefId--C PIC 9(9) COMP-5.
-      * 03 FATCA--C PIC 9(9) COMP-5.
-      * 03 FATCA-COUNTERS.
-        03 ReportingFI-COUNTERS.
-          05 ResCountryCode--C PIC 9(9) COMP-5.
-          05 TIN--C PIC 9(9) COMP-5.
-          05 Name--C PIC 9(9) COMP-5.
-          05 R-Address--C PIC 9(9) COMP-5.
-          05 R-Address-COUNTERS.
-            07 AddressFree2--C PIC 9(9) COMP-5.
-            07 AddressFix--C PIC 9(9) COMP-5.
-            07 Street--C PIC 9(9) COMP-5.
-            07 BuildingIdentifier--C PIC 9(9) COMP-5.
-            07 SuiteIdentifier--C PIC 9(9) COMP-5.
-            07 FloorIdentifier--C PIC 9(9) COMP-5.
-            07 DistrictName--C PIC 9(9) COMP-5.
-            07 POB--C PIC 9(9) COMP-5.
-            07 PostCode--C PIC 9(9) COMP-5.
-            07 CountrySubentity--C PIC 9(9) COMP-5.
-            07 AddressFree--C PIC 9(9) COMP-5.
-          05 CorrMessageRefId--C PIC 9(9) COMP-5.
-          05 CorrDocRefId--C PIC 9(9) COMP-5.
-      * 03 ReportingGroup--C PIC 9(9) COMP-5.
-        03 ReportingGroup-COUNTERS.
-          05 Sponsor--C      PIC 9(9) COMP-5.
-          05 Sponsor-COUNTERS.
-            07 ResCountryCode--C PIC 9(9) COMP-5.
-            07 TIN--C PIC 9(9) COMP-5.
-            07 Name--C PIC 9(9) COMP-5.
-            07 R-Address--C PIC 9(9) COMP-5.
-            07 R-Address-COUNTERS.
-              09 AddressFree2--C PIC 9(9) COMP-5.
-              09 AddressFix--C PIC 9(9) COMP-5.
-              09 Street--C PIC 9(9) COMP-5.
-              09 BuildingIdentifier--C PIC 9(9) COMP-5.
-              09 SuiteIdentifier--C PIC 9(9) COMP-5.
-              09 FloorIdentifier--C PIC 9(9) COMP-5.
-              09 DistrictName--C PIC 9(9) COMP-5.
-              09 POB--C PIC 9(9) COMP-5.
-              09 PostCode--C PIC 9(9) COMP-5.
-              09 CountrySubentity--C PIC 9(9) COMP-5.
-              09 AddressFree--C PIC 9(9) COMP-5.
-            07 CorrMessageRefId--C PIC 9(9) COMP-5.
-            07 CorrDocRefId--C PIC 9(9) COMP-5.
-          05 Intermediary--C      PIC 9(9) COMP-5.
-          05 Intermediary-COUNTERS.
-            07 ResCountryCode--C PIC 9(9) COMP-5.
-            07 TIN--C PIC 9(9) COMP-5.
-            07 Name--C PIC 9(9) COMP-5.
-            07 R-Address--C PIC 9(9) COMP-5.
-            07 R-Address-COUNTERS.
-              09 AddressFree2--C PIC 9(9) COMP-5.
-              09 AddressFix--C PIC 9(9) COMP-5.
-              09 Street--C PIC 9(9) COMP-5.
-              09 BuildingIdentifier--C PIC 9(9) COMP-5.
-              09 SuiteIdentifier--C PIC 9(9) COMP-5.
-              09 FloorIdentifier--C PIC 9(9) COMP-5.
-              09 DistrictName--C PIC 9(9) COMP-5.
-              09 POB--C PIC 9(9) COMP-5.
-              09 PostCode--C PIC 9(9) COMP-5.
-              09 CountrySubentity--C PIC 9(9) COMP-5.
-              09 AddressFree--C PIC 9(9) COMP-5.
-            07 CorrMessageRefId--C PIC 9(9) COMP-5.
-            07 CorrDocRefId--C PIC 9(9) COMP-5.
-          05 AccountReport--C PIC 9(9) COMP-5.
-          05 AccountReport-COUNTERS.
-            07 CorrMessageRefId--C PIC 9(9) COMP-5.
-            07 CorrDocRefId--C PIC 9(9) COMP-5.
-            07 Individual--C   PIC 9(9) COMP-5.
-            07 Individual-COUNTERS.
-              09 ResCountryCode--C PIC 9(9) COMP-5.
-              09 TIN--C PIC 9(9) COMP-5.
-              09 Name--C PIC 9(9) COMP-5.
-              09 Name-COUNTERS.
-                11 PrecedingTitle--C PIC 9(9) COMP-5.
-                11 R-Title--C PIC 9(9) COMP-5.
-                11 MiddleName--C PIC 9(9) COMP-5.
-                11 NamePrefix--C PIC 9(9) COMP-5.
-                11 GenerationIdentifier--C PIC 9(9) COMP-5.
-                11 Suffix--C PIC 9(9) COMP-5.
-                11 GeneralSuffix--C PIC 9(9) COMP-5.
-              09 R-Address--C PIC 9(9) COMP-5.
-              09 R-Address-COUNTERS.
-                11 AddressFree2--C PIC 9(9) COMP-5.
-                11 AddressFix--C PIC 9(9) COMP-5.
-                11 Street--C PIC 9(9) COMP-5.
-                11 BuildingIdentifier--C PIC 9(9) COMP-5.
-                11 SuiteIdentifier--C PIC 9(9) COMP-5.
-                11 FloorIdentifier--C PIC 9(9) COMP-5.
-                11 DistrictName--C PIC 9(9) COMP-5.
-                11 POB--C PIC 9(9) COMP-5.
-                11 PostCode--C PIC 9(9) COMP-5.
-                11 CountrySubentity--C PIC 9(9) COMP-5.
-                11 AddressFree--C PIC 9(9) COMP-5.
-              09 Nationality--C PIC 9(9) COMP-5.
-              09 BirthInfo--C PIC 9(9) COMP-5.
-              09 BirthInfo-COUNTERS.
-                11 BirthDate--C PIC 9(9) COMP-5.
-                11 City--C PIC 9(9) COMP-5.
-                11 CitySubentity--C PIC 9(9) COMP-5.
-                11 CountryInfo--C PIC 9(9) COMP-5.
-                11 CountryCode--C PIC 9(9) COMP-5.
-                11 FormerCountryName--C PIC 9(9) COMP-5.
-            07 Organisation--C   PIC 9(9) COMP-5.
-            07 Organisation-COUNTERS.
-              09 ResCountryCode--C PIC 9(9) COMP-5.
-              09 TIN--C PIC 9(9) COMP-5.
-              09 Name--C PIC 9(9) COMP-5.
-              09 R-Address--C PIC 9(9) COMP-5.
-              09 R-Address-COUNTERS.
-                11 AddressFree2--C PIC 9(9) COMP-5.
-                11 AddressFix--C PIC 9(9) COMP-5.
-                11 Street--C PIC 9(9) COMP-5.
-                11 BuildingIdentifier--C PIC 9(9) COMP-5.
-                11 SuiteIdentifier--C PIC 9(9) COMP-5.
-                11 FloorIdentifier--C PIC 9(9) COMP-5.
-                11 DistrictName--C PIC 9(9) COMP-5.
-                11 POB--C PIC 9(9) COMP-5.
-                11 PostCode--C PIC 9(9) COMP-5.
-                11 CountrySubentity--C PIC 9(9) COMP-5.
-                11 AddressFree--C PIC 9(9) COMP-5.
-            07 AcctHolderType--C PIC 9(9) COMP-5.
-            07 SubstantialOwner--C   PIC 9(9) COMP-5.
-            07 SubstantialOwner-COUNTERS.
-              09 ResCountryCode--C PIC 9(9) COMP-5.
-              09 TIN--C PIC 9(9) COMP-5.
-              09 Name--C PIC 9(9) COMP-5.
-              09 Name-COUNTERS.
-                11 PrecedingTitle--C PIC 9(9) COMP-5.
-                11 R-Title--C PIC 9(9) COMP-5.
-                11 MiddleName--C PIC 9(9) COMP-5.
-                11 NamePrefix--C PIC 9(9) COMP-5.
-                11 GenerationIdentifier--C PIC 9(9) COMP-5.
-                11 Suffix--C PIC 9(9) COMP-5.
-                11 GeneralSuffix--C PIC 9(9) COMP-5.
-              09 R-Address--C PIC 9(9) COMP-5.
-              09 R-Address-COUNTERS.
-                11 AddressFree2--C PIC 9(9) COMP-5.
-                11 AddressFix--C PIC 9(9) COMP-5.
-                11 Street--C PIC 9(9) COMP-5.
-                11 BuildingIdentifier--C PIC 9(9) COMP-5.
-                11 SuiteIdentifier--C PIC 9(9) COMP-5.
-                11 FloorIdentifier--C PIC 9(9) COMP-5.
-                11 DistrictName--C PIC 9(9) COMP-5.
-                11 POB--C PIC 9(9) COMP-5.
-                11 PostCode--C PIC 9(9) COMP-5.
-                11 CountrySubentity--C PIC 9(9) COMP-5.
-                11 AddressFree--C PIC 9(9) COMP-5.
-              09 Nationality--C PIC 9(9) COMP-5.
-              09 BirthInfo--C PIC 9(9) COMP-5.
-              09 BirthInfo-COUNTERS.
-                11 BirthDate--C PIC 9(9) COMP-5.
-                11 City--C PIC 9(9) COMP-5.
-                11 CitySubentity--C PIC 9(9) COMP-5.
-                11 CountryInfo--C PIC 9(9) COMP-5.
-                11 CountryCode--C PIC 9(9) COMP-5.
-                11 FormerCountryName--C PIC 9(9) COMP-5.
-            07 Payment--C  PIC 9(9) COMP-5.
-            07 Payment-Amnt.
-MCHA++        09 PaymentAmnt--C PIC 9(9) COMP-5.
-          05 PoolReport--C PIC 9(9) COMP-5.
-          05 PoolReport-COUNTERS.
-            07 CorrMessageRefId--C PIC 9(9) COMP-5.
-            07 CorrDocRefId--C PIC 9(9) COMP-5.
-
-
-
-      *   **************
-      *   * FATCA_OECD *
-      *   *            *
-      *   **************
-      *   Element racine du fichier XML
-       01 FATCA_OECD.
-      *      xmlns:ftc="urn:oecd:ties:fatca:v1"
-      *      xmlns:sfa="urn:oecd:ties:stffatcatypes:v1"
-      *      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      *      attribut : version="X.Y"
-         03  tech-attr-req-version PIC X(03).
-      *      xsi:schemaLocation=
-      *                      "urn:oecd:ties:fatca:v1 FatcaXML_v1.1.xsd"
-
-      *     ***************
-      *     * MessageSpec *
-      *     *             *
-      *     ***************
-         03  MessageSpec.
-      *      GIIN IF remettante    = 98Q96B.00000.LE.250
-          05 SendingCompanyIN OCCURS 0 TO 1 DEPENDING ON
-             SendingCompanyIN--C        PIC X(19).
-      *      Seule valeur possible = FR
-          05 TransmittingCountry PIC X(02).
-      *      Seule valeur possible = US
-          05 ReceivingCountry PIC X(02).
-      *      Seule valeur possible = FATCA
-          05 MessageType PIC X(05).
-      *      Avertissement specifiques à l'utilisation du fichier
-      *      A blanc par défaut.
-          05 Warning OCCURS 0 TO 1 DEPENDING ON Warning--C PIC
-             X(255).
-      *      Balise à ne pas utiliser pour le cahier de charge actuel
-          05 Contact OCCURS 0 TO 1 DEPENDING ON Contact--C PIC
-             X(32).
-      *      Id unique message, concatener DocTypeIndic et date du jour
-      *      exemple valeur        = FATCA1-2014-11-13
-SBOU  *   05 MessageRefId PIC X(17).
-SBOU      05 MessageRefId PIC X(80).
-      *      Id unique messages initiaux à corriger
-          05 CorrMessageRefId  OCCURS 0 TO 3  DEPENDING ON
-MCHA+-*      CorrMessageRefId--C OF MessageSpec-COUNTERS PIC X(17).
-MCHA+-       CorrMessageRefId--C OF MessageSpec-COUNTERS PIC X(70).
-      *      Année civile à laquelle se rapporte le message
-      *      Année  : année fiscale du fichier en entrée
-      *      Mois   : 12
-      *      jour   : 31
-      *      exemple valeur        = 2014-12-31
-          05 ReportingPeriod PIC X(10).
-      *      Date et heure de création du fichier
-      *      exemple valeur        = 2015-03-15T09:45:30
-          05 Timestamp PIC X(19).
-
-      *     *********
-      *     * FATCA *
-      *     *       *
-      *     *********
-      *      Balise FATCA, multiplicité toujours à 1
-      *  03  FATCA OCCURS 1 TO 3  DEPENDING ON FATCA--C.
-         03  FATCA.
-
-      *       ***************
-      *       * ReportingFI *
-      *       *             *
-      *       ***************
-          05  ReportingFI.
-      *        code du pays de résidence fiscale l'entité déclarante
-      *        exemple valeur  = FR
-           07  ResCountryCode OCCURS 0 TO 3  DEPENDING ON
-               ResCountryCode--C OF ReportingFI-COUNTERS PIC X(02).
-      *        Identification de l'entité déclarante
-      *        doit contenir minimum un caractère
-      *        par défaut c'est le même que SendingCompanyIN
-      *         exemple valeur  = 98Q96B.00000.LE.250
-           07  TIN OCCURS 0 TO 3  DEPENDING ON TIN--C
-                                            OF ReportingFI-COUNTERS.
-      *         Attribut à mettre à blanc pour indiquer US
-            09  tech-attr-opt-issuedBy PIC X(02).
-            09  tech-text PIC X(19).
-      *         Name de l'entité déclarante (Raison sociale)
-      *         exemple valeur  = Assureur A
-           07  Name OCCURS 1 TO 3  DEPENDING ON Name--C
-                                            OF ReportingFI-COUNTERS.
-      *         Attr à ne pas utiliser pour le cahier de charge actuel
-      *         exemple valeur  = OECD202
-            09  tech-attr-opt-nameType PIC X(07).
-            09  tech-text PIC X(64).
-           07  R-Address OCCURS 1 TO 3  DEPENDING ON R-Address--C
-                                            OF ReportingFI-COUNTERS.
-      *         Attr à ne pas utiliser pour le cahier de charge actuel
-      *         exemple valeur  = OECD301
-            09  tech-attr-opt-legalAddressType PIC X(07).
-      *         Code du pays associé à l'adresse
-      *         exemple valeur  = FR
-            09  CountryCode PIC X(02).
-      *         Choisir :
-      *         Soit AddressFree
-      *         Soit AddressFix puis AddressFree
-
-      *         Addresse format libre
-            09  AddressFree2 OCCURS 0 TO 1 DEPENDING ON
-                AddressFree2--C OF ReportingFI-COUNTERS PIC X(255).
-      *         Addresse format structuré (prioritaire)
-            09  AddressFix OCCURS 0 TO 1 DEPENDING ON
-                AddressFix--C OF ReportingFI-COUNTERS.
-      *           rue
-              11  Street OCCURS 0 TO 1 DEPENDING ON Street--C
-                 OF ReportingFI-COUNTERS PIC X(80).
-      *           Numéro de rue (à défaut bâtiment)
-              11  BuildingIdentifier OCCURS 0 TO 1 DEPENDING ON
-                  BuildingIdentifier--C OF ReportingFI-COUNTERS
-                  PIC X(80).
-      *           Complément d'adresse : n appartement, résidence, etc
-              11  SuiteIdentifier OCCURS 0 TO 1 DEPENDING ON
-                  SuiteIdentifier--C OF ReportingFI-COUNTERS PIC X(80).
-      *           Numéro d'étage
-              11  FloorIdentifier OCCURS 0 TO 1 DEPENDING ON
-                  FloorIdentifier--C OF ReportingFI-COUNTERS PIC X(80).
-      *           Département
-              11  DistrictName OCCURS 0 TO 1 DEPENDING ON
-                  DistrictName--C OF ReportingFI-COUNTERS PIC X(80).
-      *           Boîte postale
-              11  POB OCCURS 0 TO 1 DEPENDING ON POB--C
-                  OF ReportingFI-COUNTERS PIC X(80).
-      *           Code postal
-              11  PostCode OCCURS 0 TO 1 DEPENDING ON PostCode--C
-                  OF ReportingFI-COUNTERS PIC X(80).
-      *           Commune
-              11  City PIC X(80).
-      *           Région ou État fédéré
-              11  CountrySubentity OCCURS 0 TO 1 DEPENDING ON
-                  CountrySubentity--C OF ReportingFI-COUNTERS PIC X(80).
-            09  AddressFree OCCURS 0 TO 1 DEPENDING ON
-                AddressFree--C OF ReportingFI-COUNTERS PIC X(255).
-           07  DocSpec.
-      *         Type de déclaration communiquée
-      *         valeur possible :
-      *         FATCA1  = Données Nouvelles
-      *         FATCA2  = Données Corrigées
-      *         FATCA3  = Données Annulées
-      *         FATCA4  = Données Modifiées
-      *         FATCA11 = Nouvelles Données Test
-      *         FATCA12 = Données Test Corrigées
-      *         FATCA13 = Données Test Annulées
-      *         FATCA14 = Données Test Modifiées
-            09  DocTypeIndic PIC X(07).
-      *         Identifiant du bloc de données
-      *         Concatener :
-      *         MessageRefId " " Name " reporting FI"
-      *         exemple = fatca1-2014-17-01 Assureur A reporting FI
-            09  DocRefId PIC X(80).
-      *         Identifiant du message à corriger
-            09  CorrMessageRefId OCCURS 0 TO 1 DEPENDING ON
-MCHA+-*         CorrMessageRefId--C OF ReportingFI-COUNTERS PIC X(17).
-MCHA+-          CorrMessageRefId--C OF ReportingFI-COUNTERS PIC X(80).
-      *         Identifiant du bloc de données à corriger
-            09  CorrDocRefId OCCURS 0 TO 1 DEPENDING ON
-                CorrDocRefId--C OF ReportingFI-COUNTERS PIC X(80).
-
-      *       ******************
-      *       * ReportingGroup *
-      *       *                *
-      *       ******************
-      *       Balise ReportingGroup, multiplicité toujours à 1
-      *   05  ReportingGroup OCCURS 1 TO 3  DEPENDING ON
-      *       ReportingGroup--C.
-          05  ReportingGroup.
-      *        ***********
-      *        * Sponsor *
-      *        *         *
-      *        ***********
-           07  Sponsor OCCURS 0 TO 1 DEPENDING ON Sponsor--C.
-      *        code du pays de résidence fiscale l'entité déclarante
-      *        exemple valeur  = FR
-            09  ResCountryCode OCCURS 0 TO 3  DEPENDING ON
-                ResCountryCode--C OF Sponsor-COUNTERS PIC X(02).
-      *         Identification de l'entité déclarante
-      *         doit contenir minimum un caractère
-      *         par défaut c'est le même que SendingCompanyIN
-      *          exemple valeur  = 98Q96B.00000.LE.250
-            09  TIN OCCURS 0 TO 3  DEPENDING ON TIN--C
-                                             OF Sponsor-COUNTERS.
-      *          Attribut à mettre à blanc pour indiquer US
-             11  tech-attr-opt-issuedBy PIC X(02).
-             11  tech-text PIC X(19).
-      *          Name de l'entité déclarante (Raison sociale)
-      *          exemple valeur  = Assureur A
-            09  Name OCCURS 1 TO 3  DEPENDING ON Name--C
-                                             OF Sponsor-COUNTERS.
-      *          Attr à ne pas utiliser pour le cahier de charge actuel
-      *          exemple valeur  = OECD202
-             11  tech-attr-opt-nameType PIC X(07).
-             11  tech-text PIC X(64).
-            09  R-Address OCCURS 1 TO 3  DEPENDING ON R-Address--C
-                                             OF Sponsor-COUNTERS.
-      *          Attr à ne pas utiliser pour le cahier de charge actuel
-      *          exemple valeur  = OECD301
-             11  tech-attr-opt-legalAddressType PIC X(07).
-      *          Code du pays associé à l'adresse
-      *          exemple valeur  = FR
-             11  CountryCode PIC X(02).
-      *          Choisir :
-      *          Soit AddressFree
-      *          Soit AddressFix puis AddressFree
-
-      *          Addresse format libre
-             11  AddressFree2 OCCURS 0 TO 1 DEPENDING ON
-                 AddressFree2--C OF Sponsor-COUNTERS PIC X(255).
-      *          Addresse format structuré (prioritaire)
-             11  AddressFix OCCURS 0 TO 1 DEPENDING ON
-                 AddressFix--C OF Sponsor-COUNTERS.
-      *            rue
-               13  Street OCCURS 0 TO 1 DEPENDING ON Street--C
-                   OF Sponsor-COUNTERS PIC X(80).
-      *            Numéro de rue (à défaut bâtiment)
-               13  BuildingIdentifier OCCURS 0 TO 1 DEPENDING ON
-                   BuildingIdentifier--C OF Sponsor-COUNTERS PIC X(80).
-      *            Complément d'adresse : n appartement, résidence, etc
-               13  SuiteIdentifier OCCURS 0 TO 1 DEPENDING ON
-                   SuiteIdentifier--C OF Sponsor-COUNTERS PIC X(80).
-      *            Numéro d'étage
-               13  FloorIdentifier OCCURS 0 TO 1 DEPENDING ON
-                   FloorIdentifier--C OF Sponsor-COUNTERS PIC X(80).
-      *            Département
-               13  DistrictName OCCURS 0 TO 1 DEPENDING ON
-                   DistrictName--C OF Sponsor-COUNTERS PIC X(80).
-      *            Boîte postale
-               13  POB OCCURS 0 TO 1 DEPENDING ON POB--C
-                   OF Sponsor-COUNTERS PIC X(80).
-      *            Code postal
-               13  PostCode OCCURS 0 TO 1 DEPENDING ON PostCode--C
-                   OF Sponsor-COUNTERS PIC X(80).
-      *            Commune
-               13  City PIC X(80).
-      *            Région ou État fédéré
-               13  CountrySubentity OCCURS 0 TO 1 DEPENDING ON
-                   CountrySubentity--C OF Sponsor-COUNTERS PIC X(80).
-             11  AddressFree OCCURS 0 TO 1 DEPENDING ON
-                 AddressFree--C OF Sponsor-COUNTERS PIC X(255).
-            09  DocSpec.
-      *          Type de déclaration communiquée
-      *          valeur possible :
-      *          FATCA1  = Données Nouvelles
-      *          FATCA2  = Données Corrigées
-      *          FATCA3  = Données Annulées
-      *          FATCA4  = Données Modifiées
-      *          FATCA11 = Nouvelles Données Test
-      *          FATCA12 = Données Test Corrigées
-      *          FATCA13 = Données Test Annulées
-      *          FATCA14 = Données Test Modifiées
-             11  DocTypeIndic PIC X(07).
-      *          Identifiant du bloc de données
-      *          Concatener :
-      *          MessageRefId " " Name " reporting FI"
-      *          exemple = fatca1-2014-17-01 Assureur A reporting FI
-150978*      11  DocRefId PIC X(80).
-150978       11  DocRefId PIC X(90).
-      *          Identifiant du message à corriger
-             11  CorrMessageRefId OCCURS 0 TO 1 DEPENDING ON
-MCHA+-*          CorrMessageRefId--C OF Sponsor-COUNTERS PIC X(17).
-MCHA+-           CorrMessageRefId--C OF Sponsor-COUNTERS PIC X(80).
-      *          Identifiant du bloc de données à corriger
-             11  CorrDocRefId OCCURS 0 TO 1 DEPENDING ON
-                 CorrDocRefId--C OF Sponsor-COUNTERS PIC X(80).
-
-      *        ****************
-      *        * Intermediary *
-      *        *              *
-      *        ****************
-           07  Intermediary OCCURS 0 TO 1 DEPENDING ON
-               Intermediary--C.
-      *        code du pays de résidence fiscale l'entité déclarante
-      *        exemple valeur  = FR
-            09  ResCountryCode OCCURS 0 TO 3  DEPENDING ON
-                ResCountryCode--C  OF Intermediary-COUNTERS PIC X(02).
-      *         Identification de l'entité déclarante
-      *         doit contenir minimum un caractère
-      *         par défaut c'est le même que SendingCompanyIN
-      *          exemple valeur  = 98Q96B.00000.LE.250
-            09  TIN OCCURS 0 TO 3  DEPENDING ON TIN--C
-                                   OF Intermediary-COUNTERS.
-      *          Attribut à mettre à blanc pour indiquer US
-             11  tech-attr-opt-issuedBy PIC X(02).
-             11  tech-text PIC X(19).
-      *          Name de l'entité déclarante (Raison sociale)
-      *          exemple valeur  = Assureur A
-            09  Name OCCURS 1 TO 3  DEPENDING ON Name--C
-                                           OF Intermediary-COUNTERS.
-      *          Attr à ne pas utiliser pour le cahier de charge actuel
-      *          exemple valeur  = OECD202
-             11  tech-attr-opt-nameType PIC X(07).
-             11  tech-text PIC X(64).
-            09  R-Address OCCURS 1 TO 3  DEPENDING ON R-Address--C
-                                           OF Intermediary-COUNTERS.
-      *          Attr à ne pas utiliser pour le cahier de charge actuel
-      *          exemple valeur  = OECD301
-             11  tech-attr-opt-legalAddressType PIC X(07).
-      *          Code du pays associé à l'adresse
-      *          exemple valeur  = FR
-             11  CountryCode PIC X(02).
-      *          Choisir :
-      *          Soit AddressFree
-      *          Soit AddressFix puis AddressFree
-
-      *          Addresse format libre
-             11  AddressFree2 OCCURS 0 TO 1 DEPENDING ON
-                 AddressFree2--C OF Intermediary-COUNTERS PIC X(255).
-      *          Addresse format structuré (prioritaire)
-             11  AddressFix OCCURS 0 TO 1 DEPENDING ON
-                 AddressFix--C OF Intermediary-COUNTERS.
-      *            rue
-               13  Street OCCURS 0 TO 1 DEPENDING ON Street--C
-                   OF Intermediary-COUNTERS PIC X(80).
-      *            Numéro de rue (à défaut bâtiment)
-               13  BuildingIdentifier OCCURS 0 TO 1 DEPENDING ON
-                   BuildingIdentifier--C
-                                     OF Intermediary-COUNTERS PIC X(80).
-      *            Complément d'adresse : n appartement, résidence, etc
-               13  SuiteIdentifier OCCURS 0 TO 1 DEPENDING ON
-                   SuiteIdentifier--C
-                                     OF Intermediary-COUNTERS PIC X(80).
-      *            Numéro d'étage
-               13  FloorIdentifier OCCURS 0 TO 1 DEPENDING ON
-                   FloorIdentifier--C
-                                     OF Intermediary-COUNTERS PIC X(80).
-      *            Département
-               13  DistrictName OCCURS 0 TO 1 DEPENDING ON
-                   DistrictName--C
-                                   OF Intermediary-COUNTERS PIC X(80).
-      *            Boîte postale
-               13  POB OCCURS 0 TO 1 DEPENDING ON POB--C
-                                   OF Intermediary-COUNTERS PIC X(80).
-      *            Code postal
-               13  PostCode OCCURS 0 TO 1 DEPENDING ON PostCode--C
-                                   OF Intermediary-COUNTERS PIC X(80).
-      *            Commune
-               13  City PIC X(80).
-      *            Région ou État fédéré
-               13  CountrySubentity OCCURS 0 TO 1 DEPENDING ON
-                   CountrySubentity--C
-                                   OF Intermediary-COUNTERS PIC X(80).
-             11  AddressFree OCCURS 0 TO 1 DEPENDING ON
-                 AddressFree--C
-                                   OF Intermediary-COUNTERS PIC X(255).
-            09  DocSpec.
-      *          Type de déclaration communiquée
-      *          valeur possible :
-      *          FATCA1  = Données Nouvelles
-      *          FATCA2  = Données Corrigées
-      *          FATCA3  = Données Annulées
-      *          FATCA4  = Données Modifiées
-      *          FATCA11 = Nouvelles Données Test
-      *          FATCA12 = Données Test Corrigées
-      *          FATCA13 = Données Test Annulées
-      *          FATCA14 = Données Test Modifiées
-             11  DocTypeIndic PIC X(07).
-      *          Identifiant du bloc de données
-      *          Concatener :
-      *          MessageRefId " " Name " reporting FI"
-      *          exemple = fatca1-2014-17-01 Assureur A reporting FI
-150978*      11  DocRefId PIC X(80).
-150978       11  DocRefId PIC X(90).
-      *          Identifiant du message à corriger
-             11  CorrMessageRefId OCCURS 0 TO 1 DEPENDING ON
-MCHA+-*          CorrMessageRefId--C OF Intermediary-COUNTERS PIC X(17).
-MCHA+-           CorrMessageRefId--C OF Intermediary-COUNTERS PIC X(80).
-      *          Identifiant du bloc de données à corriger
-             11  CorrDocRefId OCCURS 0 TO 1 DEPENDING ON
-                 CorrDocRefId--C OF Intermediary-COUNTERS PIC X(80).
-      *        *****************
-      *        * AccountReport *
-      *        *               *
-      *        *****************
-      *        Pratiquement la balise a une mutliplicité n
-      *        la multiplicité est géré au niveau du traitement
-           07  AccountReport OCCURS 0 TO 1  DEPENDING ON
-               AccountReport--C.
-            09  DocSpec.
-      *          Type de déclaration communiquée
-      *          valeur possible :
-      *          FATCA1  = Données Nouvelles
-      *          FATCA2  = Données Corrigées
-      *          FATCA3  = Données Annulées
-      *          FATCA4  = Données Modifiées
-      *          FATCA11 = Nouvelles Données Test
-      *          FATCA12 = Données Test Corrigées
-      *          FATCA13 = Données Test Annulées
-      *          FATCA14 = Données Test Modifiées
-             11  DocTypeIndic PIC X(07).
-      *          Identifiant du bloc de données
-      *          Concatener :
-      *          MessageRefId " " Name " reporting FI"
-      *          exemple = fatca1-2014-17-01 Assureur A reporting FI
-150978*      11  DocRefId PIC X(80).
-150978       11  DocRefId PIC X(90).
-      *          Identifiant du message à corriger
-             11  CorrMessageRefId OCCURS 0 TO 1 DEPENDING ON
-                 CorrMessageRefId--C OF AccountReport-COUNTERS
-MCHA+-*          PIC X(17).
-MCHA+-           PIC X(90).
-      *          Identifiant du bloc de données à corriger
-             11  CorrDocRefId OCCURS 0 TO 1 DEPENDING ON
-                 CorrDocRefId--C OF AccountReport-COUNTERS PIC X(90).
-      *         Identifiant Unique de contrat I-KAC
-MCHA- *     09  AccountNumber PIC X(17).
-MCHA+       09  AccountNumber PIC X(30).
-      *         Titulaire du compte
-            09  AccountHolder.
-      *          Choix :
-      *          Soit Individual
-      *          Soit Organisation ET AccHolderType
-
-      *          **************
-      *          * Individual *
-      *          *            *
-      *          **************
-             11  Individual OCCURS 0 TO 1 DEPENDING ON
-                 Individual--C.
-      *           code du pays de résidence du titulaire du compte
-      *           exemple valeur  = FR
-              13  ResCountryCode OCCURS 0 TO  3 DEPENDING ON
-                  ResCountryCode--C OF Individual-COUNTERS PIC X(02).
-      *           Référence fiscalité étrangère (GIIN)
-      *           doit contenir minimum un caractère
-              13  TIN OCCURS 0 TO  3 DEPENDING ON TIN--C
-                                    OF Individual-COUNTERS.
-               15  tech-attr-opt-issuedBy PIC X(02).
-               15  tech-text PIC X(17).
-      *           Nom
-              13  Name OCCURS 1 TO 3  DEPENDING ON Name--C
-                                    OF Individual-COUNTERS.
-      *            Champs non utilisé
-               15  PrecedingTitle OCCURS 0 TO 1 DEPENDING ON
-                   PrecedingTitle--C OF Individual-COUNTERS PIC X(32).
-      *            Titre civilité
-               15  R-Title OCCURS 0 TO 3  DEPENDING ON
-                   R-Title--C OF Individual-COUNTERS PIC X(32).
-      *            Prénom
-               15  FirstName.
-      *             Attr non utilisé
-                17  tech-attr-non-xnlNameType PIC X(32).
-                17  tech-text PIC X(32).
-      *            Champs non utilisé
-               15  MiddleName OCCURS 0 TO 3  DEPENDING ON
-                   MiddleName--C OF Individual-COUNTERS.
-      *             Attr non utilisé
-                17  tech-attr-non-xnlNameType PIC X(32).
-                17  tech-text PIC X(32).
-      *            Champs non utilisé
-               15  NamePrefix OCCURS 0 TO 1 DEPENDING ON
-                   NamePrefix--C OF Individual-COUNTERS.
-      *             Attr non utilisé
-                17  tech-attr-non-xnlNameType PIC X(32).
-                17  tech-text PIC X(32).
-      *            Nom du famille
-               15  LastName.
-      *             Attr non utilisé
-                17  tech-attr-non-xnlNameType PIC X(32).
-                17  tech-text PIC X(32).
-      *            Champs non utilisé
-               15  GenerationIdentifier OCCURS 0 TO 3
-                   DEPENDING ON GenerationIdentifier--C
-                                 OF Individual-COUNTERS PIC X(32).
-      *            Champs non utilisé
-               15  Suffix OCCURS 0 TO 3  DEPENDING ON Suffix--C
-                   OF Individual-COUNTERS PIC X(32).
-      *            Champs non utilisé
-               15  GeneralSuffix OCCURS 0 TO 1 DEPENDING ON
-                   GeneralSuffix--C OF Individual-COUNTERS PIC X(32).
-              13  R-Address OCCURS 1 TO 3  DEPENDING ON
-                  R-Address--C OF Individual-COUNTERS.
-      *           Attr à ne pas utiliser pour cahier de charge actuel
-      *           exemple valeur  = OECD301
-               15  tech-attr-opt-legalAddressType PIC X(32).
-      *            Code du pays associé à l'adresse
-      *            exemple valeur  = FR
-               15  CountryCode PIC X(02).
-      *            Choisir :
-      *            Soit AddressFree
-      *            Soit AddressFix puis AddressFree
-
-      *            Addresse format libre
-               15  AddressFree2 OCCURS 0 TO 1 DEPENDING ON
-                   AddressFree2--C OF Individual-COUNTERS PIC X(255).
-      *            Addresse format structuré (prioritaire)
-               15  AddressFix OCCURS 0 TO 1 DEPENDING ON
-                   AddressFix--C OF Individual-COUNTERS.
-      *             Rue
-                17  Street OCCURS 0 TO 1 DEPENDING ON
-                    Street--C OF Individual-COUNTERS PIC X(80).
-      *             Numéro de rue (à défaut bâtiment)
-                17  BuildingIdentifier OCCURS 0 TO 1
-                    DEPENDING ON BuildingIdentifier--C
-                         OF Individual-COUNTERS   PIC X(80).
-      *             Complément d'adresse : n appartement, résidence, etc
-                17  SuiteIdentifier OCCURS 0 TO 1 DEPENDING
-                    ON SuiteIdentifier--C OF Individual-COUNTERS
-                                PIC X(80).
-      *             Numéro d'étage
-                17  FloorIdentifier OCCURS 0 TO 1 DEPENDING
-                    ON FloorIdentifier--C OF Individual-COUNTERS
-                                         PIC X(80).
-      *             Département
-                17  DistrictName OCCURS 0 TO 1 DEPENDING ON
-                    DistrictName--C OF Individual-COUNTERS PIC X(80).
-      *             Boîte postale
-                17  POB OCCURS 0 TO 1 DEPENDING ON POB--C
-                    OF Individual-COUNTERS PIC X(80).
-      *             Code postal
-                17  PostCode OCCURS 0 TO 1 DEPENDING ON
-                    PostCode--C OF Individual-COUNTERS PIC X(80).
-      *             Commune
-                17  City PIC X(80).
-      *             Région ou État fédéré
-                17  CountrySubentity OCCURS 0 TO 1 DEPENDING
-                    ON CountrySubentity--C
-                      OF Individual-COUNTERS PIC X(80).
-               15  AddressFree OCCURS 0 TO 1 DEPENDING ON
-                   AddressFree--C OF Individual-COUNTERS PIC X(255).
-      *           Code pays nationlité
-              13  Nationality OCCURS 0 TO 3  DEPENDING ON
-                  Nationality--C OF Individual-COUNTERS PIC X(02).
-      *           Information naissance
-              13  BirthInfo OCCURS 0 TO 1 DEPENDING ON
-                  BirthInfo--C OF Individual-COUNTERS.
-      *           date naissance
-               15 BirthDate OCCURS 0 TO 1 DEPENDING ON
-                  BirthDate--C OF Individual-COUNTERS PIC X(10).
-      *           champs à ne pas utilisé, Ville naissance
-               15 City OCCURS 0 TO 1 DEPENDING ON City--C
-                  OF Individual-COUNTERS PIC X(80).
-      *           champs à ne pas utilisé, Région de naissance
-               15 CitySubentity OCCURS 0 TO 1 DEPENDING ON
-                  CitySubentity--C OF Individual-COUNTERS PIC X(80).
-               15 CountryInfo OCCURS 0 TO 1 DEPENDING ON
-                  CountryInfo--C OF Individual-COUNTERS.
-      *             champs à ne pas utilisé, Code pays naissance
-                17  CountryCode OCCURS 0 TO 1 DEPENDING ON
-                    CountryCode--C OF Individual-COUNTERS PIC X(02).
-      *             champs à ne pas utilisé, Code pays naissance
-                17  FormerCountryName OCCURS 0 TO 1
-                    DEPENDING ON FormerCountryName--C
-                              OF Individual-COUNTERS  PIC X(02).
-      *          ****************
-      *          * Organisation *
-      *          *              *
-      *          ****************
-             11  Organisation OCCURS 0 TO 1 DEPENDING ON
-                 Organisation--C.
-      *           code du pays de résidence du titulaire du compte
-      *           exemple valeur  = FR
-              13  ResCountryCode OCCURS 0 TO 3  DEPENDING ON
-                  ResCountryCode--C OF Organisation-COUNTERS PIC X(02).
-      *           Référence fiscalité étrangère (GIIN)
-      *           doit contenir minimum un caractère
-              13  TIN OCCURS 0 TO 3  DEPENDING ON TIN--C
-                                 OF Organisation-COUNTERS.
-               15  tech-attr-opt-issuedBy PIC X(02).
-               15  tech-text PIC X(17).
-      *           Raison sociale
-              13  Name OCCURS 1 TO 10 DEPENDING ON Name--C
-                                 OF Organisation-COUNTERS.
-      *            Attr à ne pas utiliser pour le cahier charge actuel
-      *            exemple valeur  = OECD202
-               15  tech-attr-opt-nameType PIC X(07).
-               15  tech-text PIC X(64).
-              13  R-Address OCCURS 1 TO 3  DEPENDING ON
-                  R-Address--C OF Organisation-COUNTERS.
-      *           Attr à ne pas utiliser pour cahier de charge actuel
-      *           exemple valeur  = OECD301
-               15  tech-attr-opt-legalAddressType PIC X(32).
-      *            Code du pays associé à l'adresse
-      *            exemple valeur  = FR
-               15  CountryCode PIC X(02).
-      *            Choisir :
-      *            Soit AddressFree
-      *            Soit AddressFix puis AddressFree
-
-      *            Addresse format libre
-               15  AddressFree2 OCCURS 0 TO 1 DEPENDING ON
-                   AddressFree2--C OF Organisation-COUNTERS PIC X(255).
-      *            Addresse format structuré (prioritaire)
-               15  AddressFix OCCURS 0 TO 1 DEPENDING ON
-                   AddressFix--C OF Organisation-COUNTERS.
-      *             Rue
-                17  Street OCCURS 0 TO 1 DEPENDING ON
-                    Street--C OF Organisation-COUNTERS PIC X(80).
-      *             Numéro de rue (à défaut bâtiment)
-                17  BuildingIdentifier OCCURS 0 TO 1
-                    DEPENDING ON BuildingIdentifier--C
-                         OF Organisation-COUNTERS  PIC X(80).
-      *             Complément d'adresse : n appartement, résidence, etc
-                17  SuiteIdentifier OCCURS 0 TO 1 DEPENDING
-                    ON SuiteIdentifier--C OF Organisation-COUNTERS
-                                PIC X(80).
-      *             Numéro d'étage
-                17  FloorIdentifier OCCURS 0 TO 1 DEPENDING
-                    ON FloorIdentifier--C OF Organisation-COUNTERS
-                                         PIC X(80).
-      *             Département
-                17  DistrictName OCCURS 0 TO 1 DEPENDING ON
-                    DistrictName--C OF Organisation-COUNTERS PIC X(80).
-      *             Boîte postale
-                17  POB OCCURS 0 TO 1 DEPENDING ON POB--C
-                    OF Organisation-COUNTERS PIC X(80).
-      *             Code postal
-                17  PostCode OCCURS 0 TO 1 DEPENDING ON
-                    PostCode--C OF Organisation-COUNTERS PIC X(80).
-      *             Commune
-                17  City PIC X(80).
-      *             Région ou État fédéré
-                17  CountrySubentity OCCURS 0 TO 1 DEPENDING
-                    ON CountrySubentity--C
-                      OF Organisation-COUNTERS PIC X(80).
-               15  AddressFree OCCURS 0 TO 1 DEPENDING ON
-                   AddressFree--C OF Organisation-COUNTERS PIC X(255).
-      *          ******************
-      *          * AcctHolderType *
-      *          *                *
-      *          ******************
-      *          Type organisation détentrice du compte
-      *          Valeur possible =
-      *            FATCA101 : Owner-Documented FI with specified
-      *                       US owner(s)
-      *            FATCA102 : Passive Non-Financial Entity with
-      *                       substantial US Owners
-      *            FATCA103 : Non-Participating FI
-      *            FATCA104 : Specified US Person
-      *            FATCA105 : Direct Reporting NFFE
-             11  AcctHolderType OCCURS 0 TO 1 DEPENDING ON
-                   AcctHolderType--C PIC X(08).
-      *         ********************
-      *         * SubstantialOwner *
-      *         *                  *
-      *         ********************
-            09  SubstantialOwner OCCURS 0 TO 30 DEPENDING ON
-                SubstantialOwner--C.
-      *          code du pays de résidence du titulaire du compte
-      *          exemple valeur  = FR
-             11  ResCountryCode OCCURS 0 TO  3 DEPENDING ON
-                 ResCountryCode--C
-                               OF SubstantialOwner-COUNTERS PIC X(02).
-      *          Référence fiscalité étrangère (GIIN)
-      *          doit contenir minimum un caractère
-             11  TIN OCCURS 0 TO  3 DEPENDING ON TIN--C
-                                   OF SubstantialOwner-COUNTERS.
-              13  tech-attr-opt-issuedBy PIC X(02).
-              13  tech-text PIC X(17).
-      *          Nom
-             11  Name OCCURS 1 TO 3  DEPENDING ON Name--C
-                                   OF SubstantialOwner-COUNTERS.
-      *           Champs non utilisé
-              13  PrecedingTitle OCCURS 0 TO 1 DEPENDING ON
-                  PrecedingTitle--C
-                               OF SubstantialOwner-COUNTERS PIC X(32).
-      *           Titre civilité
-              13  R-Title OCCURS 0 TO 3  DEPENDING ON
-                  R-Title--C OF SubstantialOwner-COUNTERS PIC X(32).
-      *           Prénom
-              13  FirstName.
-      *            Attr non utilisé
-               15  tech-attr-non-xnlNameType PIC X(32).
-               15  tech-text PIC X(32).
-      *           Champs non utilisé
-              13  MiddleName OCCURS 0 TO 3  DEPENDING ON
-                  MiddleName--C OF SubstantialOwner-COUNTERS.
-      *            Attr non utilisé
-               15  tech-attr-non-xnlNameType PIC X(32).
-               15  tech-text PIC X(32).
-      *           Champs non utilisé
-              13  NamePrefix OCCURS 0 TO 1 DEPENDING ON
-                  NamePrefix--C OF SubstantialOwner-COUNTERS.
-      *            Attr non utilisé
-               15  tech-attr-non-xnlNameType PIC X(32).
-               15  tech-text PIC X(32).
-      *           Nom du famille
-              13  LastName.
-      *            Attr non utilisé
-               15  tech-attr-non-xnlNameType PIC X(32).
-               15  tech-text PIC X(32).
-      *           Champs non utilisé
-              13  GenerationIdentifier OCCURS 0 TO 3
-                  DEPENDING ON GenerationIdentifier--C
-                            OF SubstantialOwner-COUNTERS PIC X(32).
-      *           Champs non utilisé
-              13  Suffix OCCURS 0 TO 3  DEPENDING ON Suffix--C
-                  OF SubstantialOwner-COUNTERS PIC X(32).
-      *           Champs non utilisé
-              13  GeneralSuffix OCCURS 0 TO 1 DEPENDING ON
-                  GeneralSuffix--C
-                            OF SubstantialOwner-COUNTERS PIC X(32).
-             11  R-Address OCCURS 1 TO 3  DEPENDING ON
-                 R-Address--C OF SubstantialOwner-COUNTERS.
-      *          Attr à ne pas utiliser pour cahier de charge actuel
-      *          exemple valeur  = OECD301
-              13  tech-attr-opt-legalAddressType PIC X(32).
-      *           Code du pays associé à l'adresse
-      *           exemple valeur  = FR
-              13  CountryCode PIC X(02).
-      *           Choisir :
-      *           Soit AddressFree
-      *           Soit AddressFix puis AddressFree
-
-      *           Addresse format libre
-              13  AddressFree2 OCCURS 0 TO 1 DEPENDING ON
-                  AddressFree2--C
-                              OF SubstantialOwner-COUNTERS PIC X(255).
-      *           Addresse format structuré (prioritaire)
-              13  AddressFix OCCURS 0 TO 1 DEPENDING ON
-                  AddressFix--C OF SubstantialOwner-COUNTERS.
-      *            Rue
-               15  Street OCCURS 0 TO 1 DEPENDING ON
-                   Street--C OF SubstantialOwner-COUNTERS PIC X(80).
-      *            Numéro de rue (à défaut bâtiment)
-               15  BuildingIdentifier OCCURS 0 TO 1
-                   DEPENDING ON BuildingIdentifier--C
-                        OF SubstantialOwner-COUNTERS PIC X(80).
-      *            Complément d'adresse : n appartement, résidence, etc
-               15  SuiteIdentifier OCCURS 0 TO 1 DEPENDING
-                   ON SuiteIdentifier--C
-                        OF SubstantialOwner-COUNTERS PIC X(80).
-      *            Numéro d'étage
-               15  FloorIdentifier OCCURS 0 TO 1 DEPENDING
-                   ON FloorIdentifier--C
-                        OF SubstantialOwner-COUNTERS PIC X(80).
-      *            Département
-               15  DistrictName OCCURS 0 TO 1 DEPENDING ON
-                   DistrictName--C
-                        OF SubstantialOwner-COUNTERS PIC X(80).
-      *            Boîte postale
-               15  POB OCCURS 0 TO 1 DEPENDING ON POB--C
-                   OF SubstantialOwner-COUNTERS PIC X(80).
-      *            Code postal
-               15  PostCode OCCURS 0 TO 1 DEPENDING ON
-                   PostCode--C OF SubstantialOwner-COUNTERS PIC X(80).
-      *            Commune
-               15  City PIC X(80).
-      *            Région ou État fédéré
-               15  CountrySubentity OCCURS 0 TO 1 DEPENDING
-                   ON CountrySubentity--C
-                     OF SubstantialOwner-COUNTERS PIC X(80).
-              13  AddressFree OCCURS 0 TO 1 DEPENDING ON
-                  AddressFree--C
-                     OF SubstantialOwner-COUNTERS PIC X(255).
-      *          Code pays nationlité
-             11  Nationality OCCURS 0 TO 3  DEPENDING ON
-                 Nationality--C
-                     OF SubstantialOwner-COUNTERS PIC X(02).
-      *          Information naissance
-             11  BirthInfo OCCURS 0 TO 1 DEPENDING ON
-                 BirthInfo--C OF SubstantialOwner-COUNTERS.
-      *          date naissance
-              13 BirthDate OCCURS 0 TO 1 DEPENDING ON
-                 BirthDate--C
-                              OF SubstantialOwner-COUNTERS PIC X(10).
-      *          champs à ne pas utilisé, Ville naissance
-              13 City OCCURS 0 TO 1 DEPENDING ON City--C
-                 OF SubstantialOwner-COUNTERS PIC X(80).
-      *          champs à ne pas utilisé, Région de naissance
-              13 CitySubentity OCCURS 0 TO 1 DEPENDING ON
-                 CitySubentity--C
-                 OF SubstantialOwner-COUNTERS PIC X(80).
-              13 CountryInfo OCCURS 0 TO 1 DEPENDING ON
-                 CountryInfo--C OF SubstantialOwner-COUNTERS.
-      *            champs à ne pas utilisé, Code pays naissance
-               15  CountryCode OCCURS 0 TO 1 DEPENDING ON
-                   CountryCode--C
-                                OF SubstantialOwner-COUNTERS PIC X(02).
-      *            champs à ne pas utilisé, Code pays naissance
-               15  FormerCountryName OCCURS 0 TO 1
-                   DEPENDING ON FormerCountryName--C
-                             OF SubstantialOwner-COUNTERS PIC X(02).
-      *         ******************
-      *         * AccountBalance *
-      *         *                *
-      *         ******************
-            09  AccountBalance.
-      *          Devise de solde du compte
-             11  tech-attr-req-currCode PIC X(03).
-      *          Montant de solde du compte
-             11  tech-text PIC S9(16)V9(2)
-                   COMP-3.
-      *         ***********
-      *         * Payment *
-      *         *         *
-      *         ***********
-            09  Payment OCCURS 0 TO 3  DEPENDING ON Payment--C.
-      *          Type du payment
-      *          Valeur possible =
-      *            FATCA501 : Dividendes
-      *            FATCA502 : Intérêt
-      *            FATCA503 : Produits Brut/Rachats sur contrats
-      *                       d'assurance-vie et contrats ou bons
-      *                       de capitalisation
-      *            FATCA504 : Autres revenus, y compris les rentes
-      *                       et arrérages.
-             11  R-Type PIC X(08).
-MCHA++       11  PaymentAmnt OCCURS 0 TO 1 DEPENDING ON PaymentAmnt--C.
-      *           Devise du payment
-              13  tech-attr-req-currCode PIC X(03).
-      *           Montant de payment
-              13  tech-text PIC S9(16)V9(2)
-                     COMP-3.
-      *        **************
-      *        * PoolReport *
-      *        *            *
-      *        **************
-      *        Balise PoolReport non utilisée pour la France
-           07  PoolReport OCCURS 0 TO 3  DEPENDING ON PoolReport--C.
-            09  DocSpec.
-      *          Type de déclaration communiquée
-      *          valeur possible :
-      *          FATCA1  = Données Nouvelles
-      *          FATCA2  = Données Corrigées
-      *          FATCA3  = Données Annulées
-      *          FATCA4  = Données Modifiées
-      *          FATCA11 = Nouvelles Données Test
-      *          FATCA12 = Données Test Corrigées
-      *          FATCA13 = Données Test Annulées
-      *          FATCA14 = Données Test Modifiées
-             11  DocTypeIndic PIC X(07).
-      *          Identifiant du bloc de données
-      *          Concatener :
-      *          MessageRefId " " Name " reporting FI"
-      *          exemple = fatca1-2014-17-01 Assureur A reporting FI
-             11  DocRefId PIC X(80).
-      *          Identifiant du message à corriger
-             11  CorrMessageRefId OCCURS 0 TO 1 DEPENDING ON
-MCHA+-*          CorrMessageRefId--C OF PoolReport-COUNTERS PIC X(17).
-MCHA+-           CorrMessageRefId--C OF PoolReport-COUNTERS PIC X(80).
-      *          Identifiant du bloc de données à corriger
-             11  CorrDocRefId OCCURS 0 TO 1 DEPENDING ON
-                 CorrDocRefId--C OF PoolReport-COUNTERS PIC X(80).
-            09  AccountCount PIC S9(9) COMP-5.
-      *         FATCA201 = Recalcitrant account holders
-      *                    with US Indicia
-      *         FATCA202 = Recalcitrant account holders
-      *                    without US Indicia
-      *         FATCA203 = Dormant Accounts
-      *         FATCA204 = Non-participating foreign
-      *                    financial institutions
-      *         FATCA205 = Recalcitrant account holders
-      *                    that are US persons
-      *         FATCA206 = Recalcitrant account holders
-      *                    that are passive NFFEs
-            09  AccountPoolReportType PIC X(08).
-            09  PoolBalance.
-      *          Devise du solde
-             11  tech-attr-req-currCode PIC X(03).
-      *          Montant du solde
-             11  tech-text PIC S9(16)V9(2)
-                   COMP-3.
-
-      *   *******************************
-      *   *  variables pour préfixes    *
-      *   *                             *
-      *   *******************************
-
-      *   Liste des balises dont le préfixe est 'ftc'
-      *   les autres balises auront le préfixe par défaut 'sfa'.
+      *   Liste des balises dont le prÃ©fixe est 'ftc'
+      *   les autres balises auront le prÃ©fixe par dÃ©faut 'sfa'.
 
        01     WS-PREFIXE-FTC.
         05    WS-L-PREFIXE  PIC  X(03) VALUE 'ftc'.
@@ -1324,7 +275,7 @@ MCHA+-           CorrMessageRefId--C OF PoolReport-COUNTERS PIC X(80).
        01     WS-I-UNIQ-KAC-RUPT        PIC X(17) VALUE SPACE.
        01     WS-I-UNIQ-KPI-RUPT        PIC X(17) VALUE SPACE.
 
-      * ----  Nombre de chiffres de la fraction décimale des montant
+      * ----  Nombre de chiffres de la fraction dÃ©cimale des montant
        01     WS-Q-NB-DECIM             PIC 9(01) VALUE 2.
 
        01     TOP-RUPTURE-CNT-CLI       PIC X(01) VALUE SPACE.
@@ -1347,8 +298,8 @@ size    05    WS-L-XML-GENERATE         PIC  X(22000) VALUE SPACE.
         05    WS-N-XML-DCOP             PIC  9(04) BINARY VALUE 0.
         05    WS-Q-XML-DCOP-INDT        PIC  9(04) BINARY VALUE 0.
 
-      * ----  Tableau pour stocker les lignes xml retournées par
-      *       MFUSXL00 en vue d'écriture
+      * ----  Tableau pour stocker les lignes xml retournÃ©es par
+      *       MFUSXL00 en vue d'Ã©criture
         05    WS-Q-XML-TAB              PIC  9(04) BINARY VALUE ZERO.
         05    WS-G-XML-TAB              OCCURS 1000.
          10   WS-Q-XML-LINE             PIC  9(04) BINARY VALUE ZERO.
@@ -1356,8 +307,8 @@ size    05    WS-L-XML-GENERATE         PIC  X(22000) VALUE SPACE.
          10   WS-L-XML-LINE             PIC  X(500) VALUE SPACE.
 
       * ----  Tableau pour stocker les lignes xml de fermeture
-      *       ces lignes sont générées au début du programme
-      *       mais leurs écriture est différé jusqu'à la fin
+      *       ces lignes sont gÃ©nÃ©rÃ©es au dÃ©but du programme
+      *       mais leurs Ã©criture est diffÃ©rÃ© jusqu'Ã  la fin
         05    WS-Q-XML-TAB-FIN          PIC  9(04) BINARY VALUE ZERO.
         05    WS-G-XML-TAB-FIN          OCCURS 200.
          10   WS-Q-XML-LINE-FIN         PIC  9(04) BINARY VALUE ZERO.
@@ -1396,14 +347,14 @@ size    05    WS-L-XML-GENERATE         PIC  X(22000) VALUE SPACE.
 
       *************************************************************
       *                                                           *
-      *   Zones WS pour stocker les données du fichier en entrée  *
+      *   Zones WS pour stocker les donnÃ©es du fichier en entrÃ©e  *
       *                                                           *
       *************************************************************
 
       *    Compteur d'adresse par client
        01  WS-Q-DATA-DET-ADR                     PIC 9(04) BINARY.
 
-      *    Compteur de bénéficiaires par client
+      *    Compteur de bÃ©nÃ©ficiaires par client
        01  WS-Q-DATA-DET-BNF                     PIC 9(04) BINARY.
 
        01   WS-G-IDENT-ENREG.
@@ -1447,11 +398,11 @@ size    05    WS-L-XML-GENERATE         PIC  X(22000) VALUE SPACE.
              10  WS-L-MAIL-CONTACT1              PIC X(070).            00029800
 MCHA  *      Type de FATCA                                              00030400
 "            10  WS-C-TYPE-FATCA                 PIC X(008).            00030500
-"     *      Référence initial du fichier de reporting FATCAn           00030800
+"     *      RÃ©fÃ©rence initial du fichier de reporting FATCAn           00030800
 "            10  WS-I-REF-FIC-INIT               PIC X(055).            00031000
-"     *      Date de référence du  fichier de reporting FATCAn          00031300
+"     *      Date de rÃ©fÃ©rence du  fichier de reporting FATCAn          00031300
 "            10  WS-D-REF-FIC-INIT               PIC X(026).            00031400
-"     *      Référence du fichier de reporting FATCAn                   00031700
+"     *      RÃ©fÃ©rence du fichier de reporting FATCAn                   00031700
 "            10  WS-I-REF-FIC                    PIC X(055).            00031900
 "     *      FILLER                                                     00032200
 MCHA         10 WS-FILLER                       PIC X(540).             00032300
@@ -1613,7 +564,7 @@ MCHA+         15 WS-C-TITRE-CVLTE-F              PIC X(001).
       *                             *
       *******************************
 
-      *   Références de compilation
+      *   RÃ©fÃ©rences de compilation
        01 W-REF-COMPIL.
           03 W-DATE-COMPIL.
              05 W-DATE-COMPIL-JJ       PIC X(02) VALUE SPACES.
@@ -1673,7 +624,7 @@ MCHA+         15 WS-C-TITRE-CVLTE-F              PIC X(001).
       *******************************
 
       *                                                                 00840029
-      ***  LES CODES RETOUR DES DIFFéRENTS FICHIERS                     00840199
+      ***  LES CODES RETOUR DES DIFFÃ©RENTS FICHIERS                     00840199
       *                                                                 00840229
        01  FS-E01                      PIC X(02) VALUE SPACES.          02530199
        01  FS-S01                      PIC X(02) VALUE SPACES.          02530199
@@ -1685,10 +636,10 @@ MCHA+         15 WS-C-TITRE-CVLTE-F              PIC X(001).
       *   Compteur du nombre de lectures du fichier DFUSLE21
        01 WS-NB-LECT-E01               PIC 9(9) VALUE ZEROES.
 
-      *   Compteur du nombre d'écritures du fichier DFUSLS21
+      *   Compteur du nombre d'Ã©critures du fichier DFUSLS21
        01 WS-NB-ECRT-S01               PIC 9(9) VALUE ZEROES.
 
-150978*   Compteur du nombre d'écritures du fichier DFUSLS22
+150978*   Compteur du nombre d'Ã©critures du fichier DFUSLS22
 150978 01 WS-NB-ECRT-S02               PIC 9(9) VALUE ZEROES.
 
       *    Compteur d'AccountReport
@@ -1697,24 +648,24 @@ MCHA+         15 WS-C-TITRE-CVLTE-F              PIC X(001).
 150978*    Compteur de PoolReport
 150978 01  WS-Q-PoolReport             PIC 9(09) BINARY VALUE ZERO.
 
-      *   Booléen pour indiquer fin du fichier
+      *   BoolÃ©en pour indiquer fin du fichier
        01 TOP-FIN-DFUSLE21             PIC X(1)  VALUE SPACE.
           88 FIN-DFUSLE21                        VALUE 'O'.
 
-150978*   Booléen pour indiquer fin du fichier
+150978*   BoolÃ©en pour indiquer fin du fichier
 150978 01 TOP-FIN-TRT-ACCOUNT          PIC X(1)  VALUE SPACE.
 150978    88 FIN-TRT-ACCOUNT-OK                  VALUE 'O'.
 150978    88 FIN-TRT-ACCOUNT-KO                  VALUE 'N'.
 
-150978*   Booléen pour indiquer présence des comptes
+150978*   BoolÃ©en pour indiquer prÃ©sence des comptes
 150978 01 TOP-EXIST-ACCOUNT          PIC X(1)  VALUE SPACE.
 150978    88 EXIST-ACCOUNT-OK                  VALUE 'O'.
 150978    88 EXIST-ACCOUNT-KO                  VALUE 'N'.
 
-      *   Variable numérique de code ABEND
+      *   Variable numÃ©rique de code ABEND
        01 WS-CODE-ABEND                PIC 9(4) VALUE ZERO.
 
-      *   Indice pour lignes à afficher par MCCDBILA
+      *   Indice pour lignes Ã  afficher par MCCDBILA
        01 WS-DISP                      PIC 9(2) VALUE ZEROES.
 
 
@@ -1840,7 +791,7 @@ MCHA+         15 WS-C-TITRE-CVLTE-F              PIC X(001).
       DEND DECLARATIVES.
 
 
-      * ----------->  Cinématique générale
+      * ----------->  CinÃ©matique gÃ©nÃ©rale
 
 
 
@@ -1848,9 +799,9 @@ MCHA+         15 WS-C-TITRE-CVLTE-F              PIC X(001).
            PERFORM INIT-TRAIT
 
       *    C-ENR = '00'
-      *    Traitement des données de l'entité déclarante
+      *    Traitement des donnÃ©es de l'entitÃ© dÃ©clarante
       *    effectue :
-      *    - Deux lecture du fichier pour entité et adresse
+      *    - Deux lecture du fichier pour entitÃ© et adresse
       *    - Ecriture de l'arbre FATCA (sans accountReport)
 
            PERFORM TRAIT-TET
@@ -1872,11 +823,11 @@ MCHA+         15 WS-C-TITRE-CVLTE-F              PIC X(001).
 150978           IF RUPTURE-CNT-CLI AND FIN-TRT-ACCOUNT-KO
 
       D             DISPLAY ' RUPTURE-CNT-CLI'
-      *             Init données AccountReport
+      *             Init donnÃ©es AccountReport
                     PERFORM INIT-ARBR-AccountReport
-      *             Alim données AccountReport
+      *             Alim donnÃ©es AccountReport
                     PERFORM ALIM-ARBR-AccountReport
-      *             générer AccountReport du compte précédant
+      *             gÃ©nÃ©rer AccountReport du compte prÃ©cÃ©dant
                     PERFORM GENER-XML-AccountReport
       *             Ecriture accountReport
                     PERFORM ECRT-WS-G-XML
@@ -1895,11 +846,11 @@ MCHA                SET EXIST-ACCOUNT-OK TO TRUE
 150978           IF FIN-TRT-ACCOUNT-KO AND EXIST-ACCOUNT-OK
 150978              SET FIN-TRT-ACCOUNT-OK TO TRUE
 150978D             DISPLAY ' RUPTURE-CNT-CLI'
-150978*             Init données AccountReport
+150978*             Init donnÃ©es AccountReport
 150978              PERFORM INIT-ARBR-AccountReport
-150978*             Alim données AccountReport
+150978*             Alim donnÃ©es AccountReport
 150978              PERFORM ALIM-ARBR-AccountReport
-150978*             générer AccountReport du compte précédant
+150978*             gÃ©nÃ©rer AccountReport du compte prÃ©cÃ©dant
 150978              PERFORM GENER-XML-AccountReport
 150978*             Ecriture accountReport
 150978              PERFORM ECRT-WS-G-XML
@@ -1907,12 +858,12 @@ MCHA                SET EXIST-ACCOUNT-OK TO TRUE
 150978              SET RUPTURE-CNT-CLI-NON TO TRUE
 150978           END-IF
 150978
-150978*==>       Intégration des clients récalcitrants
-150978*          Init données PoolReport
+150978*==>       IntÃ©gration des clients rÃ©calcitrants
+150978*          Init donnÃ©es PoolReport
 150978           PERFORM INIT-ARBR-PoolReport
-150978*          Alim données PoolReport
+150978*          Alim donnÃ©es PoolReport
 150978           PERFORM ALIM-ARBR-PoolReport
-150978*          générer bloc PoolReport
+150978*          gÃ©nÃ©rer bloc PoolReport
 150978           PERFORM GENER-XML-PoolReport
 150978*          Ecriture du PoolReport
 150978           PERFORM ECRT-WS-G-XML
@@ -1978,7 +929,7 @@ MCHA+                  MOVE E01-G-DATA-MAJ-CLR TO MJ00-CFUSMJ00
 150978*    Ouverture du fichier DFUSLS22
 150978     PERFORM OUVR-FICH-S02
 
-      *    Affichage bilan du début d'execution
+      *    Affichage bilan du dÃ©but d'execution
            PERFORM AFFICH-BILAN-DEB
 
            .
@@ -1987,20 +938,20 @@ MCHA+                  MOVE E01-G-DATA-MAJ-CLR TO MJ00-CFUSMJ00
        TRAIT-TET.
       *---------*
 
-      *    Lecture Ligne entité déclarante
+      *    Lecture Ligne entitÃ© dÃ©clarante
            PERFORM LECT-FICH-E01
 
 150978     IF NOT FIN-DFUSLE21
-      *       Alimentation données entité déclarante
+      *       Alimentation donnÃ©es entitÃ© dÃ©clarante
               PERFORM ALIM-DATA-WS-TET-END
 
-      *       Lecture Ligne entité déclarante - Adresse
+      *       Lecture Ligne entitÃ© dÃ©clarante - Adresse
               PERFORM LECT-FICH-E01
 
-      *       Alimentation données entité déclarante -Adresse
+      *       Alimentation donnÃ©es entitÃ© dÃ©clarante -Adresse
               PERFORM ALIM-DATA-WS-TET-ADR
 
-      *       Affichage bilan entité déclarante
+      *       Affichage bilan entitÃ© dÃ©clarante
               PERFORM AFFICH-BILAN-END
 
       *       Alimentation de l'arbre FATCA (sans AccountReport)
@@ -2009,11 +960,11 @@ MCHA+                  MOVE E01-G-DATA-MAJ-CLR TO MJ00-CFUSMJ00
       *       Generer l'arbre FATCA (sans AccountReport)
               PERFORM GENER-XML-FATCA-OECD
 
-      *       Decouper XML FATCA pour permettre d'insérer les
+      *       Decouper XML FATCA pour permettre d'insÃ©rer les
       *       AccountReport
               PERFORM DECOUP-XML-FATCA-OECD
 
-      *       Ecriture de la structure générale FATCA
+      *       Ecriture de la structure gÃ©nÃ©rale FATCA
               PERFORM ECRT-WS-G-XML
 150978     END-IF
            .
@@ -2046,16 +997,16 @@ MCHA+                  MOVE E01-G-DATA-MAJ-CLR TO MJ00-CFUSMJ00
        VALORISER-DocTypeIndic.
       *----------------------*
 
-      *   Type de déclaration communiquée
+      *   Type de dÃ©claration communiquÃ©e
       *   valeur possible :
-      *     FATCA1  = Données Nouvelles
-      *     FATCA2  = Données Corrigées
-      *     FATCA3  = Données Annulées
-      *     FATCA4  = Données Modifiées
-      *     FATCA11 = Nouvelles Données Test
-      *     FATCA12 = Données Test Corrigées
-      *     FATCA13 = Données Test Annulées
-      *     FATCA14 = Données Test Modifiées
+      *     FATCA1  = DonnÃ©es Nouvelles
+      *     FATCA2  = DonnÃ©es CorrigÃ©es
+      *     FATCA3  = DonnÃ©es AnnulÃ©es
+      *     FATCA4  = DonnÃ©es ModifiÃ©es
+      *     FATCA11 = Nouvelles DonnÃ©es Test
+      *     FATCA12 = DonnÃ©es Test CorrigÃ©es
+      *     FATCA13 = DonnÃ©es Test AnnulÃ©es
+      *     FATCA14 = DonnÃ©es Test ModifiÃ©es
 
            IF WS-C-MOD-REPORT
            OF WS-G-DATA-TET-END = '2'
@@ -2070,7 +1021,7 @@ MCHA+ *       DISPLAY 'WS-C-TYPE-FATCA ' WS-DOCREFID(1:7)
        VALORISER-DocRefId.
       *------------------*
 
-      *    Identifiant du bloc de données
+      *    Identifiant du bloc de donnÃ©es
       *    Concatener :
       *    MessageRefId " " Name " reporting FI"
       *    exemple = fatca1-2014-17-01 Assureur A reporting FI
@@ -2482,7 +1433,7 @@ MCHA  *         WITH  XML-DECLARATION
            END-XML
 
 MCHA  *    DISPLAY 'MCHA ' WS-L-XML-GENERATE
-      *    Alimenter les paramètres MFUSXL00
+      *    Alimenter les paramÃ¨tres MFUSXL00
            PERFORM ALIM-XL00-FONC-IN-FATCA
 
       *    Appel au module MFUSXL00
@@ -2548,8 +1499,8 @@ MCHA  *         WITH  XML-DECLARATION
 
            END-XML
 
-MCHA++D    Display 'Payment--C  aprés   : ' Payment--C
-      *    Alimenter les paramètres MFUSXL00
+MCHA++D    Display 'Payment--C  aprÃ©s   : ' Payment--C
+      *    Alimenter les paramÃ¨tres MFUSXL00
            PERFORM ALIM-XL00-FONC-IN-ACCOUNT
 
       *    Appel au module MFUSXL00
@@ -2607,7 +1558,7 @@ MCHA++D    Display 'Payment--C  aprés   : ' Payment--C
 150978
 150978     END-XML
 150978
-150978*    Alimenter les paramètres MFUSXL00
+150978*    Alimenter les paramÃ¨tres MFUSXL00
 150978     PERFORM ALIM-XL00-FONC-IN-ACCOUNT
 150978
 150978*    Appel au module MFUSXL00
@@ -2712,28 +1663,28 @@ MCHA+1        END-IF
 
               WHEN 'CNT'
 
-      *          Initialiser donnees WS détail CNT
+      *          Initialiser donnees WS dÃ©tail CNT
                  PERFORM INIT-WS-G-DATA-DET-CNT
 
-      *          Alimenter données détails compte
+      *          Alimenter donnÃ©es dÃ©tails compte
                  PERFORM ALIM-DATA-WS-DET-CNT
 
               WHEN 'CLI'
 
-      *          Initialiser donnees WS détail CLI, ADR ET BNF
+      *          Initialiser donnees WS dÃ©tail CLI, ADR ET BNF
                  PERFORM INIT-WS-G-DATA-DET-CLT
 
-      *          Alimenter données détails Client
+      *          Alimenter donnÃ©es dÃ©tails Client
                  PERFORM ALIM-DATA-WS-DET-CLT
 
               WHEN 'ADR'
 
-      *          Alimenter données détails adresse titulaire du compte
+      *          Alimenter donnÃ©es dÃ©tails adresse titulaire du compte
                  PERFORM ALIM-DATA-WS-DET-ADR
 
               WHEN 'BNF'
 
-      *          Alimenter données détails bénéficiaire du compte
+      *          Alimenter donnÃ©es dÃ©tails bÃ©nÃ©ficiaire du compte
                  PERFORM ALIM-DATA-WS-DET-BNF
 
               WHEN OTHER
@@ -2761,7 +1712,7 @@ MCHA+1        END-IF
 150978     IF    E01-C-ENR = '20'
            AND ( E01-C-ENTIT ='CNT' OR 'CLI')
 
-      *       si les vriables de la rupture ont déjà été valorisées
+      *       si les vriables de la rupture ont dÃ©jÃ  Ã©tÃ© valorisÃ©es
               IF  WS-I-UNIQ-KAC-RUPT NOT = SPACE
               AND WS-I-UNIQ-KPI-RUPT NOT = SPACE
 
@@ -2788,7 +1739,7 @@ MCHA+1        END-IF
 
               END-IF
 
-      *       Evaluer entité traitée
+      *       Evaluer entitÃ© traitÃ©e
               EVALUATE E01-C-ENTIT
 
                  WHEN 'CNT'
@@ -2886,7 +1837,7 @@ MCHA+1        END-IF
        ALIM-ARBR-AccountReport.
       *-----------------------*
 
-      *    Alimenter données compte Arbre AccountReport
+      *    Alimenter donnÃ©es compte Arbre AccountReport
 
       D    DISPLAY 'Debut alimentation AccountReport'
       D    DISPLAY 'Compte : ' WS-I-UNIQ-KAC
@@ -3956,7 +2907,7 @@ MCHA+ *    END-PERFORM
 150978 ALIM-ARBR-PoolReport.
 150978*--------------------*
 150978
-150978*    Alimenter données compte Arbre PoolReport
+150978*    Alimenter donnÃ©es compte Arbre PoolReport
 150978
 150978D    DISPLAY 'Debut alimentation PoolReport'
 150978D    DISPLAY '         '
@@ -4109,16 +3060,16 @@ MCHA+-     END-IF
        FIN-TRAIT.
       *-------------*
 
-      *    Fermeture du fichier en entrée
+      *    Fermeture du fichier en entrÃ©e
            PERFORM FERM-FICH-E01
 
       *    Fermeture du fichier en sortie
            PERFORM FERM-FICH-S01
 
-150978*    Fermeture du fichier en sortie à destination de BFUSMJ00
+150978*    Fermeture du fichier en sortie Ã  destination de BFUSMJ00
 150978     PERFORM FERM-FICH-S02
 
-      *    Récuperation de la date / heure de fin de traitement
+      *    RÃ©cuperation de la date / heure de fin de traitement
            PERFORM RECUP-DATE-HEURE-FIN
 
       *    Affichage du bilan final
@@ -4135,10 +3086,10 @@ MCHA+-     END-IF
        ALIM-XL00-FONC-IN-FATCA.
       *---------------------------*
 
-      *    Initialisation de la zone entrée et la zone entrée-sortie
+      *    Initialisation de la zone entrÃ©e et la zone entrÃ©e-sortie
            PERFORM INIT-XL00-FONC-IN
 
-      *    Alimentation des paramètres du module
+      *    Alimentation des paramÃ¨tres du module
            MOVE '1'                   TO XL00-B-INDT
            MOVE '1'                   TO XL00-B-NMSP
            MOVE '1'                   TO XL00-B-XSD
@@ -4151,15 +3102,15 @@ MCHA       MOVE '1'                   TO XL00-B-VIDE
            MOVE '1'                   TO XL00-B-DECL
            MOVE '1'                   TO XL00-B-DCOP
 
-      *    paramètres mots réservés
+      *    paramÃ¨tres mots rÃ©servÃ©s
            MOVE  2                    TO XL00-Q-RESV-INDICATIF
            MOVE 'R-'                  TO XL00-L-RESV-INDICATIF
 
-      *    paramètres xml délcaration
+      *    paramÃ¨tres xml dÃ©lcaration
            MOVE  5                    TO XL00-Q-DECL-ENCODING
            MOVE 'UTF-8'               TO XL00-L-DECL-ENCODING
 
-      *    paramètres Name space
+      *    paramÃ¨tres Name space
            MOVE  0                    TO XL00-Q-NMSP
 
            ADD   1                    TO XL00-Q-NMSP
@@ -4183,20 +3134,20 @@ MCHA       MOVE '1'                   TO XL00-B-VIDE
            MOVE 'http://www.w3.org/2001/XMLSchema-instance'
                                       TO XL00-L-NMSP-URN  (XL00-Q-NMSP)
 
-      *    paramètres Schema
+      *    paramÃ¨tres Schema
            MOVE  40                   TO XL00-Q-XSD-URN
            MOVE 'urn:oecd:ties:fatca:v1 FatcaXML_v1.1.xsd'
                                       TO XL00-L-XSD-URN
 
-      *    paramètres indentation
+      *    paramÃ¨tres indentation
            MOVE WS-Q-INDT-UNIT        TO XL00-Q-INDT-UNIT
            MOVE WS-Q-INDT-INIT        TO XL00-Q-INDT-INIT
 
-      *    paramètres découpage
+      *    paramÃ¨tres dÃ©coupage
            MOVE 14                    TO XL00-Q-DCOP-TAG
            MOVE 'ReportingGroup'      TO XL00-L-DCOP-TAG
 
-      *    paramètres préfixes
+      *    paramÃ¨tres prÃ©fixes
            MOVE 3                     TO XL00-Q-PRFX-DFLT
            MOVE 'sfa'                 TO XL00-L-PRFX-DFLT
            MOVE 3                     TO XL00-Q-PRFX-PARM
@@ -4213,7 +3164,7 @@ MCHA       MOVE '1'                   TO XL00-B-VIDE
            END-PERFORM
 
 
-      *    données xml brutes à traiter
+      *    donnÃ©es xml brutes Ã  traiter
            MOVE WS-Q-XML-GENERATE     TO XL00-Q-XML-BRUTE
            MOVE WS-L-XML-GENERATE     TO XL00-L-XML-BRUTE
 
@@ -4223,10 +3174,10 @@ MCHA       MOVE '1'                   TO XL00-B-VIDE
        ALIM-XL00-FONC-IN-ACCOUNT.
       *-----------------------------*
 
-      *    Initialisation de la zone entrée et la zone entrée-sortie
+      *    Initialisation de la zone entrÃ©e et la zone entrÃ©e-sortie
            PERFORM INIT-XL00-FONC-IN
 
-      *    Alimentation des paramètres du module
+      *    Alimentation des paramÃ¨tres du module
            MOVE '1'                   TO XL00-B-INDT
            MOVE '0'                   TO XL00-B-NMSP
            MOVE '0'                   TO XL00-B-XSD
@@ -4239,11 +3190,11 @@ SBOU       MOVE '1'                   TO XL00-B-VIDE
            MOVE '0'                   TO XL00-B-DECL
            MOVE '0'                   TO XL00-B-DCOP
 
-      *    paramètres mots réservés
+      *    paramÃ¨tres mots rÃ©servÃ©s
            MOVE  2                    TO XL00-Q-RESV-INDICATIF
            MOVE 'R-'                  TO XL00-L-RESV-INDICATIF
 
-      *    paramètres préfixes
+      *    paramÃ¨tres prÃ©fixes
            MOVE 3                     TO XL00-Q-PRFX-DFLT
            MOVE 'sfa'                 TO XL00-L-PRFX-DFLT
            MOVE 3                     TO XL00-Q-PRFX-PARM
@@ -4260,11 +3211,11 @@ SBOU       MOVE '1'                   TO XL00-B-VIDE
            END-PERFORM
 
 
-      *    paramètres indentation
+      *    paramÃ¨tres indentation
            MOVE WS-Q-INDT-UNIT        TO XL00-Q-INDT-UNIT
            MOVE WS-Q-INDT-INIT        TO XL00-Q-INDT-INIT
 
-      *    données xml brutes à traiter
+      *    donnÃ©es xml brutes Ã  traiter
            MOVE WS-Q-XML-GENERATE     TO XL00-Q-XML-BRUTE
            MOVE WS-L-XML-GENERATE     TO XL00-L-XML-BRUTE
 
@@ -4291,7 +3242,7 @@ SBOU       MOVE '1'                   TO XL00-B-VIDE
 
               WHEN 0
               WHEN 4
-      *          Valoriser données WS par retour module
+      *          Valoriser donnÃ©es WS par retour module
                  MOVE XL00-Q-XML-TAB            TO  WS-Q-XML-TAB
                  PERFORM VARYING I FROM 1 BY 1
                  UNTIL   I > XL00-Q-XML-TAB
@@ -4315,7 +3266,7 @@ SBOU       MOVE '1'                   TO XL00-B-VIDE
        INIT-XL00-FONC-IN.
       *---------------------*
 
-      *    Initialisation de la zone entrée et la zone entrée-sortie
+      *    Initialisation de la zone entrÃ©e et la zone entrÃ©e-sortie
            MOVE SPACE                 TO XL00-G-FCT-APPL
            MOVE SPACE                 TO XL00-G-FCT-PARAM-IN
            MOVE ZEROS                 TO XL00-Q-NMSP
@@ -4339,7 +3290,7 @@ SBOU       MOVE '1'                   TO XL00-B-VIDE
        ALIM-DATA-WS-TET-END.
       *--------------------------*
 
-      *    S'assurer qu'on est sur l'entête et la ligne traite une END
+      *    S'assurer qu'on est sur l'entÃªte et la ligne traite une END
 150978     IF  E01-C-ENR   = '10'
            AND E01-C-ENTIT = 'END'
 
@@ -4359,7 +3310,7 @@ SBOU       MOVE '1'                   TO XL00-B-VIDE
        ALIM-DATA-WS-TET-ADR.
       *--------------------------*
 
-      *    S'assurer qu'on est sur l'entête et la ligne traite une ADR
+      *    S'assurer qu'on est sur l'entÃªte et la ligne traite une ADR
 150978     IF  E01-C-ENR   = '10'
            AND E01-C-ENTIT = 'ADR'
 
@@ -4377,7 +3328,7 @@ SBOU       MOVE '1'                   TO XL00-B-VIDE
        ALIM-DATA-WS-DET-CNT.
       *--------------------------*
 
-      *    S'assurer qu'on est sur détail et la ligne traite un CNT
+      *    S'assurer qu'on est sur dÃ©tail et la ligne traite un CNT
 150978     IF  E01-C-ENR   = '20'
            AND E01-C-ENTIT = 'CNT'
 
@@ -4422,7 +3373,7 @@ MC                           TO WS-I-REF-FID-INIT  OF WS-G-DATA-DET-CNT
        ALIM-DATA-WS-DET-CLT.
       *--------------------------*
 
-      *    S'assurer qu'on est sur détail et la ligne traite un CLI
+      *    S'assurer qu'on est sur dÃ©tail et la ligne traite un CLI
 150978     IF  E01-C-ENR   = '20'
            AND E01-C-ENTIT = 'CLI'
 
@@ -4439,7 +3390,7 @@ MC                           TO WS-I-REF-FID-INIT  OF WS-G-DATA-DET-CNT
        ALIM-DATA-WS-DET-ADR.
       *--------------------------*
 
-      *    S'assurer qu'on est sur détail et la ligne traite une ADR
+      *    S'assurer qu'on est sur dÃ©tail et la ligne traite une ADR
 150978     IF  E01-C-ENR   = '20'
            AND E01-C-ENTIT = 'ADR'
 
@@ -4459,7 +3410,7 @@ MC                           TO WS-I-REF-FID-INIT  OF WS-G-DATA-DET-CNT
        ALIM-DATA-WS-DET-BNF.
       *--------------------------*
 
-      *    S'assurer qu'on est sur détail et la ligne traite une BNF
+      *    S'assurer qu'on est sur dÃ©tail et la ligne traite une BNF
 150978     IF  E01-C-ENR   = '20'
            AND E01-C-ENTIT = 'BNF'
 
@@ -4633,7 +3584,7 @@ MCHA+ *---------------*
 "      NETTOY-CAR-SPEC.
 "     *---------------*
 "
-"     *    Traitement des caracteres spéciaux
+"     *    Traitement des caracteres spÃ©ciaux
 "     *
 "          PERFORM  VARYING I-SP FROM 1 BY 1
 "                   UNTIL I-SP > 1000
@@ -4661,7 +3612,7 @@ MCHA+      .
       *------------------*
 
       *    Gestion des Abends
-      *    Le code abend est passé à ce parapgraphe par WS-CODE-ABEND
+      *    Le code abend est passÃ© Ã  ce parapgraphe par WS-CODE-ABEND
       *    Les donnes complementaires de l'abend (File-Status ...)
 
       *    Initialisation des lignes de descriptions d'abend
@@ -4883,7 +3834,7 @@ MCHA+      .
                  MOVE WS-CODE-ABEND        TO      WS-LIGNE-ANO12
                  MOVE WS-LIGNE-ANO1        TO      INAB-L-DISP (3)
                  MOVE
-                 'Enregistrment données entité déclarante introuvable'
+                 'Enregistrment donnÃ©es entitÃ© dÃ©clarante introuvable'
                                            TO      WS-LIGNE-ANO21
                  MOVE WS-LIGNE-ANO2        TO      INAB-L-DISP (4)
                  MOVE WS-LIGNE-VIDE        TO      INAB-L-DISP (5)
@@ -4909,7 +3860,7 @@ MCHA+      .
                  MOVE WS-CODE-ABEND        TO      WS-LIGNE-ANO12
                  MOVE WS-LIGNE-ANO1        TO      INAB-L-DISP (3)
                  MOVE
-                 'Enregistrment adresse entité déclarante introuvable'
+                 'Enregistrment adresse entitÃ© dÃ©clarante introuvable'
                                            TO      WS-LIGNE-ANO21
                  MOVE WS-LIGNE-ANO2        TO      INAB-L-DISP (4)
                  MOVE WS-LIGNE-VIDE        TO      INAB-L-DISP (5)
@@ -5013,7 +3964,7 @@ MCHA+      .
                  MOVE WS-CODE-ABEND        TO      WS-LIGNE-ANO12
                  MOVE WS-LIGNE-ANO1        TO      INAB-L-DISP (3)
                  MOVE
-                 'Enregistrment Bénéficiaire attendu mais introuvable'
+                 'Enregistrment BÃ©nÃ©ficiaire attendu mais introuvable'
                                            TO      WS-LIGNE-ANO21
                  MOVE WS-LIGNE-ANO2        TO      INAB-L-DISP (4)
                  MOVE WS-LIGNE-VIDE        TO      INAB-L-DISP (5)
@@ -5039,7 +3990,7 @@ MCHA+      .
                  MOVE WS-CODE-ABEND        TO      WS-LIGNE-ANO12
                  MOVE WS-LIGNE-ANO1        TO      INAB-L-DISP (3)
                  MOVE
-                 'Enregistrment détail attendu mais introuvable'
+                 'Enregistrment dÃ©tail attendu mais introuvable'
                                            TO      WS-LIGNE-ANO21
                  MOVE WS-LIGNE-ANO2        TO      INAB-L-DISP (4)
                  MOVE WS-LIGNE-VIDE        TO      INAB-L-DISP (5)
@@ -5100,7 +4051,7 @@ MCHA+      .
                  MOVE WS-LIGNE-ANO4        TO      INAB-L-DISP (8)
                  MOVE WS-LIGNE-VIDE        TO      INAB-L-DISP (9)
                  MOVE WS-LIGNE-EGAL        TO      INAB-L-DISP (10)
-150978*       4014 : ENTITé différente de FID, REP ou RBR
+150978*       4014 : ENTITÃ© diffÃ©rente de FID, REP ou RBR
 150978        WHEN       4014
 150978           MOVE    10                TO      INAB-Q-LIST-DISP
 150978           MOVE WS-LIGNE-ANO0        TO      INAB-L-DISP (1)
@@ -5109,13 +4060,13 @@ MCHA+      .
 150978           MOVE WS-CODE-ABEND        TO      WS-LIGNE-ANO12
 150978           MOVE WS-LIGNE-ANO1        TO      INAB-L-DISP (3)
 150978           MOVE
-150978           'Lecture d''un ENR 40 avec entité non FID, REP ni RBR'
+150978           'Lecture d''un ENR 40 avec entitÃ© non FID, REP ni RBR'
 150978                                     TO      WS-LIGNE-ANO21
 150978           MOVE WS-LIGNE-ANO2        TO      INAB-L-DISP (4)
 150978           MOVE WS-LIGNE-VIDE        TO      INAB-L-DISP (5)
 150978           MOVE WS-LIGNE-ETOILE      TO      INAB-L-DISP (6)
 150978           MOVE WS-LIGNE-VIDE        TO      INAB-L-DISP (7)
-150978           MOVE 'ENTITéE  = '        TO      WS-LIGNE-ANO41
+150978           MOVE 'ENTITÃ©E  = '        TO      WS-LIGNE-ANO41
 150978           MOVE E01-C-ENTIT          TO      WS-LIGNE-ANO42
 150978           MOVE WS-LIGNE-ANO4        TO      INAB-L-DISP (8)
 150978           MOVE WS-LIGNE-VIDE        TO      INAB-L-DISP (9)
@@ -5300,7 +4251,7 @@ MCHA+      .
       *--------------------*
        INIT-PARAM-MCCDBILA.
       *--------------------*
-      *    Initialisation paramètre d'entrée de MCCDBILA
+      *    Initialisation paramÃ¨tre d'entrÃ©e de MCCDBILA
            MOVE ZEROS                   TO BILA-Q-LIST-DISP
 
            PERFORM VARYING I    FROM 1 BY 1
@@ -5364,10 +4315,10 @@ MCHA+      .
        TRAIT-STRING.
       *------------*
 
-      *    Traitement des chaines de caractères
-      *    Permet d'enlever les espaces avant et après chaque string
-      *    et de les concaténer éventuellement
-      *    Entrée : tableau de strings et séparateur
+      *    Traitement des chaines de caractÃ¨res
+      *    Permet d'enlever les espaces avant et aprÃ¨s chaque string
+      *    et de les concatÃ©ner Ã©ventuellement
+      *    EntrÃ©e : tableau de strings et sÃ©parateur
       *    Sortie : un string
 
       D    display 'Traitement des string '
@@ -5480,10 +4431,10 @@ MCHA+      .
 150978*-------------*
 150978 ALIM-TBFIDFUS.
 150978*-------------*
-150978*    Initialisation des données en sortie
+150978*    Initialisation des donnÃ©es en sortie
 150978     PERFORM INIT-TBFIDFUS
 150978
-150978*    Alimentation d'un enregistrement de création de la TBFIDFUS
+150978*    Alimentation d'un enregistrement de crÃ©ation de la TBFIDFUS
 150978     MOVE 'MAJ'                          TO MJ00-C-OPE
 150978     MOVE 'TBFIDFUS'                     TO MJ00-NOM-TABLE
 150978     MOVE E01-I-IDENT-END
@@ -5563,19 +4514,19 @@ MCHA+      .
 151197*-------------*
 151197 ALIM-TBLCCFUS.
 151197*-------------*
-151197*    Initialisation des données en sortie
+151197*    Initialisation des donnÃ©es en sortie
 151197     PERFORM INIT-TBLCCFUS
 151197
-151197*    Alimentation d'un enregistrement de création de la TBLCCFUS
+151197*    Alimentation d'un enregistrement de crÃ©ation de la TBLCCFUS
 151197     MOVE 'MAJ'                          TO MJ00-C-OPE
 151197     MOVE 'TBLCCFUS'                     TO MJ00-NOM-TABLE
-151197*  ==> REPORTABILITé DU CONTRAT
+151197*  ==> REPORTABILITÃ© DU CONTRAT
 151197     MOVE E01-C-PRTB-CNTRT
 151197       OF E01-G-DATA-DET-LCC
 151197                                         TO MJ00-C-PRTB-CNTRT
 151197                                         OF MJ00-ENR-TBLCCFUS
 151197
-151197*  ==> TIMESTAMP DE CRéATION OU DE MAJ
+151197*  ==> TIMESTAMP DE CRÃ©ATION OU DE MAJ
 151197     MOVE E01-D-CRE-MAJ
 151197       OF E01-G-DATA-DET-LCC
 151197                                         TO MJ00-D-CRE-MAJ
@@ -5614,10 +4565,10 @@ MCHA+      .
 150978*-------------*
 150978 ALIM-TBREPFUS.
 150978*-------------*
-150978*    Initialisation des données en sortie
+150978*    Initialisation des donnÃ©es en sortie
 150978     PERFORM INIT-TBREPFUS
 150978
-150978*    Alimentation d'un enregistrement de création de la TBREPFUS
+150978*    Alimentation d'un enregistrement de crÃ©ation de la TBREPFUS
 150978     MOVE 'CRE'                          TO MJ00-C-OPE
 150978     MOVE 'TBREPFUS'                     TO MJ00-NOM-TABLE
 150978     MOVE E01-A-APPL
@@ -5645,10 +4596,10 @@ MCHA+      .
 150978*-------------*
 150978 ALIM-TBRBRFUS.
 150978*-------------*
-150978*    Initialisation des données en sortie
+150978*    Initialisation des donnÃ©es en sortie
 150978     PERFORM INIT-TBRBRFUS
 150978
-150978*    Alimentation d'un enregistrement de création de la TBREPFUS
+150978*    Alimentation d'un enregistrement de crÃ©ation de la TBREPFUS
 150978     MOVE 'CRE'                          TO MJ00-C-OPE
 150978     MOVE 'TBRBRFUS'                     TO MJ00-NOM-TABLE
 150978     MOVE E01-I-IDENT-REF-REP
@@ -5668,7 +4619,7 @@ MCHA+      .
 150978*-------------*
 150978 INIT-TBFIDFUS.
 150978*-------------*
-150978*    Initialisation des données CFUSMJ00 de la TBFIDFUS
+150978*    Initialisation des donnÃ©es CFUSMJ00 de la TBFIDFUS
 150978     MOVE SPACES TO MJ00-ENR-TBFIDFUS
 150978     MOVE ZERO   TO MJ00-I-IDENT-END     OF MJ00-ENR-TBFIDFUS
 150978                    MJ00-I-IDENT-REF-REP OF MJ00-ENR-TBFIDFUS
@@ -5683,7 +4634,7 @@ MCHA+      .
 150978*-------------*
 150978 INIT-TBREPFUS.
 150978*-------------*
-150978*    Initialisation des données CFUSMJ00 de la TBREPFUS
+150978*    Initialisation des donnÃ©es CFUSMJ00 de la TBREPFUS
 150978     MOVE SPACES TO MJ00-ENR-TBREPFUS
 150978     MOVE ZERO   TO MJ00-I-IDENT-REF-REP OF MJ00-ENR-TBREPFUS
 150978                    MJ00-I-IDENT-CPT     OF MJ00-ENR-TBREPFUS
@@ -5693,7 +4644,7 @@ MCHA+      .
 150978*-------------*
 150978 INIT-TBRBRFUS.
 150978*-------------*
-150978*    Initialisation des données CFUSMJ00 de la TBRBRFUS
+150978*    Initialisation des donnÃ©es CFUSMJ00 de la TBRBRFUS
 150978     MOVE SPACES TO MJ00-ENR-TBREPFUS
 150978     MOVE ZERO   TO MJ00-I-IDENT-REF-REP OF MJ00-ENR-TBRBRFUS
 150978                    MJ00-I-IDENT-TYP-REC OF MJ00-ENR-TBRBRFUS
@@ -5702,7 +4653,7 @@ MCHA+      .
 151197*-------------*
 151197 INIT-TBLCCFUS.
 151197*-------------*
-151197*    Initialisation des données CFUSMJ00 de la TBLCCFUS
+151197*    Initialisation des donnÃ©es CFUSMJ00 de la TBLCCFUS
 151197     MOVE SPACES TO MJ00-ENR-TBLCCFUS
 151197     MOVE ZERO   TO MJ00-I-IDENT-CLT     OF MJ00-ENR-TBLCCFUS
 151197                    MJ00-I-IDENT-CPT     OF MJ00-ENR-TBLCCFUS
@@ -5727,20 +4678,20 @@ MCHA+      .
        RECUP-DATE-HEURE-DEB.
       *---------------------*
 
-      *    Récuperation de la date de compilation du composant
+      *    RÃ©cuperation de la date de compilation du composant
            MOVE WHEN-COMPILED               TO W-REF-COMPIL
 
-      *    Récuperation de la date de traitement
+      *    RÃ©cuperation de la date de traitement
            MOVE 'ACD-D-HR'                  TO NOM-PRIMITIVE
            CALL 'MGDATR03'               USING NOM-PRIMITIVE
                                                MGDATR03-PARAM
-      *    Contrôle du code retour technique
+      *    ContrÃ´le du code retour technique
            IF RETURN-CODE NOT = ZERO OR
               OP06-C-RET  NOT = ZERO
               MOVE 1000                     TO WS-CODE-ABEND
               PERFORM TRAIT-ABEND
            ELSE
-      *       Récuperation sous différents formats
+      *       RÃ©cuperation sous diffÃ©rents formats
               MOVE D-ISO-AAAA OF OP06-T-REF TO WS-ANNEE-TRAITEMENT
               MOVE D-ISO-MM   OF OP06-T-REF TO WS-MOIS-TRAITEMENT
               MOVE D-ISO-JJ   OF OP06-T-REF TO WS-JOUR-TRAITEMENT
@@ -5761,10 +4712,10 @@ MCHA+      .
        RECUP-DATE-HEURE-FIN.
       *--------------------*
 
-      *    Récuperation de la date de compilation du composant
+      *    RÃ©cuperation de la date de compilation du composant
            MOVE WHEN-COMPILED               TO W-REF-COMPIL
 
-      *    Récuperation de la date systeme et timestamp
+      *    RÃ©cuperation de la date systeme et timestamp
            MOVE 'ACD-D-HR'                  TO NOM-PRIMITIVE
            CALL 'MGDATR03'               USING NOM-PRIMITIVE
                                                MGDATR03-PARAM
@@ -5872,12 +4823,12 @@ MCHA+      .
            ADD  1                       TO WS-DISP
            MOVE WS-LIGNE-EGAL           TO BILA-L-DISP(WS-DISP)
            ADD  1                       TO WS-DISP
-      *    Entité déclarante
+      *    EntitÃ© dÃ©clarante
            MOVE '*    ENTITE DECLARANTE         :
       -    '        *'                  TO BILA-L-DISP(WS-DISP)(1:64)
            MOVE WS-L-RAISON-SOCIALE     TO BILA-L-DISP(WS-DISP)(34:28)
            ADD  1                       TO WS-DISP
-      *    Année fiscale
+      *    AnnÃ©e fiscale
            MOVE '*    ANNEE FISCALE             :
       -    '        *'                  TO BILA-L-DISP(WS-DISP)(1:64)
            MOVE WS-A-APPL               TO BILA-L-DISP(WS-DISP)(34:28)
@@ -5947,7 +4898,7 @@ MCHA+      .
            MOVE '*    WS-NB-LECT-E01             :
       -    '        *'                   TO BILA-L-DISP(WS-DISP)(1:64)
            MOVE WS-NB-LECT-E01           TO BILA-L-DISP(WS-DISP)(45:9)
-      *    Nombre d'écritures du fichier DFUSLS21
+      *    Nombre d'Ã©critures du fichier DFUSLS21
            ADD  1                        TO WS-DISP
            MOVE '*    WS-NB-ECRT-S01             :
       -    '        *'                   TO BILA-L-DISP(WS-DISP)(1:64)
