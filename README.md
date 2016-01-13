@@ -9,10 +9,13 @@ So this solution brings features lacking in IBM COBOL ENTREPRISE 4.2.
 ## FATCA.cbl
 
 Because XML schema to COBOL mapping is not supported by IBM COBOL IBM COBOL ENTREPRISE 4.2
+
 I use the tool legstar-xsd2cob (see link below) to generate a raw mapping between FATCA Xml schemas and Cobol data description.
-Then I enhanced it by adding several informations (see FATCA.CBL).
-This copy contain Cobol data description compliant with the XML schemas of FATCA Reporting.
-It raw version was generated using
+
+Then I enhanced it by adding several informations (data starting with the prefix "tech"). 
+those information will be used by the module in order to add features (see below)
+
+https://code.google.com/p/legstar-xsd2cob/
 
 ## Features
 
@@ -20,6 +23,7 @@ It raw version was generated using
 IN : 
 <...><...><...>...</...><...>...</...></...><...>
 OUT:
+
 <...>
   <...>
     <...>...</...>
