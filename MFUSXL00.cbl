@@ -20,9 +20,7 @@
       *               DATE          : 27/10/2014                       *
       *               COMPOSANT     : MFUSXL00                         *
       *               TYPE          : MODULE                           *
-      *               CHAINE        : FUSEL                            *
-      *               AUTEUR        : EBAI - ESSADIQ BAICH - CGI       *
-      *               REFERENCE     : GAMA - 20141525                  *
+      *               AUTEUR        : ESSADIQ BAICH                    *
       *                                                                *
       *             __________________________________________         *
       *                                                                *
@@ -114,14 +112,14 @@ size    05    WS-G-NMSP OCCURS 5.
       *       Schema
         05    WS-Q-XSD-URN              PIC  9(04)       BINARY.
         05    WS-L-XSD-URN              PIC  X(80).
-      *       Indicatif des noms résérvés à enlever
+      *       Indicatif des noms rÃ©sÃ©rvÃ©s Ã  enlever
         05    WS-Q-RESV-INDICATIF       PIC  9(04)       BINARY.
         05    WS-L-RESV-INDICATIF       PIC  X(80).
 
-      *       Préfixe par défaut
+      *       PrÃ©fixe par dÃ©faut
         05    WS-Q-PRFX-DFLT            PIC  9(04)       BINARY.
         05    WS-L-PRFX-DFLT            PIC  X(20).
-      *       Préfixe paramètre
+      *       PrÃ©fixe paramÃ¨tre
         05    WS-Q-PRFX-PARM            PIC  9(04)       BINARY.
         05    WS-L-PRFX-PARM            PIC  X(20).
       *       Liste des noms balises
@@ -140,13 +138,13 @@ size    05    WS-G-PRFX OCCURS 30.
       * --
       * -- Le code famille Q signifie longueur
       * -- Le code famille N signifie position
-      * -- Le code famille B signifie booléen (existence)
+      * -- Le code famille B signifie boolÃ©en (existence)
       * --
 
       *
       *       Nombre de lignes XML
         05    WS-Q-XML-TAB              PIC  9(04) BINARY VALUE ZERO.
-      *       Données ligne XML
+      *       DonnÃ©es ligne XML
         05    WS-G-XML-TAB              OCCURS 1000.
 size  * 05    WS-G-XML-TAB              OCCURS 120.
       *       Taille totale de la ligne XML
@@ -157,7 +155,7 @@ size  * 05    WS-G-XML-TAB              OCCURS 120.
          10   WS-L-XML-LINE             PIC  X(1000) VALUE SPACE.
 size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
       *
-      *       Est elle une décalration XML ?
+      *       Est elle une dÃ©calration XML ?
          10   WS-B-XML-TAG-DECL         PIC  X(01) VALUE SPACE.
       *       Niveau imbrication
          10   WS-Q-XML-TAG-IMBR         PIC S9(04) BINARY VALUE ZERO.
@@ -165,19 +163,19 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
          10   WS-Q-XML-TAG-NAME         PIC  9(04) BINARY VALUE ZERO.
       *       Offset nom de la balise
          10   WS-N-XML-TAG-NAME         PIC  9(04) BINARY VALUE ZERO.
-      *       Donnée nom de la balise
+      *       DonnÃ©e nom de la balise
          10   WS-L-XML-TAG-NAME         PIC  X(80) VALUE SPACE.
       *       Offset attributs de la balise
          10   WS-N-XML-TAG-ATTR         PIC  9(04) BINARY VALUE ZERO.
       *       Taille attributs de la balise
          10   WS-Q-XML-TAG-ATTR         PIC  9(04) BINARY VALUE ZERO.
-      *       Donnée attributs de la balise
+      *       DonnÃ©e attributs de la balise
          10   WS-L-XML-TAG-ATTR         PIC  X(80) VALUE SPACE.
       *       Taille Text de la balise
          10   WS-Q-XML-TAG-TEXT         PIC  9(04) BINARY VALUE ZERO.
       *       Offset Text de la balise
          10   WS-N-XML-TAG-TEXT         PIC  9(04) BINARY VALUE ZERO.
-      *       Donnée Text de la balise
+      *       DonnÃ©e Text de la balise
          10   WS-L-XML-TAG-TEXT         PIC  X(255) VALUE SPACE.
       *       Offset fin balise   > (nom balise + attributs)
          10   WS-N-XML-TAG-FIN          PIC  9(04) BINARY VALUE ZERO.
@@ -191,7 +189,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
          10   WS-B-XML-TAG-CMPLX        PIC  X(01) VALUE SPACE.
       *       Est elle une balise simple
          10   WS-B-XML-TAG-SMPLE        PIC  X(01) VALUE SPACE.
-      *       Numéro de ligne de la balise mère
+      *       NumÃ©ro de ligne de la balise mÃ¨re
          10   WS-N-XML-TAG-MERE         PIC  9(04) BINARY VALUE ZERO.
       *
 
@@ -307,7 +305,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
 
 
 
-      * ----------->  Cinématique générale
+      * ----------->  CinÃ©matique gÃ©nÃ©rale
 
 
 
@@ -321,19 +319,19 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
        INITIALISATION.
       *--------------*
 
-      *    Affichage des paramètres en entrée
+      *    Affichage des paramÃ¨tres en entrÃ©e
       D    PERFORM AFFICH-ZCOM-FONC-IN
 
       *    Initialisations IDEV
            PERFORM SQ-INIT-MODULE
 
-      *    Initialisation  des données en sortie
+      *    Initialisation  des donnÃ©es en sortie
            PERFORM INIT-ZCOM-FONC-OUT
 
-      *    Initialisation  des données du travail
+      *    Initialisation  des donnÃ©es du travail
            PERFORM INIT-DONNEES-TRAVAIL
 
-      *    Contrôle des données en entrée
+      *    ContrÃ´le des donnÃ©es en entrÃ©e
            PERFORM CTRL-ZCOM-FONC-IN
 
            .
@@ -342,7 +340,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
        CTRL-ZCOM-FONC-IN.
       *-----------------*
 
-      *    Contrôle des données d'entrée.
+      *    ContrÃ´le des donnÃ©es d'entrÃ©e.
 
       D    DISPLAY 'ZCOM-B-INDT     :'        ZCOM-B-INDT
       D    DISPLAY 'ZCOM-B-NMSP     :'        ZCOM-B-NMSP
@@ -358,7 +356,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF ZCOM-L-XML-BRUTE = SPACES OR LOW-VALUE
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  01                    TO   ZCOM-C-RET
-              MOVE 'Donnée <L-XML-BRUTE> non renseignée'
+              MOVE 'DonnÃ©e <L-XML-BRUTE> non renseignÃ©e'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -366,7 +364,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF ZCOM-Q-XML-BRUTE     = ZEROS
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  02                    TO   ZCOM-C-RET
-              MOVE 'Donnée <Q-XML-BRUTE> non renseignée'
+              MOVE 'DonnÃ©e <Q-XML-BRUTE> non renseignÃ©e'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -374,7 +372,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF (ZCOM-B-INDT NOT = '1' AND ZCOM-B-INDT NOT = '0')
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  03                    TO   ZCOM-C-RET
-              MOVE 'Boolèens des fonctions mal renseignées'
+              MOVE 'BoolÃ¨ens des fonctions mal renseignÃ©es'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -382,7 +380,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF (ZCOM-B-NMSP NOT = '1' AND ZCOM-B-NMSP NOT = '0')
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  03                    TO   ZCOM-C-RET
-              MOVE 'Boolèens des fonctions mal renseignées'
+              MOVE 'BoolÃ¨ens des fonctions mal renseignÃ©es'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -390,7 +388,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF (ZCOM-B-XSD  NOT = '1' AND ZCOM-B-XSD  NOT = '0')
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  03                    TO   ZCOM-C-RET
-              MOVE 'Boolèens des fonctions mal renseignées'
+              MOVE 'BoolÃ¨ens des fonctions mal renseignÃ©es'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -398,7 +396,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF (ZCOM-B-PRFX NOT = '1' AND ZCOM-B-PRFX NOT = '0')
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  03                    TO   ZCOM-C-RET
-              MOVE 'Boolèens des fonctions mal renseignées'
+              MOVE 'BoolÃ¨ens des fonctions mal renseignÃ©es'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -406,7 +404,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF (ZCOM-B-ATTR NOT = '1' AND ZCOM-B-ATTR NOT = '0')
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  03                    TO   ZCOM-C-RET
-              MOVE 'Boolèens des fonctions mal renseignées'
+              MOVE 'BoolÃ¨ens des fonctions mal renseignÃ©es'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -414,7 +412,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF (ZCOM-B-TEXT NOT = '1' AND ZCOM-B-TEXT NOT = '0')
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  03                    TO   ZCOM-C-RET
-              MOVE 'Boolèens des fonctions mal renseignées'
+              MOVE 'BoolÃ¨ens des fonctions mal renseignÃ©es'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -422,7 +420,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF (ZCOM-B-VIDE NOT = '1' AND ZCOM-B-VIDE NOT = '0')
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  03                    TO   ZCOM-C-RET
-              MOVE 'Boolèens des fonctions mal renseignées'
+              MOVE 'BoolÃ¨ens des fonctions mal renseignÃ©es'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -430,7 +428,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF (ZCOM-B-RESV NOT = '1' AND ZCOM-B-RESV NOT = '0')
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  03                    TO   ZCOM-C-RET
-              MOVE 'Boolèens des fonctions mal renseignées'
+              MOVE 'BoolÃ¨ens des fonctions mal renseignÃ©es'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -438,7 +436,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF (ZCOM-B-DECL NOT = '1' AND ZCOM-B-DECL NOT = '0')
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  03                    TO   ZCOM-C-RET
-              MOVE 'Boolèens des fonctions mal renseignées'
+              MOVE 'BoolÃ¨ens des fonctions mal renseignÃ©es'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -446,7 +444,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
            IF (ZCOM-B-DCOP NOT = '1' AND ZCOM-B-DCOP NOT = '0')
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  03                    TO   ZCOM-C-RET
-              MOVE 'Boolèens des fonctions mal renseignées'
+              MOVE 'BoolÃ¨ens des fonctions mal renseignÃ©es'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -455,7 +453,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
               IF ZCOM-Q-INDT-UNIT = ZERO
                  MOVE  08                    TO   ZCOM-CODE-RETOUR
                  MOVE  04                    TO   ZCOM-C-RET
-                 MOVE 'Indentation demandée mais paramètres manquants'
+                 MOVE 'Indentation demandÃ©e mais paramÃ¨tres manquants'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
               END-IF
@@ -466,7 +464,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
               OR ZCOM-L-DCOP-TAG     = SPACE
                  MOVE  08                    TO   ZCOM-CODE-RETOUR
                  MOVE  06                    TO   ZCOM-C-RET
-                 MOVE 'Decoupage demandé mais paramètres manquants'
+                 MOVE 'Decoupage demandÃ© mais paramÃ¨tres manquants'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
               END-IF
@@ -477,7 +475,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
               OR ZCOM-L-DECL-ENCODING     = SPACE
                  MOVE  08                    TO   ZCOM-CODE-RETOUR
                  MOVE  09                    TO   ZCOM-C-RET
-                 MOVE 'XML Declaration demandée mais paramètre manquant'
+                 MOVE 'XML Declaration demandÃ©e mais paramÃ¨tre manquant'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
               END-IF
@@ -487,7 +485,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
               IF ZCOM-Q-NMSP          NOT > 0
                  MOVE  08                    TO   ZCOM-CODE-RETOUR
                  MOVE  10                    TO   ZCOM-C-RET
-                 MOVE 'XML Name space demandé mais paramètre manquant'
+                 MOVE 'XML Name space demandÃ© mais paramÃ¨tre manquant'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
               END-IF
@@ -498,7 +496,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
               OR ZCOM-L-XSD-URN           = SPACE
                  MOVE  08                    TO   ZCOM-CODE-RETOUR
                  MOVE  11                    TO   ZCOM-C-RET
-                 MOVE 'XML Schema demandée mais paramètre manquant'
+                 MOVE 'XML Schema demandÃ©e mais paramÃ¨tre manquant'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
               END-IF
@@ -509,7 +507,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
               OR ZCOM-L-RESV-INDICATIF  = SPACE
                  MOVE  08                    TO   ZCOM-CODE-RETOUR
                  MOVE  12                    TO   ZCOM-C-RET
-                 MOVE 'mots réservés demandé mais parmetre manquant'
+                 MOVE 'mots rÃ©servÃ©s demandÃ© mais parmetre manquant'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
               END-IF
@@ -523,7 +521,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
               OR ZCOM-Q-PRFX            NOT > 0
                  MOVE  08                    TO   ZCOM-CODE-RETOUR
                  MOVE  13                    TO   ZCOM-C-RET
-                 MOVE 'gérer préfixes demandé mais parmetre manquant'
+                 MOVE 'gÃ©rer prÃ©fixes demandÃ© mais parmetre manquant'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
               END-IF
@@ -722,7 +720,7 @@ size  *  10   WS-L-XML-LINE             PIC  X(250) VALUE SPACE.
 size       IF WS-Q-XML-TAB > 120
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  17                    TO   ZCOM-C-RET
-              MOVE 'Nombre de lignes dépasse taille ZCOM'
+              MOVE 'Nombre de lignes dÃ©passe taille ZCOM'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
 
@@ -739,7 +737,7 @@ mcha+ *       IF WS-Q-XML-LINE(I) > 600
 mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
                  MOVE  08                    TO   ZCOM-CODE-RETOUR
                  MOVE  18                    TO   ZCOM-C-RET
-                 MOVE 'taille ligne dépasse taille ZCOM'
+                 MOVE 'taille ligne dÃ©passe taille ZCOM'
                                              TO   ZCOM-L-C-RET
                  PERFORM TRT-ERREUR
 
@@ -803,7 +801,7 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
        PARSE-XML.
       *---------*
 
-      *    La fonction permet aussi de valoriser les caractèristques
+      *    La fonction permet aussi de valoriser les caractÃ¨ristques
       *    de la ligne/balise
 
       D    DISPLAY SPACE
@@ -815,7 +813,7 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
            MOVE SPACE                     TO WS-L-XML-BUFFER
            MOVE ZEROS                     TO WS-Q-XML-BUFFER-IMBR
 
-      *    Initialiser booléens
+      *    Initialiser boolÃ©ens
            SET TAG-OUVR                   TO TRUE
            SET TAG-SMPLE                  TO TRUE
            SET TAG-DEB                    TO TRUE
@@ -833,23 +831,23 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
            MOVE ZERO                      TO WS-Q-XML-TAG-ATTR-CREER
            MOVE ZERO                      TO WS-N-XML-TAG-FIN-CREER
 
-      *    Les noms des elements commencent à la position 2
+      *    Les noms des elements commencent Ã  la position 2
            MOVE 2                         TO WS-N-XML-TAG-NAME-BUFFER
 
 
-      *    Parcourir tous les caractères du XML généré
+      *    Parcourir tous les caractÃ¨res du XML gÃ©nÃ©rÃ©
            PERFORM VARYING I FROM 1 BY 1
            UNTIL           I > WS-Q-XML
 
       *       Alimenter taille buffer
               ADD  1                   TO WS-Q-XML-BUFFER
-      *       Vérifier dépassement buffer
+      *       VÃ©rifier dÃ©passement buffer
               PERFORM CTRL-Q-XML-BUFFER
       *       Alimenter buffer
               MOVE WS-L-XML(I:1)       TO WS-L-XML-BUFFER
                                          (WS-Q-XML-BUFFER:1)
 
-      *       Evaluer le caractère en cours
+      *       Evaluer le caractÃ¨re en cours
               EVALUATE  WS-L-XML(I:1)
 
                  WHEN '<'
@@ -859,7 +857,7 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
                     SET  TAG-DEB       TO TRUE
                     SET  TAG-NAME      TO TRUE
 
-      *          Si '/' Alors verifier si il sert à fermer une balise
+      *          Si '/' Alors verifier si il sert Ã  fermer une balise
                  WHEN '/'
       *                     </
                     IF WS-L-XML(I - 1:1) = '<'
@@ -875,7 +873,7 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
                     OR WS-L-XML(I + 1:1) = '>'
                        MOVE  08                  TO   ZCOM-CODE-RETOUR
                        MOVE  07                  TO   ZCOM-C-RET
-                       MOVE 'XML contient déjà une balise déclaration'
+                       MOVE 'XML contient dÃ©jÃ  une balise dÃ©claration'
                                                  TO   ZCOM-L-C-RET
                        PERFORM TRT-ERREUR
                     END-IF
@@ -891,7 +889,7 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
       *                     ><./.>
       *                ...et est complexe
                        IF TAG-CMPLX
-      *                   décrémenter niveau imbrication
+      *                   dÃ©crÃ©menter niveau imbrication
                           SUBTRACT 1 FROM WS-Q-XML-BUFFER-IMBR
       *
       *                   Alimenter tableau XML et vider buffer
@@ -900,7 +898,7 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
       *                   ...<./.>
                        ELSE
 
-      *                   Garder même indentation
+      *                   Garder mÃªme indentation
       *                   Alimenter tableau XML et vider buffer
                           PERFORM XML-CREER-LINE
 
@@ -946,7 +944,7 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
 
                        MOVE ZERO   TO WS-N-XML-TAG-FIN-BUFFER
 
-      *                Vérifier est ce que c'est une balise complexe
+      *                VÃ©rifier est ce que c'est une balise complexe
       *                <...><
                        IF WS-L-XML(I + 1:1) = '<'
       *                   Marquer comme tag complexe
@@ -970,7 +968,7 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
 
                     IF WS-L-XML(I:1) = ' ' AND TAG-DEB
 
-      *                Si on est sur le premier espace après nom balise
+      *                Si on est sur le premier espace aprÃ¨s nom balise
                        IF TAG-NAME
 
                           COMPUTE WS-N-XML-TAG-ATTR-BUFFER =
@@ -986,10 +984,10 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
                     IF TAG-DEB
 
                        IF TAG-NAME
-      *                   Incrémenter la longueur NAME
+      *                   IncrÃ©menter la longueur NAME
                           ADD   1            TO WS-Q-XML-TAG-NAME-BUFFER
                        ELSE
-      *                   Incrémenter la longueur ATTR
+      *                   IncrÃ©menter la longueur ATTR
                           ADD   1            TO WS-Q-XML-TAG-ATTR-BUFFER
                        END-IF
 
@@ -1080,10 +1078,10 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
        ALIM-BALISES-MERES.
       *------------------*
 
-      *    Alimenter balise mère pour chaque balises
+      *    Alimenter balise mÃ¨re pour chaque balises
 
-      *    Premièrement alimenter les niveaux imbrications
-      *    Commencer à partir de 2 pour sauter racine dont niveau est 0
+      *    PremiÃ¨rement alimenter les niveaux imbrications
+      *    Commencer Ã  partir de 2 pour sauter racine dont niveau est 0
            PERFORM VARYING L FROM 2 BY 1
            UNTIL L > WS-Q-XML-TAB
 
@@ -1110,7 +1108,7 @@ mcha+ *          DISPLAY ' WS-Q-XML-LINE(I) ' WS-Q-XML-LINE(I)
               END-IF
 
 
-      *       Initialiser numéro balise mère
+      *       Initialiser numÃ©ro balise mÃ¨re
               MOVE ZERO                  TO WS-N-XML-TAG-MERE (L)
 
       *       Si premier niveau imbr => element racine
@@ -1170,7 +1168,7 @@ MCHA  D                WS-L-XML-TAG-NAME(I)
       D              DISPLAY 'FCT-VIDE SMPLE: ' WS-L-XML-LINE(I)(1:
       D                                   WS-Q-XML-LINE(I))
 
-      *             stocker balise mère pour y brancher
+      *             stocker balise mÃ¨re pour y brancher
                     MOVE WS-N-XML-TAG-MERE(I) TO J
 
 
@@ -1185,10 +1183,10 @@ MCHA  D                WS-L-XML-TAG-NAME(I)
       *             Decrementer taille totale tableau
                     SUBTRACT 1 FROM WS-Q-XML-TAB
 
-      *             Re-calculer les numéros des balises mères
+      *             Re-calculer les numÃ©ros des balises mÃ¨res
                     PERFORM ALIM-BALISES-MERES
 
-      *             re-traiter l'itération I qui a de nouvelles valeurs
+      *             re-traiter l'itÃ©ration I qui a de nouvelles valeurs
       *             SUBTRACT 1 FROM I
                     MOVE J TO I
                     SUBTRACT 1 FROM I
@@ -1200,12 +1198,12 @@ MCHA  D                WS-L-XML-TAG-NAME(I)
 
       *          balise ouvrant
                  IF  WS-B-XML-TAG-OUVR(I)  = '1'
-      *          la ligne n'est pas sujet de découpage
+      *          la ligne n'est pas sujet de dÃ©coupage
                  AND NOT ((ZCOM-B-DCOP = '1')
                      AND (WS-L-XML-TAG-NAME(I)(1:WS-Q-XML-TAG-NAME(I))
                           = ZCOM-L-DCOP-TAG(1:ZCOM-Q-DCOP-TAG)))
 
-      *            si même niveau d'imbrication que son suivant
+      *            si mÃªme niveau d'imbrication que son suivant
                     IF WS-Q-XML-TAG-IMBR(I) = WS-Q-XML-TAG-IMBR(I + 1)
 
       D                DISPLAY 'FCT-VIDE CMPLX: ' WS-L-XML-LINE(I)(1:
@@ -1213,7 +1211,7 @@ MCHA  D                WS-L-XML-TAG-NAME(I)
       D                DISPLAY '2/          : ' WS-L-XML-LINE(I + 1)(1:
       D                                         WS-Q-XML-LINE(I + 1))
 
-      *                stocker balise mère pour y brancher
+      *                stocker balise mÃ¨re pour y brancher
                        MOVE WS-N-XML-TAG-MERE(I) TO J
 
       *                Enlever ligne ouvrante
@@ -1238,7 +1236,7 @@ MCHA  D                WS-L-XML-TAG-NAME(I)
       *                Decrementer taille totale tableau
                        SUBTRACT 1 FROM WS-Q-XML-TAB
 
-      *                Re-calculer les numéros des balises mères
+      *                Re-calculer les numÃ©ros des balises mÃ¨res
                        PERFORM ALIM-BALISES-MERES
 
       *                re-traiter I qui a de nouvelles valeurs
@@ -1272,11 +1270,11 @@ SBOU          END-IF
            PERFORM VARYING I FROM 1 BY 1
            UNTIL I > WS-Q-XML-TAB
 
-      *       Utilisation buffer car on peut pas string sur lui même
+      *       Utilisation buffer car on peut pas string sur lui mÃªme
               MOVE SPACE TO WS-L-XML-BUFFER
 
       *       Calcul indetation = indetation initiale +
-      *       niveau imbrication * unité d'indentation
+      *       niveau imbrication * unitÃ© d'indentation
       *
               COMPUTE WS-Q-XML-INDT(I)
                     = WS-Q-INDT-INIT       +
@@ -1323,9 +1321,9 @@ SBOU          END-IF
        FCT-DECL.
       *--------*
 
-      *    Fonction de création déclaration xml
+      *    Fonction de crÃ©ation dÃ©claration xml
 
-      *    Vérifier dépassement tableau des lignes XML
+      *    VÃ©rifier dÃ©passement tableau des lignes XML
            ADD 1                   TO WS-Q-XML-TAB
            PERFORM  CTRL-Q-XML-TAB
            SUBTRACT 1            FROM WS-Q-XML-TAB
@@ -1348,7 +1346,7 @@ SBOU          END-IF
 
            END-PERFORM
 
-      *    Ajouter la ligne declaration en tête du tableau
+      *    Ajouter la ligne declaration en tÃªte du tableau
            MOVE '1'                  TO WS-B-XML-TAG-DECL (1)
            MOVE '0'                  TO WS-B-XML-TAG-OUVR (1)
                                         WS-B-XML-TAG-FERM (1)
@@ -1373,7 +1371,7 @@ SBOU          END-IF
            MOVE    WS-Q-XML-BUFFER   TO WS-Q-XML-LINE(1)
 
 
-      *    Incrementer toutes paramètres sortie de numérotation ligne
+      *    Incrementer toutes paramÃ¨tres sortie de numÃ©rotation ligne
            ADD 1 TO WS-N-XML-DCOP
 
       *    Incrementer taille totale du tableau
@@ -1392,8 +1390,8 @@ SBOU          END-IF
        FCT-NMSP.
       *--------*
 
-      *    Fonction d'ajout des namespace à la racine XML
-      *    la racine est à priori dans la première ligne
+      *    Fonction d'ajout des namespace Ã  la racine XML
+      *    la racine est Ã  priori dans la premiÃ¨re ligne
 
            MOVE WS-Q-XML-LINE(1) TO WS-Q-XML-BUFFER
            MOVE WS-L-XML-LINE(1) TO WS-L-XML-BUFFER
@@ -1458,7 +1456,7 @@ SBOU          END-IF
       *--------*
 
       *    Fonction d'ajout de schemaLocation
-      *    la racine est à priori dans la première ligne
+      *    la racine est Ã  priori dans la premiÃ¨re ligne
 
            MOVE WS-Q-XML-LINE(1) TO WS-Q-XML-BUFFER
            MOVE WS-L-XML-LINE(1) TO WS-L-XML-BUFFER
@@ -1667,10 +1665,10 @@ SBOU          END-IF
       *          Decrementer taille totale tableau
                  SUBTRACT 1 FROM WS-Q-XML-TAB
 
-      *          Re-calculer les numéros des balises mères
+      *          Re-calculer les numÃ©ros des balises mÃ¨res
                  PERFORM ALIM-BALISES-MERES
 
-      *          re-traiter l'itération I qui a de nouvelles valeurs
+      *          re-traiter l'itÃ©ration I qui a de nouvelles valeurs
                  SUBTRACT 1 FROM I
 
               END-IF
@@ -1779,10 +1777,10 @@ SBOU          END-IF
       *          Decrementer taille totale tableau
                  SUBTRACT 1 FROM WS-Q-XML-TAB
 
-      *          Re-calculer les numéros des balises mères
+      *          Re-calculer les numÃ©ros des balises mÃ¨res
                  PERFORM ALIM-BALISES-MERES
 
-      *          re-traiter l'itération I qui a de nouvelles valeurs
+      *          re-traiter l'itÃ©ration I qui a de nouvelles valeurs
                  SUBTRACT 1 FROM I
 
               END-IF
@@ -1962,7 +1960,7 @@ SBOU          END-IF
            IF WS-N-XML-DCOP = 0
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  19                    TO   ZCOM-C-RET
-              MOVE 'Balise de découpage introuvable'
+              MOVE 'Balise de dÃ©coupage introuvable'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
 
@@ -1986,7 +1984,7 @@ SBOU          END-IF
       *    Incrementer ligne tableau
            ADD 1 TO WS-Q-XML-TAB
 
-      *    Vérifier dépassement tableau des lignes XML
+      *    VÃ©rifier dÃ©passement tableau des lignes XML
            PERFORM  CTRL-Q-XML-TAB
 
            MOVE '0'       TO WS-B-XML-TAG-DECL (WS-Q-XML-TAB)
@@ -2079,7 +2077,7 @@ SBOU          END-IF
            IF WS-Q-XML-BUFFER      > 1000
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  04                    TO   ZCOM-C-RET
-              MOVE 'Taille du buffer des lignes xml dépassée'
+              MOVE 'Taille du buffer des lignes xml dÃ©passÃ©e'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -2092,7 +2090,7 @@ SBOU          END-IF
            IF WS-Q-XML-TAB  > 1000
               MOVE  08                    TO   ZCOM-CODE-RETOUR
               MOVE  05                    TO   ZCOM-C-RET
-              MOVE 'Taille du tableau des lignes indentées dépassée'
+              MOVE 'Taille du tableau des lignes indentÃ©es dÃ©passÃ©e'
                                           TO   ZCOM-L-C-RET
               PERFORM TRT-ERREUR
            END-IF
@@ -2171,7 +2169,7 @@ SBOU          END-IF
       *=====================
        INIT-ZCOM-FONC-OUT.
       *=====================
-      *    Initialisation des données
+      *    Initialisation des donnÃ©es
       *    en sortie de module ZCOM-FONC-OUT
 
            MOVE ZERO                  TO      ZCOM-CODE-RETOUR
