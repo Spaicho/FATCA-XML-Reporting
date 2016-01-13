@@ -20,8 +20,8 @@ https://code.google.com/p/legstar-xsd2cob/
 
 #### features :
 
-![features](img/fatca2.png)
-![features](img/fatca3.png)
+![features](img/Fatca2.png)
+![features](img/Fatca3.png)
 
 
 IN : 
