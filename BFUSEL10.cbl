@@ -2,28 +2,18 @@
        IDENTIFICATION DIVISION.
       *================================================================*
        PROGRAM-ID. BFUSEL10
-       AUTHOR. CGI
+       AUTHOR.ESSADIQ BAICH
       ******************************************************************
       *                   PROGRAMME BATCH BFUSEL10                     *
       ******************************************************************
       *                                                                *
       *   NOM DU PROGRAMME     : BFUSEL10                              *
       *                                                                *
-      *   LIBELLE DU PROGRAMME : RÈcupÈrer informations Reporting.     *
-      *                                                                *
-      *   CODE APPLICATION     : AP10527 - FUS                         *
-      *                                                                *
-      *   ACTION               : RÈcupÈrer informations Reporting depuis
-      *                        : la base FUS.                          *
+      *   LIBELLE DU PROGRAMME : R√©cup√©rer informations Reporting.     *
       *                                                                *
       *   LANGAGE PROGRAMME    : COBOL/DB2/REDEMARRABLE                *
       *                                                                *
       *   DATE CREATION        : 27/10/2014                            *
-      *                                                                *
-      *   AUTEUR               : ZAJA / ZOUHAIR AJABA  / TMA GTC       *
-      *                                                                *
-      *   REFERENCE            : 20141525: FUS - EVO - Elaborer        *
-      *                        :           Reporting FATCA FR et IGA   *
       *                                                                *
       ******************************************************************
       *                           FONCTION
@@ -36,15 +26,15 @@
       *================================================================*
 150978*  CGI   !16/04/2015!20150978!Prises en compte des adaptations   *
 150978*        !          !        !pour suivantes :                   *
-150978*        !          !        !- Fichier aiguillage en entrÈe     *
-150978*        !          !        !- Fichiers en sortie gÈrÈ par entitÈ
-150978*        !          !        !- Gestion des clients rÈcalcitrants*
-150978*        !          !        !- PrÈparation de la MAJ des tables *
+150978*        !          !        !- Fichier aiguillage en entr√©e     *
+150978*        !          !        !- Fichiers en sortie g√©r√© par entit√©
+150978*        !          !        !- Gestion des clients r√©calcitrants*
+150978*        !          !        !- Pr√©paration de la MAJ des tables *
 150978*        !          !        !  TBREPFUS, TBRBRFUS et TBFIDFUS   *
       *================================================================*
 151197*  CGI   !22/04/2015!20151197!MAJ ECV et Historique pour FATCA3  *
       *----------------------------------------------------------------*
-151197*  AAM   !30/04/2015!20151197!- AJOUT DE LA RECHERCHE DES DONNÈES*
+151197*  AAM   !30/04/2015!20151197!- AJOUT DE LA RECHERCHE DES DONN√©ES*
 151197*        !          !        !  FATCA3 VIA LA TABLE TBHISFUS     *
       *----------------------------------------------------------------*
 151345*  MCHA  !12/06/2015!20151345!AJOUT MAJ ECV RECALCITRANT         *
@@ -76,8 +66,8 @@
       * |  FICHIERS      |  E  |  S  | E/S |   DESCRIPTION       |     *
       * |________________|_____|_____|_____|_____________________|     *
       * |                |     |     |     |                     |     *
-      * |-DFUSLE11       |  X  |     |     |-Contient les donnÈes|     *
-      * |                |     |     |     | ‡ traiter           |     *
+      * |-DFUSLE11       |  X  |     |     |-Contient les donn√©es|     *
+      * |                |     |     |     | √† traiter           |     *
       * |                |     |     |     |                     |     *
       * |-DFUSLS11       |     |  X  |     |-Fichier en sortie   |     *
       * |                |     |     |     |                     |     *
@@ -462,42 +452,42 @@ MCHA++*  1025      | PB ADRESSE ENTITE DECLARANTE                      *
 "          05  WS-CPT-AIG-LUS-20           PIC 9(11).
 "     *    NOMBRE D'ENREGISTREMENT LUS
 "          05  WS-CPT-PAR-LUS              PIC 9(11).
-"     *    NOMBRE D'ENREGISTREMENT ÈCRITS TOTAL
+"     *    NOMBRE D'ENREGISTREMENT √©CRITS TOTAL
 "          05  WS-CPT-ECRIT                PIC 9(11).
-"     *    NOMBRE D'ENREGISTREMENT ÈCRITS DFUSLS11
+"     *    NOMBRE D'ENREGISTREMENT √©CRITS DFUSLS11
 "          05  WS-EDT1-ECRIT               PIC 9(11).
-"     *    NOMBRE D'ENREGISTREMENT ÈCRITS DFUSLS12
+"     *    NOMBRE D'ENREGISTREMENT √©CRITS DFUSLS12
 "          05  WS-EDT2-ECRIT               PIC 9(11).
-"     *    NOMBRE D'ENREGISTREMENT ÈCRITS DFUSLS13
+"     *    NOMBRE D'ENREGISTREMENT √©CRITS DFUSLS13
 "          05  WS-EDT3-ECRIT               PIC 9(11).
-"     *    NOMBRE D'ENREGISTREMENT ÈCRITS DFUSLS14
+"     *    NOMBRE D'ENREGISTREMENT √©CRITS DFUSLS14
 "          05  WS-EDT4-ECRIT               PIC 9(11).
-"     *    NOMBRE D'ENREGISTREMENT ÈCRITS DFUSLS15
+"     *    NOMBRE D'ENREGISTREMENT √©CRITS DFUSLS15
 "          05  WS-EDT5-ECRIT               PIC 9(11).
-"     *    NOMBRE D'ENREGISTREMENT ÈCRITS DFUSLS16
+"     *    NOMBRE D'ENREGISTREMENT √©CRITS DFUSLS16
 "          05  WS-EDT6-ECRIT               PIC 9(11).
-"     *    NOMBRE D'ENREGISTREMENT ÈCRITS DFUSLS17
+"     *    NOMBRE D'ENREGISTREMENT √©CRITS DFUSLS17
 "          05  WS-EDT7-ECRIT               PIC 9(11).
-"     *    NOMBRE D'ENREGISTREMENT ÈCRITS DFUSLS18
+"     *    NOMBRE D'ENREGISTREMENT √©CRITS DFUSLS18
 "          05  WS-EDT8-ECRIT               PIC 9(11).
-"     *    NOMBRE D'ENREGISTREMENT ÈCRITS DFUSLS19
+"     *    NOMBRE D'ENREGISTREMENT √©CRITS DFUSLS19
 "          05  WS-EDT9-ECRIT               PIC 9(11).
-"     *    NOMBRE DE PERSONNES DÈCLARÈES
+"     *    NOMBRE DE PERSONNES D√©CLAR√©ES
 "          05 WS-Q-PERS-DECL               PIC 9(09).
-"     *    NOMBRE DE CONTRATS DÈCLARÈS
+"     *    NOMBRE DE CONTRATS D√©CLAR√©S
 "          05 WS-Q-CONTRAT-DECL            PIC 9(09).
-"     *    NOMBRE DE RÈCALCITRANT DÈCLARÈES
+"     *    NOMBRE DE R√©CALCITRANT D√©CLAR√©ES
 "          05 WS-Q-RECAL-DECL              PIC 9(09).
 "
 "     *   MONTANTS
 "      01  WS-MONTANTS.
-"     *    Montant total de solde dÈclarÈ
+"     *    Montant total de solde d√©clar√©
 "          05 WS-M-TOT-SOL-DECL               PIC 9(018).
-"     *    Montant total d'intÈrÍt dÈclarÈ
+"     *    Montant total d'int√©r√™t d√©clar√©
 "          05 WS-M-TOT-INT-DECL               PIC 9(018).
-"     *    Montant total de solde dÈclarÈ
+"     *    Montant total de solde d√©clar√©
 "          05 WS-M-TOT-CES-DECL               PIC 9(018).
-"     *    Montant total autre montant dÈclarÈ
+"     *    Montant total autre montant d√©clar√©
 "          05 WS-M-TOT-M-DECL                 PIC 9(018).
 "
 "     *   INDiCES
@@ -506,7 +496,7 @@ MCHA++*  1025      | PB ADRESSE ENTITE DECLARANTE                      *
 150978     05  WS-I                        PIC 9(11).
       *   COMPTEUR D'OCCURENCES POUR LES PRISES DE CHECKPOINT
        01  WS-CPT-CHKPT                    PIC 9(5).
-      *   COMPTEUR NOMBRE DE CHECKPOINT EFFECTUÈS
+      *   COMPTEUR NOMBRE DE CHECKPOINT EFFECTU√©S
        01  WS-CPT-NBRE-CHECK               PIC 9(5).
       *   INDICATEUR FIN TRAITEMENT
        01  IND-FIN-FIC                     PIC X(1).
@@ -525,7 +515,7 @@ MCHA++*  1025      | PB ADRESSE ENTITE DECLARANTE                      *
 151197   88 ENR-HIS-NN-TRV            VALUE  '0'.
 
 
-151197* LA VALEUR AVANT LA MODIFICATION DU HID SAUVEGARDÈE
+151197* LA VALEUR AVANT LA MODIFICATION DU HID SAUVEGARD√©E
 151197 01 W-N-OPE               PIC X(18) VALUE SPACES.
 151197 01 W-I-UNIQ-KAC          PIC X(17) VALUE SPACES.
 MC     01 W-I-RIB-INVAR         PIC X(23) VALUE SPACES.
@@ -553,7 +543,7 @@ MC+   * VALEUR TEMPORAIRE DES DONNEES DE LA TABLE CLIENT
 "     *      NATURE PERSONNE                                            00027000
 "            10 W-C-NTUR-PERS                 PIC X(002).
 "
-"     *      RÈFÈRENCE FISCALITÈ ÈTRANGËRE                              00027000
+"     *      R√©F√©RENCE FISCALIT√© √©TRANG√®RE                              00027000
 "            10 W-C-REF-GIIN                  PIC X(020).
 "
 "     *      NOM PATRONYMIQUE (PP)
@@ -589,10 +579,10 @@ MC+   * VALEUR TEMPORAIRE DES DONNEES DE LA TABLE CLIENT
 "     *      RAISON SOCIALE (PM)
 "            10 W-L-RAISON-SOCIALE             PIC X(060).
 "
-"     *       Classification d'une entitÈ
+"     *       Classification d'une entit√©
 "            10 W-C-TYPE-CLASS                 PIC X(008).
 "
-"     *      DonnÈes adresses
+"     *      Donn√©es adresses
 "     *      NOM COMMUNE ADRESSE
 "            10 W-L-COMM-ADR                   PIC X(032).
 "
@@ -602,10 +592,10 @@ MC+   * VALEUR TEMPORAIRE DES DONNEES DE LA TABLE CLIENT
 "     *      CODE PAYS ISO DE L'ADRESSE
 "            10 W-C-PAYS-ADR                   PIC X(002).
 "
-"     *      INTITULÈ COURRIER LIGNE 1 ADRESSE
+"     *      INTITUL√© COURRIER LIGNE 1 ADRESSE
 "            10 W-L-INTIT-COURR-1              PIC X(038).
 "
-"     *      INTITULÈ COURRIER LIGNE 2 ADRESSE
+"     *      INTITUL√© COURRIER LIGNE 2 ADRESSE
 "            10 W-L-INTIT-COURR-2              PIC X(038).
 "
 "     *      ADRESSE 1
@@ -617,7 +607,7 @@ MC+   * VALEUR TEMPORAIRE DES DONNEES DE LA TABLE CLIENT
 "     *      ADRESSE 3
 "            10 W-L-ADR-LIGNE-3                PIC X(038).
 "
-"     *      LIBELLÈ PAYS DE L'ADRESSE
+"     *      LIBELL√© PAYS DE L'ADRESSE
 "            10 W-L-PAYS-ADR                   PIC X(038).
 MC+
 MC+   * VALEUR TEMPORAIRE DES DONNEES DE LA TABLE CLIENT
@@ -627,7 +617,7 @@ MC+   * VALEUR TEMPORAIRE DES DONNEES DE LA TABLE CLIENT
 "     *      NATURE PERSONNE                                            00027000
 "            10 TEMP-C-NTUR-PERS              PIC X(002).
 "
-"     *      RÈFÈRENCE FISCALITÈ ÈTRANGËRE                              00027000
+"     *      R√©F√©RENCE FISCALIT√© √©TRANG√®RE                              00027000
 "            10 TEMP-C-REF-GIIN               PIC X(020).
 "
 "     *      NOM PATRONYMIQUE (PP)
@@ -663,10 +653,10 @@ MC+   * VALEUR TEMPORAIRE DES DONNEES DE LA TABLE CLIENT
 "     *      RAISON SOCIALE (PM)
 "            10 TEMP-L-RAISON-SOCIALE          PIC X(060).
 "
-"     *       Classification d'une entitÈ
+"     *       Classification d'une entit√©
 "            10 TEMP-C-TYPE-CLASS              PIC X(008).
 "
-"     *      DonnÈes adresses
+"     *      Donn√©es adresses
 "     *      NOM COMMUNE ADRESSE
 "            10 TEMP-L-COMM-ADR                PIC X(032).
 "
@@ -676,10 +666,10 @@ MC+   * VALEUR TEMPORAIRE DES DONNEES DE LA TABLE CLIENT
 "     *      CODE PAYS ISO DE L'ADRESSE
 "            10 TEMP-C-PAYS-ADR                PIC X(002).
 "
-"     *      INTITULÈ COURRIER LIGNE 1 ADRESSE
+"     *      INTITUL√© COURRIER LIGNE 1 ADRESSE
 "            10 TEMP-L-INTIT-COURR-1           PIC X(038).
 "
-"     *      INTITULÈ COURRIER LIGNE 2 ADRESSE
+"     *      INTITUL√© COURRIER LIGNE 2 ADRESSE
 "            10 TEMP-L-INTIT-COURR-2           PIC X(038).
 "
 "     *      ADRESSE 1
@@ -691,10 +681,10 @@ MC+   * VALEUR TEMPORAIRE DES DONNEES DE LA TABLE CLIENT
 "     *      ADRESSE 3
 "            10 TEMP-L-ADR-LIGNE-3             PIC X(038).
 "
-"     *      LIBELLÈ PAYS DE L'ADRESSE
+"     *      LIBELL√© PAYS DE L'ADRESSE
 "            10 TEMP-L-PAYS-ADR                PIC X(038).
 MC+
-      *  Le nombre de dÈcimaux du montant associÈ au compte
+      *  Le nombre de d√©cimaux du montant associ√© au compte
        01 WS-Q-NBR-DEC                 PIC S9(1) VALUE ZERO.
       *
       *------- ZONE DE SAUVEGARDE POUR LES PRISES DE CHECKPOINT -------*
@@ -888,7 +878,7 @@ MC+
 150978                          PCB-DFUSLS19.
       *
       *
-      * CODE UTILE ‡ L'AFFICHAGE DE LA SYSOUT EN MODE DEBUG
+      * CODE UTILE √† L'AFFICHAGE DE LA SYSOUT EN MODE DEBUG
       *
       DDECLARATIVES.
       DTRACING SECTION.
@@ -1160,16 +1150,16 @@ MCHA!!     IF SYSIN-80(1:9) = 'FATCA31A '
            .
 
       *==================================================*
-      * RECHERCHE DES INFORMATIONS DE L'ENTITÈ DÈCLARANTE*
+      * RECHERCHE DES INFORMATIONS DE L'ENTIT√© D√©CLARANTE*
       *==================================================*
        1330-RECH-INF-END.
       *
-      * RECHERCHE ET ÈCRITURE DES INFORMATIONS END
+      * RECHERCHE ET √©CRITURE DES INFORMATIONS END
       *
-      * ==> ACCÈDER LA BASE FUS TABLE DES END
+      * ==> ACC√©DER LA BASE FUS TABLE DES END
            PERFORM 1350-SEL-INF-END
 
-      * ==> ALIMENTATION DE LA LIGNE NUMÈRO ZÈRO
+      * ==> ALIMENTATION DE LA LIGNE NUM√©RO Z√©RO
            PERFORM 1361-ALIM-INF-END
 
 MCHA+-D    DISPLAY 'SYSIN-TYPE-FATCA ' SYSIN-TYPE-FATCA
@@ -1188,10 +1178,10 @@ MCHA+-     END-IF
 150978* ==> ECRITURE LIGNE IDENTIFIANT FID
 150978     PERFORM 1363-INS-REF-FID
 150978
-150978* ==> rÈcupÈrer la rÈdÈrence IDENTIFIANT FID ajoutÈ en sÈquence
+150978* ==> r√©cup√©rer la r√©d√©rence IDENTIFIANT FID ajout√© en s√©quence
 150978     PERFORM 1364-RECUP-REF-FID
 
-      * ==> ACCÈDER LA BASE FUS TABLE DES ADRESSE
+      * ==> ACC√©DER LA BASE FUS TABLE DES ADRESSE
            PERFORM 1370-SEL-INF-ADR
 
       * ==> ALIMENTATION DE LA LIGNE DES ADRESSES
@@ -1204,7 +1194,7 @@ MCHA+-     END-IF
 
       *                   ***                            *
       *==================================================*
-      * ACCËS ‡ LA BASE FUS (TBENDFUS)                   *
+      * ACC√®S √† LA BASE FUS (TBENDFUS)                   *
       *==================================================*
        1350-SEL-INF-END.
       *
@@ -1390,7 +1380,7 @@ MCHA+- 1365-FERM-FID.
       * =============================================================  *
        1360-ECRIRE-OUT.
       *
-      *    ECRITURE LIGNE IDENTIFIANT ENTITÈ DÈCLARENTE
+      *    ECRITURE LIGNE IDENTIFIANT ENTIT√© D√©CLARENTE
       *
            MOVE SPACE                  TO   STAT-FUSEL10
 150978     MOVE SPACE                  TO   STAT-FUSEL20
@@ -1405,7 +1395,7 @@ MCHA+- 1365-FERM-FID.
 "
 "     * AIGUILLAGE DE L ECRITURE
 "          EVALUATE TRUE
-"     * ==>   EntitÈ 1G159I.00000.BR.492
+"     * ==>   Entit√© 1G159I.00000.BR.492
 "             WHEN TOP-DECL-01
 "               CALL  'CBLTDLI'           USING  ISRT
 "                                                 PCB-DFUSLS11
@@ -1419,7 +1409,7 @@ MCHA+- 1365-FERM-FID.
 "                  MOVE 2410                TO   WS-CODE-ABEND
 "                  PERFORM 4200-ABEND-ERR
 "               END-IF
-"     * ==>   EntitÈ 1G159I.00000.LE.250
+"     * ==>   Entit√© 1G159I.00000.LE.250
 "             WHEN TOP-DECL-02
 "               CALL  'CBLTDLI'           USING  ISRT
 "                                                 PCB-DFUSLS12
@@ -1433,7 +1423,7 @@ MCHA+- 1365-FERM-FID.
 "                  MOVE 2420                TO   WS-CODE-ABEND
 "                  PERFORM 4200-ABEND-ERR
 "               END-IF
-"     * ==>   EntitÈ 1G159I.00352.ME.876
+"     * ==>   Entit√© 1G159I.00352.ME.876
 "             WHEN TOP-DECL-03
 "               CALL  'CBLTDLI'           USING  ISRT
 "                                                 PCB-DFUSLS13
@@ -1447,7 +1437,7 @@ MCHA+- 1365-FERM-FID.
 "                  MOVE 2430                TO   WS-CODE-ABEND
 "                  PERFORM 4200-ABEND-ERR
 "               END-IF
-"     * ==>   EntitÈ 1G159I.00353.BR.663
+"     * ==>   Entit√© 1G159I.00353.BR.663
 "             WHEN TOP-DECL-04
 "               CALL  'CBLTDLI'           USING  ISRT
 "                                                 PCB-DFUSLS14
@@ -1461,7 +1451,7 @@ MCHA+- 1365-FERM-FID.
 "                  MOVE 2440                TO   WS-CODE-ABEND
 "                  PERFORM 4200-ABEND-ERR
 "               END-IF
-"     * ==>   EntitÈ 1G159I.00353.ME.250
+"     * ==>   Entit√© 1G159I.00353.ME.250
 "             WHEN TOP-DECL-05
 "               CALL  'CBLTDLI'           USING  ISRT
 "                                                 PCB-DFUSLS11
@@ -1475,7 +1465,7 @@ MCHA+- 1365-FERM-FID.
 "                  MOVE 2450                TO   WS-CODE-ABEND
 "                  PERFORM 4200-ABEND-ERR
 "               END-IF
-"     * ==>   EntitÈ 1G159I.00356.ME.250
+"     * ==>   Entit√© 1G159I.00356.ME.250
 "             WHEN TOP-DECL-06
 "               CALL  'CBLTDLI'           USING  ISRT
 "                                                 PCB-DFUSLS16
@@ -1489,7 +1479,7 @@ MCHA+- 1365-FERM-FID.
 "                  MOVE 2460                TO   WS-CODE-ABEND
 "                  PERFORM 4200-ABEND-ERR
 "               END-IF
-"     * ==>   EntitÈ 1G159I.00357.ME.250
+"     * ==>   Entit√© 1G159I.00357.ME.250
 "             WHEN TOP-DECL-07
 "               CALL  'CBLTDLI'           USING  ISRT
 "                                                 PCB-DFUSLS17
@@ -1503,7 +1493,7 @@ MCHA+- 1365-FERM-FID.
 "                  MOVE 2470                TO   WS-CODE-ABEND
 "                  PERFORM 4200-ABEND-ERR
 "               END-IF
-"     * ==>   EntitÈ 1G159I.00359.ME.540
+"     * ==>   Entit√© 1G159I.00359.ME.540
 "             WHEN TOP-DECL-08
 "               CALL  'CBLTDLI'           USING  ISRT
 "                                                 PCB-DFUSLS18
@@ -1517,7 +1507,7 @@ MCHA+- 1365-FERM-FID.
 "                  MOVE 2480                TO   WS-CODE-ABEND
 "                  PERFORM 4200-ABEND-ERR
 "               END-IF
-"     * ==>   EntitÈ 1G159I.00360.ME.250
+"     * ==>   Entit√© 1G159I.00360.ME.250
 "             WHEN TOP-DECL-09
 "               CALL  'CBLTDLI'           USING  ISRT
 "                                                 PCB-DFUSLS19
@@ -1541,56 +1531,56 @@ MCHA+- 1365-FERM-FID.
 
       *                         *****                               *  *
       * =============================================================  *
-      * ALIMENTATION DES INFORMATIONS SELON LE FORMAT DE LA LIGNE NUMÈRO
-      * ZÈRO
+      * ALIMENTATION DES INFORMATIONS SELON LE FORMAT DE LA LIGNE NUM√©RO
+      * Z√©RO
       * =============================================================  *
        1361-ALIM-INF-END.
       *
-      *    ALIMENTATION DES INFORMATIONS LIGNE ZÈRO
+      *    ALIMENTATION DES INFORMATIONS LIGNE Z√©RO
       *
       *    Initialisation
            MOVE SPACE                  TO   EL10-G-DATA-TET-END
 
       *    Code enregistrement
            MOVE '10'                   TO   EL10-C-ENR
-      *    Identifiant de lentitÈ dÈclarante
+      *    Identifiant de lentit√© d√©clarante
            MOVE TEND-I-IDENT-END       TO   EL10-I-IDENT
-      *    N∞ Ligne /Identifiant
+      *    N¬∞ Ligne /Identifiant
            MOVE 1                      TO   EL10-N-LIG-IDENT
-      *    EntitÈ concernÈe
+      *    Entit√© concern√©e
            MOVE 'END'                  TO   EL10-C-ENTIT
-      *    RÈfÈrence fiscalitÈ ÈtrangËre GIN de lentitÈ
+      *    R√©f√©rence fiscalit√© √©trang√®re GIN de lentit√©
            MOVE TEND-C-REF-GIIN        TO   EL10-C-REF-GIIN
                                        OF   EL10-G-DATA-TET-END
-      *    AnnÈe fiscale
+      *    Ann√©e fiscale
            MOVE TEND-A-APPL            TO   EL10-A-APPL
                                        OF   EL10-G-DATA-TET-END
-      *    Code du pays Èmetteur du GIN
+      *    Code du pays √©metteur du GIN
            IF TEND-C-CODE-EXPD = 'US'
               MOVE SPACES                 TO   EL10-C-PAYS-EMET-GIN
            ELSE
               MOVE 'FR'                   TO   EL10-C-PAYS-EMET-GIN
            END-IF
-      *    Raison sociale de lentitÈ
+      *    Raison sociale de lentit√©
            MOVE TEND-L-RAISON-SOCIALE  TO   EL10-L-RAISON-SOCIALE
-      *    Code Pays Èmetteur (ex : "FR")
+      *    Code Pays √©metteur (ex : "FR")
            MOVE TEND-C-PAYS-EMET       TO   EL10-C-PAYS-EMET
       *    Code Pays destinataire final (ex : "US")
            MOVE TEND-C-PAYS-DEST       TO   EL10-C-PAYS-DEST
-      *    Code ExpÈdition directe ("US") ou indirecte ("FR")
+      *    Code Exp√©dition directe ("US") ou indirecte ("FR")
            MOVE TEND-C-CODE-EXPD       TO   EL10-C-CODE-EXPD
-      *    Contact 1 (Fiscal) ou rÈserve
+      *    Contact 1 (Fiscal) ou r√©serve
            MOVE TEND-L-CONTACT1        TO   EL10-L-CONTACT1
-      *    Nom et prÈnom du contact 1
+      *    Nom et pr√©nom du contact 1
            MOVE TEND-L-NOM-CONTACT1    TO   EL10-L-NOM-CONTACT1
-      *    TÈlÈphone 1er Contact (Fiscal) ou rÈserve
+      *    T√©l√©phone 1er Contact (Fiscal) ou r√©serve
            MOVE TEND-N-TEL-CONTACT1    TO   EL10-N-TEL-CONTACT1
-      *    Mail 1er Contact (Fiscal) ou rÈserve
+      *    Mail 1er Contact (Fiscal) ou r√©serve
            MOVE TEND-L-MAIL-CONTACT1   TO   EL10-L-MAIL-CONTACT1
 MCHA??     MOVE W-DATE-TIMESTAMP
 150978                                 TO   EL10-D-REF-FIC-INIT
 150978                                 OF   EL10-G-DATA-TET-END
-150978*    INITIALISATION DES RÈFÈRENCES BLOC
+150978*    INITIALISATION DES R√©F√©RENCES BLOC
 150978     MOVE SPACES TO WS-I-REF-FIC
 150978                    WS-I-REF-BLOC-CPT
 150978                    WS-I-REF-BLOC-CLR
@@ -1670,7 +1660,7 @@ MCHA+-*                         *****                               *  *
 "          .
       *                   ***                            *
       *==================================================*
-      * ACCËS ‡ LA BASE FUS (TBADRFUS)                   *
+      * ACC√®S √† LA BASE FUS (TBADRFUS)                   *
       *==================================================*
        1370-SEL-INF-ADR.
       *
@@ -1715,11 +1705,11 @@ MCHA++           PERFORM 4200-ABEND-ERR
 
       *    Code enregistrement
            MOVE '10'                   TO   EL10-C-ENR
-      *    Identifiant de lentitÈ dÈclarante
+      *    Identifiant de lentit√© d√©clarante
            MOVE TADR-I-IDENT           TO   EL10-I-IDENT
-      *    N∞ Ligne /Identifiant
+      *    N¬∞ Ligne /Identifiant
            ADD  1                      TO   EL10-N-LIG-IDENT
-      *    EntitÈ concernÈe
+      *    Entit√© concern√©e
            MOVE 'ADR'                  TO   EL10-C-ENTIT
       *    Type adresse
            MOVE TADR-C-TYPE-ADR        TO   EL10-C-TYPE-ADR
@@ -1733,10 +1723,10 @@ MCHA++           PERFORM 4200-ABEND-ERR
       *    Code pays ISO de l'adresse
            MOVE TADR-C-PAYS-ADR        TO   EL10-C-PAYS-ADR
                                            OF   EL10-G-DATA-TET-ADR
-      *    IntitulÈ courrier ligne 1 adresse
+      *    Intitul√© courrier ligne 1 adresse
            MOVE TADR-L-INTIT-COURR-1   TO   EL10-L-INTIT-COURR-1
                                          OF   EL10-G-DATA-TET-ADR
-      *    IntitulÈ courrier ligne 2 adresse
+      *    Intitul√© courrier ligne 2 adresse
            MOVE TADR-L-INTIT-COURR-2   TO   EL10-L-INTIT-COURR-2
                                            OF   EL10-G-DATA-TET-ADR
       *    Adresse 1
@@ -1748,7 +1738,7 @@ MCHA++           PERFORM 4200-ABEND-ERR
       *    Adresse 3
            MOVE TADR-L-ADR-LIGNE-3     TO   EL10-L-ADR-LIGNE-3
                                            OF   EL10-G-DATA-TET-ADR
-      *    LibellÈ pays de l'adresse
+      *    Libell√© pays de l'adresse
            MOVE TADR-L-PAYS-ADR        TO   EL10-L-PAYS-ADR
                                            OF   EL10-G-DATA-TET-ADR
            .
@@ -1843,7 +1833,7 @@ MCHA++           PERFORM 4200-ABEND-ERR
 150978* =============================================================  *
 "      1500-LECTURE-FICHIER-AIG.
 "     *
-"     *    LECTURE FICHIER EN ENTRÈE
+"     *    LECTURE FICHIER EN ENTR√©E
 "     *
 "          MOVE SPACE                  TO   STAT-FUSEL01
 "          MOVE  AI11-I-IDENT-END      TO   WS-I-IDENT-END-SV
@@ -1883,7 +1873,7 @@ MCHA++           PERFORM 4200-ABEND-ERR
 150978* =============================================================  *
 "      1500-LECTURE-FICHIER-AIG-REP.
 "     *
-"     *    LECTURE FICHIER EN ENTRÈE
+"     *    LECTURE FICHIER EN ENTR√©E
 "     *
 "          MOVE SPACE                  TO   STAT-FUSEL01
 "     *    MOVE W999-I-IDENT-END       TO   WS-I-IDENT-END-SV
@@ -1964,7 +1954,7 @@ MCHA?            CONTINUE
 150978     PERFORM UNTIL IND-FIN-FIC  = 'O'
       *
       * TRAITEMENT PRINCIPALE
-      * Restitution et Ècriture des informations du compte
+      * Restitution et √©criture des informations du compte
 150978D       DISPLAY ' WS-I-IDENT-END LU 'WS-I-IDENT-END-LU
       D       DISPLAY ' WS-I-IDENT-END SV 'WS-I-IDENT-END-SV
               IF WS-I-IDENT-END-LU NOT = WS-I-IDENT-END-SV
@@ -2004,7 +1994,7 @@ RDMR  *       END-IF
       *
       *                     ***                           *     *      *
       *===================================================*
-      * RESTITUTION ET ÈCRITURE DES INFORMATIONS DU COMPTE.
+      * RESTITUTION ET √©CRITURE DES INFORMATIONS DU COMPTE.
       *===================================================*
        2200-RESTIT-CNT.
       *
@@ -2013,7 +2003,7 @@ RDMR  *       END-IF
 151197* SI LE TRAITEMENT TRAITE UN FICHIER FATCA3
 151197*    IF SYSIN-TYPE-FATCA = 'FATCA3 ' OR 'FATCA13'
 MC+        IF SYSIN-TYPE-FATCA13 = 'FATCA31A' OR 'FATCA31A1'
-151197*    ACCËS ‡ LA TABLE ENTÍTE HISTORIQUE
+151197*    ACC√®S √† LA TABLE ENT√™TE HISTORIQUE
 151197        PERFORM RECH-DONNEE-FATCA3
 151197     END-IF
 
@@ -2022,7 +2012,7 @@ MC+        IF SYSIN-TYPE-FATCA13 = 'FATCA31A' OR 'FATCA31A1'
 150978     MOVE ZERO              TO WS-Q-NBR-DEC
            MOVE ZERO              TO WS-M-MNT-ASS
 
-      * APPEL ‡ L'ACCESSEUR MFUSTRUB POUR OUVRIR LE CURSEUR DE LA TABLE
+      * APPEL √† L'ACCESSEUR MFUSTRUB POUR OUVRIR LE CURSEUR DE LA TABLE
       * DES MONTANTS.
            PERFORM 2111-OUV-CUR-RUB-01
 
@@ -2039,7 +2029,7 @@ MC+           IF SYSIN-TYPE-FATCA13 = 'FATCA31A' OR 'FATCA31A1'
               PERFORM 2113-FET-CUR-RUB-01
       * Fin Boucle.
            END-PERFORM
-      *  ==> RÈCUPÈRER LES INFORMATIONS DU CLIENT
+      *  ==> R√©CUP√©RER LES INFORMATIONS DU CLIENT
            PERFORM 2114-TRAITEMENT-CLI-SEL
 
       *    ALIMENTATION DES COMPTES
@@ -2056,7 +2046,7 @@ MC+           IF SYSIN-TYPE-FATCA13 = 'FATCA31A' OR 'FATCA31A1'
 MC+   * SI LE TRAITEMENT TRAITE UN FICHIER FATCA3+1
 "     D    DISPLAY ' SYSIN-TYPE-FATCA13' SYSIN-TYPE-FATCA13
 "          IF SYSIN-TYPE-FATCA13 = 'FATCA31A' OR 'FATCA31A1'
-"     *    ACCËS ‡ LA TABLE ENTÍTE HISTORIQUE
+"     *    ACC√®S √† LA TABLE ENT√™TE HISTORIQUE
 "             PERFORM RECH-DONNEE-CLT-FATCA3
 MC+        END-IF
       *    ECRITURE DONNEES CLIENT
@@ -2081,11 +2071,11 @@ MC+        END-IF
 151197*
 151197*                     ***                                        *
 151197*==============================================================*
-151197* RECHERCHE DES DONNÈES DE FATCA3 ‡ PARTIR DE LA TABLE TBHISFUS
+151197* RECHERCHE DES DONN√©ES DE FATCA3 √† PARTIR DE LA TABLE TBHISFUS
 151197*==============================================================*
 151197 RECH-DONNEE-FATCA3.
 151197*
-151197*==> INITIALISATION DES DONNÈES DE WORKING
+151197*==> INITIALISATION DES DONN√©ES DE WORKING
 151197     MOVE SPACES            TO W-N-OPE
 151197     MOVE SPACES            TO W-I-UNIQ-KAC
 MC         MOVE SPACES            TO W-I-RIB-INVAR
@@ -2095,33 +2085,33 @@ MC         MOVE SPACES            TO W-I-RIB-INVAR
 151197     MOVE ZEROES            TO W-M-MNT-ASS-06
 MCHA+!     SET ENR-HIS-NN-TRV     TO TRUE
 151197
-151197*==> ACCËS ‡ LA TABLE ENTÍTE HISTORIQUE
-151197*    OUVERTURE DU CURSEUR D'ACCËS ‡ LA TABLE TBHISFUS
+151197*==> ACC√®S √† LA TABLE ENT√™TE HISTORIQUE
+151197*    OUVERTURE DU CURSEUR D'ACC√®S √† LA TABLE TBHISFUS
 MC+        MOVE AI11-I-IDENT-CPT   TO WS-I-IDENT-1
 151197     PERFORM OUV-CUR-HIS-01
 151197
-151197*    BALAYAGE DE LA TABLE JUSQU'‡ ENTÍTE DÈTECTÈ
+151197*    BALAYAGE DE LA TABLE JUSQU'√† ENT√™TE D√©TECT√©
 151197     PERFORM UNTIL IND-FIN-TRT-HIS = 'O' OR ENR-HIS-TRV
 151197        IF THIS-C-ACTION = 'M' AND THIS-C-TYPE-IDENT-1 = '03' AND
 151197           THIS-D-TIMSP > AI11-D-REF-FIC-INIT OF AI11-ENR-PERS-CPT
 151197           SET ENR-HIS-TRV     TO TRUE
 151197           MOVE THIS-N-OPE     TO W-N-OPE
 151197        END-IF
-151197*       LECTURE SUIVANTE DU CURSEUR D'ACCËS ‡ LA TABLE TBHISFUS
+151197*       LECTURE SUIVANTE DU CURSEUR D'ACC√®S √† LA TABLE TBHISFUS
 151197        PERFORM LEC-CUR-HIS-01
 151197     END-PERFORM
 151197
-151197*    FERMETURE DU CURSEUR D'ACCËS ‡ LA TABLE TBHISFUS
+151197*    FERMETURE DU CURSEUR D'ACC√®S √† LA TABLE TBHISFUS
 151197     IF IND-FIN-TRT-HIS NOT = 'O' AND ENR-HIS-TRV
 151197        PERFORM FER-CUR-HIS-01
 151197     END-IF
 151197
-151197*==> ACCËS ‡ LA TABLE DETAIL HISTORIQUE
+151197*==> ACC√®S √† LA TABLE DETAIL HISTORIQUE
 151197     IF ENR-HIS-TRV
-151197*       OUVERTURE DU CURSEUR D'ACCËS ‡ LA TABLE TBHIDFUS
+151197*       OUVERTURE DU CURSEUR D'ACC√®S √† LA TABLE TBHIDFUS
 151197        PERFORM OUV-CUR-HID-01
 151197
-151197*       BALAYAGE DES DÈTAILS HISTORIQUES
+151197*       BALAYAGE DES D√©TAILS HISTORIQUES
 151197        PERFORM UNTIL IND-FIN-TRT-HID = 'O'
 151197           EVALUATE THID-L-DONNEE-MODIF
 151197              WHEN 'I-UNIQ-KAC'
@@ -2144,7 +2134,7 @@ MC                     MOVE THID-L-DONNEE-AVANT  TO W-I-RIB-INVAR
 151197              WHEN OTHER
 151197                 CONTINUE
 151197           END-EVALUATE
-151197*         LECTURE SUIVANTE DU CURSEUR D'ACCËS ‡ LA TABLE TBHIDFUS
+151197*         LECTURE SUIVANTE DU CURSEUR D'ACC√®S √† LA TABLE TBHIDFUS
 151197           PERFORM LEC-CUR-HID-01
 151197        END-PERFORM
 151197     END-IF
@@ -2153,11 +2143,11 @@ MC                     MOVE THID-L-DONNEE-AVANT  TO W-I-RIB-INVAR
 MC+   *
 "     *                     ***                                        *
 "     *==============================================================*
-"     * RECHERCHE DES DONNÈES CLIENT FATCA 3
+"     * RECHERCHE DES DONN√©ES CLIENT FATCA 3
 "     *==============================================================*
 "      RECH-DONNEE-CLT-FATCA3.
 "     *
-"     *==> INITIALISATION DES DONNÈES DE WORKING
+"     *==> INITIALISATION DES DONN√©ES DE WORKING
 "          MOVE LOW-VALUE         TO W-ENR-CLT-ADR
 "          MOVE SPACES            TO W-N-OPE
 "          MOVE SPACES            TO W-I-UNIQ-KAC
@@ -2168,33 +2158,33 @@ MC+   *
 "          MOVE ZEROES            TO W-M-MNT-ASS-06
 "          SET ENR-HIS-NN-TRV     TO TRUE
 "
-"     *==> ACCËS ‡ LA TABLE ENTÍTE HISTORIQUE
-"     *    OUVERTURE DU CURSEUR D'ACCËS ‡ LA TABLE TBHISFUS
+"     *==> ACC√®S √† LA TABLE ENT√™TE HISTORIQUE
+"     *    OUVERTURE DU CURSEUR D'ACC√®S √† LA TABLE TBHISFUS
 MC+        MOVE AI11-I-IDENT-CLT   TO WS-I-IDENT-1
 "          PERFORM OUV-CUR-HIS-01
 "
-"     *    BALAYAGE DE LA TABLE JUSQU'‡ ENTÍTE DÈTECTÈ
+"     *    BALAYAGE DE LA TABLE JUSQU'√† ENT√™TE D√©TECT√©
 "          PERFORM UNTIL IND-FIN-TRT-HIS = 'O' OR ENR-HIS-TRV
 "             IF THIS-C-ACTION = 'M' AND THIS-C-TYPE-IDENT-1 = '02' AND
 "                THIS-D-TIMSP > AI11-D-REF-FIC-INIT OF AI11-ENR-PERS-CPT
 "                SET ENR-HIS-TRV     TO TRUE
 "                MOVE THIS-N-OPE     TO W-N-OPE
 "             END-IF
-"     *       LECTURE SUIVANTE DU CURSEUR D'ACCËS ‡ LA TABLE TBHISFUS
+"     *       LECTURE SUIVANTE DU CURSEUR D'ACC√®S √† LA TABLE TBHISFUS
 "             PERFORM LEC-CUR-HIS-01
 "          END-PERFORM
 "
-"     *    FERMETURE DU CURSEUR D'ACCËS ‡ LA TABLE TBHISFUS
+"     *    FERMETURE DU CURSEUR D'ACC√®S √† LA TABLE TBHISFUS
 "          IF IND-FIN-TRT-HIS NOT = 'O' AND ENR-HIS-TRV
 "             PERFORM FER-CUR-HIS-01
 "          END-IF
 "
-"     *==> ACCËS ‡ LA TABLE DETAIL HISTORIQUE
+"     *==> ACC√®S √† LA TABLE DETAIL HISTORIQUE
 "          IF ENR-HIS-TRV
-"     *       OUVERTURE DU CURSEUR D'ACCËS ‡ LA TABLE TBHIDFUS
+"     *       OUVERTURE DU CURSEUR D'ACC√®S √† LA TABLE TBHIDFUS
 "             PERFORM OUV-CUR-HID-01
 "
-"     *       BALAYAGE DES DÈTAILS HISTORIQUES
+"     *       BALAYAGE DES D√©TAILS HISTORIQUES
 "             PERFORM UNTIL IND-FIN-TRT-HID = 'O'
 "                EVALUATE THID-L-DONNEE-MODIF
 "     *             Historiques client
@@ -2269,7 +2259,7 @@ MC+        MOVE AI11-I-IDENT-CLT   TO WS-I-IDENT-1
 "                   WHEN OTHER
 "                      CONTINUE
 "                END-EVALUATE
-"     *         LECTURE SUIVANTE DU CURSEUR D'ACCËS ‡ LA TABLE TBHIDFUS
+"     *         LECTURE SUIVANTE DU CURSEUR D'ACC√®S √† LA TABLE TBHIDFUS
 "                PERFORM LEC-CUR-HID-01
 "             END-PERFORM
 "          END-IF
@@ -2644,13 +2634,13 @@ MCHA+            ADD TRUB-M-MNT-ASS                TO WS-M-MNT-ASS
 
       *    Code enregistrement
            MOVE '20'                   TO   EL10-C-ENR
-      *    Identifiant de lentitÈ dÈclarante
+      *    Identifiant de lentit√© d√©clarante
            MOVE TCNT-I-IDENT-CPT       TO   EL10-I-IDENT
-      *    N∞ Ligne /Identifiant
+      *    N¬∞ Ligne /Identifiant
            MOVE 1                      TO   EL10-N-LIG-IDENT
-      *    EntitÈ concernÈe
+      *    Entit√© concern√©e
            MOVE 'CNT'                  TO   EL10-C-ENTIT
-      *    Le numÈro du contrat
+      *    Le num√©ro du contrat
            MOVE TCNT-I-UNIQ-KAC        TO   EL10-I-UNIQ-KAC
                                        OF EL10-G-DATA-DET-CNT
       *
@@ -2674,7 +2664,7 @@ MCHA+            ADD TRUB-M-MNT-ASS                TO WS-M-MNT-ASS
       *
       *    Le solde et montant
 150978     MOVE WS-M-MNT-ASS           TO   EL10-M-MNT-ASS-SLD
-"     *    Le nombre de dÈcimaux du montant associÈ au compte
+"     *    Le nombre de d√©cimaux du montant associ√© au compte
 "          MOVE WS-Q-NBR-DEC           TO   EL10-Q-NBR-DEC-SLD
 "     *    Le code devise
 "          MOVE TCNT-C-DEV             TO   EL10-C-DEV
@@ -2747,13 +2737,13 @@ MC         .
 151197
 151197*    CODE ENREGISTREMENT
 151197     MOVE '20'                   TO   EL10-C-ENR
-151197*    IDENTIFIANT DE LENTITÈ DÈCLARANTE
+151197*    IDENTIFIANT DE LENTIT√© D√©CLARANTE
 151197     MOVE TCNT-I-IDENT-CPT       TO   EL10-I-IDENT
-151197*    N∞ LIGNE /IDENTIFIANT
+151197*    N¬∞ LIGNE /IDENTIFIANT
 151197     MOVE 1                      TO   EL10-N-LIG-IDENT
-151197*    ENTITÈ CONCERNÈE
+151197*    ENTIT√© CONCERN√©E
 151197     MOVE 'CNT'                  TO   EL10-C-ENTIT
-151197*    LE NUMÈRO DU CONTRAT
+151197*    LE NUM√©RO DU CONTRAT
 151197     MOVE TEMP-I-UNIQ-KAC        TO   EL10-I-UNIQ-KAC
 151197                                 OF EL10-G-DATA-DET-CNT
 151197*
@@ -2778,7 +2768,7 @@ MC         .
 151197
 151197*    LE SOLDE ET MONTANT
 151197     MOVE WS-M-MNT-ASS           TO   EL10-M-MNT-ASS-SLD
-151197*    LE NOMBRE DE DÈCIMAUX DU MONTANT ASSOCIÈ AU COMPTE
+151197*    LE NOMBRE DE D√©CIMAUX DU MONTANT ASSOCI√© AU COMPTE
 151197     MOVE WS-Q-NBR-DEC           TO   EL10-Q-NBR-DEC-SLD
 151197*    LE CODE DEVISE
 151197     MOVE TEMP-C-DEV             TO   EL10-C-DEV
@@ -2802,7 +2792,7 @@ MC         .
 151197*=============================================================*
 151197 REMPLIR-DONNEE-CONTRAT.
 151197*
-151197*  ==> VERIFIER SI LES DONNÈES HISTORIQUES SONT RENSEIGNÈES
+151197*  ==> VERIFIER SI LES DONN√©ES HISTORIQUES SONT RENSEIGN√©ES
 151197     IF W-I-UNIQ-KAC = SPACES
 151197        MOVE TCNT-I-UNIQ-KAC   TO TEMP-I-UNIQ-KAC
 151197     ELSE
@@ -2833,7 +2823,7 @@ MC+   *=============================================================*
 "     *=============================================================*
 "      REMPLIR-DONNEE-CLIENT.
 "     *
-"     *  ==> VERIFIER SI LES DONNÈES HISTORIQUES SONT RENSEIGNÈES
+"     *  ==> VERIFIER SI LES DONN√©ES HISTORIQUES SONT RENSEIGN√©ES
 "          IF W-I-UNIQ-KPI = SPACES OR LOW-VALUE
 "             MOVE TCLI-I-UNIQ-KPI   TO TEMP-I-UNIQ-KPI
 "          ELSE
@@ -2925,13 +2915,13 @@ MC+        .
       *===================================================*
        2116-TRAITEMENT-CLI.
       *
-      *  ==> SELON LA NATURE RÈCUPERER LES INFORMATIONS CLIENTS
+      *  ==> SELON LA NATURE R√©CUPERER LES INFORMATIONS CLIENTS
            IF TCLI-C-NTUR-PERS = '01'
               PERFORM 2116-TRAITEMENT-CLI-PP
            ELSE
               PERFORM 2116-TRAITEMENT-CLI-PM
            END-IF
-      *  ==> Alimentation de la ligne numÈro zÈro
+      *  ==> Alimentation de la ligne num√©ro z√©ro
 "     D    DISPLAY ' SYSIN-TYPE-FATCA13' SYSIN-TYPE-FATCA13
 MC+        IF SYSIN-TYPE-FATCA13 = 'FATCA31A' OR 'FATCA31A1'
 "             PERFORM REMPLIR-DONNEE-CLIENT
@@ -2952,7 +2942,7 @@ MC+   *    PERFORM 2116-ECRIRE-ID-CLI-ALIM
       *  ==> Chercher les liens PERSONNE/PERSONNE
               PERFORM 2117-RECUP-LPP
            END-IF
-      *  ==> Ecrire un enregistrement pour la mise ‡ jour du statut ECV
+      *  ==> Ecrire un enregistrement pour la mise √† jour du statut ECV
            PERFORM 2116-MAJ-CLI
 
       *  ==> Ecriture ligne identifiant client
@@ -2966,7 +2956,7 @@ MC+   *    PERFORM 2116-ECRIRE-ID-CLI-ALIM
 "     *===================================================*
 "      2117-ALIM-INF-REP.
 "     *
-"     *  ==> SELON LA NATURE RÈCUPERER LES INFORMATIONS CLIENTS
+"     *  ==> SELON LA NATURE R√©CUPERER LES INFORMATIONS CLIENTS
 "
 151197     MOVE SPACES                  TO EL10-G-DATA-DET-REP
 "          MOVE '40'                    TO EL10-C-ENR
@@ -3003,7 +2993,7 @@ MC+   *    PERFORM 2116-ECRIRE-ID-CLI-ALIM
 151197*===================================================*
 151197 2119-ALIM-INF-LCC.
 151197*
-151197*  ==> SELON LA NATURE RÈCUPERER LES INFORMATIONS CLIENTS
+151197*  ==> SELON LA NATURE R√©CUPERER LES INFORMATIONS CLIENTS
 151197
 151197     MOVE SPACES                  TO EL10-G-DATA-DET-LCC
 151197     MOVE '40'                    TO EL10-C-ENR
@@ -3019,11 +3009,11 @@ MC+   *    PERFORM 2116-ECRIRE-ID-CLI-ALIM
 151197*  ==> LE NOM DE LA TABLE A METTRE A JOUR
 151197     MOVE 'TBLCCFUS'              TO EL10-NOM-TABLE
 151197                                  OF EL10-G-DATA-DET-LCC
-151197*  ==> REPORTABILITÈ DU CONTRAT
+151197*  ==> REPORTABILIT√© DU CONTRAT
 151197     MOVE TLCC-C-PRTB-CNTRT       TO EL10-C-PRTB-CNTRT
 151197                                  OF EL10-G-DATA-DET-LCC
 151197
-151197*  ==> TIMESTAMP DE CRÈATION OU DE MAJ
+151197*  ==> TIMESTAMP DE CR√©ATION OU DE MAJ
 151197     MOVE TLCC-D-CRE-MAJ          TO EL10-D-CRE-MAJ
 151197                                  OF EL10-G-DATA-DET-LCC
 151197
@@ -3082,7 +3072,7 @@ MC+   *    PERFORM 2116-ECRIRE-ID-CLI-ALIM
       *===================================================*
        2116-TRAITEMENT-CLI-PP.
       *
-      * RÈCUPÈRER LES INFORMATIONS DU CLIENT PHYSIQUE
+      * R√©CUP√©RER LES INFORMATIONS DU CLIENT PHYSIQUE
       *
            MOVE 'SE'                    TO ACCE-TYPE-REQUETE
            MOVE '01-SEL'                TO ACCE-NOM-FONCTION
@@ -3108,7 +3098,7 @@ MC+   *    PERFORM 2116-ECRIRE-ID-CLI-ALIM
       *===================================================*
        2116-TRAITEMENT-CLI-PM.
       *
-      * RÈCUPÈRER LES INFORMATIONS DU CLIENT MORAL
+      * R√©CUP√©RER LES INFORMATIONS DU CLIENT MORAL
       *
            MOVE 'SE'                    TO ACCE-TYPE-REQUETE
            MOVE '01-SEL'                TO ACCE-NOM-FONCTION
@@ -3134,7 +3124,7 @@ MC+   *    PERFORM 2116-ECRIRE-ID-CLI-ALIM
 151197*===================================================*
 151197 2118-TRAITEMENT-LCC.
 151197*
-151197* RÈCUPÈRER LES INFORMATIONS DU CLIENT MORAL
+151197* R√©CUP√©RER LES INFORMATIONS DU CLIENT MORAL
 151197*
 151197     MOVE 'SE'                    TO ACCE-TYPE-REQUETE
 151197     MOVE '03'                    TO ACCE-NOM-FONCTION
@@ -3173,16 +3163,16 @@ MC+   *    PERFORM 2116-ECRIRE-ID-CLI-ALIM
 
       *    Code enregistrement
            MOVE '20'                   TO   EL10-C-ENR
-      *    Identifiant de lentitÈ dÈclarante
+      *    Identifiant de lentit√© d√©clarante
            MOVE TCNT-I-IDENT-CPT       TO   EL10-I-IDENT
-      *    N∞ Ligne /Identifiant
+      *    N¬∞ Ligne /Identifiant
            IF WS-I-IDENT NOT = TCNT-I-IDENT-CPT
               MOVE 1                   TO   EL10-N-LIG-IDENT
            ELSE
               ADD 1                    TO   EL10-N-LIG-IDENT
            END-IF
            MOVE TCNT-I-IDENT-CPT       TO   WS-I-IDENT
-      *    EntitÈ concernÈe
+      *    Entit√© concern√©e
            MOVE 'CLI'                  TO   EL10-C-ENTIT
       *    Identifiant client
            MOVE TCLI-I-UNIQ-KPI        TO   EL10-I-UNIQ-KPI
@@ -3197,14 +3187,14 @@ MC+   *    PERFORM 2116-ECRIRE-ID-CLI-ALIM
       *    Le nom patronymique du titulaire (PP)
               MOVE TCLP-L-NOM-NAISS    TO   EL10-L-NOM-NAISS
                                        OF   EL10-G-DATA-DET-CLT
-      *    Titre civilitÈ (PP)
+      *    Titre civilit√© (PP)
               MOVE TCLP-C-TITRE-CVLTE  TO   EL10-C-TITRE-CVLTE
                                        OF   EL10-G-DATA-DET-CLT
-      *    Calcul prÈnom du client
+      *    Calcul pr√©nom du client
 MCHA- *       UNSTRING TCLP-L-PRNOM DELIMITED " "
 MCHA- *                              INTO EL10-L-PRENOM
 MCHA- *                                   EL10-L-PRENOM-2
-MCHA+ *    Le prÈnom du titulaire (PP)
+MCHA+ *    Le pr√©nom du titulaire (PP)
 MCHA+         MOVE TCLP-L-PRNOM        TO   EL10-L-PRENOM
 MCHA+                                  OF   EL10-G-DATA-DET-CLT
       *    La date de naissance du titulaire du compte (PP)
@@ -3213,20 +3203,20 @@ MCHA+                                  OF   EL10-G-DATA-DET-CLT
       *    Nom marital (PP)
               MOVE TCLP-L-NOM-MRTL     TO   EL10-L-NOM-MRLT
                                        OF   EL10-G-DATA-DET-CLT
-      *    Le code pays nationalitÈ (PP)
+      *    Le code pays nationalit√© (PP)
               MOVE TCLP-C-PAYS-NLITE   TO   EL10-C-PAYS-NLITE
                                        OF   EL10-G-DATA-DET-CLT
-      *    Code paye autre nationalitÈ
+      *    Code paye autre nationalit√©
               MOVE TCLP-C-AUTRE-PAYS-NLITE TO EL10-C-AUTRE-PAYS-NLITE
       *    Le code pays naissance  (PP)
               MOVE TCLP-C-PAYS-NAISS   TO   EL10-C-PAYS-NAISS
-      *    le code dÈpartement naissance (PP)
+      *    le code d√©partement naissance (PP)
               MOVE TCLP-C-DEPT-NAISS   TO   EL10-C-DEPT-NAISS
       *    Ville naissance (PP)
               MOVE TCLP-L-VILLE-NAISS  TO   EL10-L-VILL-NAISS
            END-IF
            IF TCLI-C-NTUR-PERS = '02'
-      *    Le numÈro d'identifiant fiscal EIN du titulaire du compte PM
+      *    Le num√©ro d'identifiant fiscal EIN du titulaire du compte PM
               MOVE TCLM-C-REF-GIIN     TO   EL10-C-REF-GIIN
                                        OF   EL10-G-DATA-DET-CLT
       *    La raison sociale du titulaire du compte PM
@@ -3257,16 +3247,16 @@ MC+   * =============================================================  *
 "
 "     *    Code enregistrement
 "          MOVE '20'                   TO   EL10-C-ENR
-"     *    Identifiant de lentitÈ dÈclarante
+"     *    Identifiant de lentit√© d√©clarante
 "          MOVE TCNT-I-IDENT-CPT       TO   EL10-I-IDENT
-"     *    N∞ Ligne /Identifiant
+"     *    N¬∞ Ligne /Identifiant
 "          IF WS-I-IDENT NOT = TCNT-I-IDENT-CPT
 "             MOVE 1                   TO   EL10-N-LIG-IDENT
 "          ELSE
 "             ADD 1                    TO   EL10-N-LIG-IDENT
 "          END-IF
 "          MOVE TCNT-I-IDENT-CPT       TO   WS-I-IDENT
-"     *    EntitÈ concernÈe
+"     *    Entit√© concern√©e
 "          MOVE 'CLI'                  TO   EL10-C-ENTIT
 "     *    Identifiant client
 "          MOVE TEMP-I-UNIQ-KPI        TO   EL10-I-UNIQ-KPI
@@ -3281,14 +3271,14 @@ MC+   * =============================================================  *
 "     *    Le nom patronymique du titulaire (PP)
 "             MOVE TEMP-L-NOM-NAISS    TO   EL10-L-NOM-NAISS
 "                                      OF   EL10-G-DATA-DET-CLT
-"     *    Titre civilitÈ (PP)
+"     *    Titre civilit√© (PP)
 "             MOVE TEMP-C-TITRE-CVLTE  TO   EL10-C-TITRE-CVLTE
 "                                      OF   EL10-G-DATA-DET-CLT
-"     *    Calcul prÈnom du client
+"     *    Calcul pr√©nom du client
 "     *       UNSTRING TCLP-L-PRNOM DELIMITED " "
 "     *                              INTO EL10-L-PRENOM
 "     *                                   EL10-L-PRENOM-2
-"     *    Le prÈnom du titulaire (PP)
+"     *    Le pr√©nom du titulaire (PP)
 "             MOVE TEMP-L-PRNOM        TO   EL10-L-PRENOM
 "                                      OF   EL10-G-DATA-DET-CLT
 "     *    La date de naissance du titulaire du compte (PP)
@@ -3297,20 +3287,20 @@ MC+   * =============================================================  *
 "     *    Nom marital (PP)
 "             MOVE TEMP-L-NOM-MRTL     TO   EL10-L-NOM-MRLT
 "                                      OF   EL10-G-DATA-DET-CLT
-"     *    Le code pays nationalitÈ (PP)
+"     *    Le code pays nationalit√© (PP)
 "             MOVE TEMP-C-PAYS-NLITE   TO   EL10-C-PAYS-NLITE
 "                                      OF   EL10-G-DATA-DET-CLT
-"     *    Code paye autre nationalitÈ
+"     *    Code paye autre nationalit√©
 "             MOVE TEMP-C-AUTRE-PAYS-NLITE TO EL10-C-AUTRE-PAYS-NLITE
 "     *    Le code pays naissance  (PP)
 "             MOVE TEMP-C-PAYS-NAISS   TO   EL10-C-PAYS-NAISS
-"     *    le code dÈpartement naissance (PP)
+"     *    le code d√©partement naissance (PP)
 "             MOVE TEMP-C-DEPT-NAISS   TO   EL10-C-DEPT-NAISS
 "     *    Ville naissance (PP)
 "             MOVE TCLP-L-VILLE-NAISS  TO   EL10-L-VILL-NAISS
 "          END-IF
 "          IF TCLI-C-NTUR-PERS = '02'
-"     *    Le numÈro d'identifiant fiscal EIN du titulaire du compte PM
+"     *    Le num√©ro d'identifiant fiscal EIN du titulaire du compte PM
 "             MOVE TCLM-C-REF-GIIN     TO   EL10-C-REF-GIIN
 "                                      OF   EL10-G-DATA-DET-CLT
 "     *    La raison sociale du titulaire du compte PM
@@ -3436,11 +3426,11 @@ MCHA+                                    OF EL10-G-DATA-MAJ-CLI
       *                         *****                               *  *
       *                         *****                               *  *
       * =============================================================  *
-      *            RÈCUPÈRER LES ADRESSES DU CLIENT
+      *            R√©CUP√©RER LES ADRESSES DU CLIENT
       * =============================================================  *
        2116-RECUP-ADR.
       *
-      *    RÈCUPÈRER LES ADRESSES DU CLIENT
+      *    R√©CUP√©RER LES ADRESSES DU CLIENT
       *
       *    OUVERTURE CURSEUR DE RECHERCHE
            PERFORM 2116-RECUP-ADR-OP-CUR
@@ -3469,7 +3459,7 @@ MCHA+                                    OF EL10-G-DATA-MAJ-CLI
       *
       * Initialisation
            MOVE 'N'                     TO IND-TRT-ADR
-      * ParamËtre d'appel
+      * Param√®tre d'appel
            MOVE 'OP'                    TO ACCE-TYPE-REQUETE
            MOVE '01'                    TO ACCE-NOM-FONCTION
       * Alimentation de clause Where
@@ -3505,16 +3495,16 @@ MCHA+                                    OF EL10-G-DATA-MAJ-CLI
 
       *    Code enregistrement
            MOVE '20'                   TO   EL10-C-ENR
-      *    Identifiant de lentitÈ dÈclarante
+      *    Identifiant de lentit√© d√©clarante
            MOVE TCNT-I-IDENT-CPT       TO   EL10-I-IDENT
-      *    N∞ Ligne /Identifiant
+      *    N¬∞ Ligne /Identifiant
            IF WS-I-IDENT NOT = TCNT-I-IDENT-CPT
               MOVE 1                   TO   EL10-N-LIG-IDENT
            ELSE
               ADD 1                    TO   EL10-N-LIG-IDENT
            END-IF
            MOVE TCNT-I-IDENT-CPT       TO   WS-I-IDENT
-      *    EntitÈ concernÈe
+      *    Entit√© concern√©e
            MOVE 'ADR'                  TO   EL10-C-ENTIT
       *    Type adresse
            MOVE TADR-C-TYPE-ADR        TO   EL10-C-TYPE-ADR
@@ -3543,7 +3533,7 @@ MC+        ELSE
 "              MOVE W-C-PAYS-ADR        TO   EL10-C-PAYS-ADR
 "                                       OF   EL10-G-DATA-DET-ADR
 MC+        END-IF
-      *    IntitulÈ courrier ligne 1 adresse
+      *    Intitul√© courrier ligne 1 adresse
 MC+        IF  W-L-INTIT-COURR-1 =  LOW-VALUE
                MOVE TADR-L-INTIT-COURR-1   TO   EL10-L-INTIT-COURR-1
                                             OF   EL10-G-DATA-DET-ADR
@@ -3551,7 +3541,7 @@ MC+        ELSE
 "              MOVE W-L-INTIT-COURR-1   TO   EL10-L-INTIT-COURR-1
 "                                           OF   EL10-G-DATA-DET-ADR
 MC+        END-IF
-      *    IntitulÈ courrier ligne 2 adresse
+      *    Intitul√© courrier ligne 2 adresse
 MC+        IF  W-L-INTIT-COURR-2 = LOW-VALUE
                MOVE TADR-L-INTIT-COURR-2   TO   EL10-L-INTIT-COURR-2
                                            OF   EL10-G-DATA-DET-ADR
@@ -3583,7 +3573,7 @@ MC+        ELSE
 "              MOVE W-L-ADR-LIGNE-3        TO   EL10-L-ADR-LIGNE-3
 "                                          OF   EL10-G-DATA-DET-ADR
 MC+        END-IF
-      *    LibellÈ pays de l'adresse
+      *    Libell√© pays de l'adresse
 MC+        IF  W-L-PAYS-ADR  =  LOW-VALUE
                MOVE TADR-L-PAYS-ADR        TO   EL10-L-PAYS-ADR
                                            OF   EL10-G-DATA-DET-ADR
@@ -3601,7 +3591,7 @@ MC+        END-IF
       *
       * LECTURE CURSEUR
       *
-      * ParamËtre d'appel
+      * Param√®tre d'appel
            MOVE 'FE'                    TO ACCE-TYPE-REQUETE
            MOVE '01'                    TO ACCE-NOM-FONCTION
       * Alimentation de clause Where
@@ -3626,11 +3616,11 @@ MC+        END-IF
       *                      ***                 * *         * *   ** *
       *                      ***                 * *         * *   ** *
       * =============================================================  *
-      *            RÈCUPÈRER LES LPP
+      *            R√©CUP√©RER LES LPP
       * =============================================================  *
        2117-RECUP-LPP.
       *
-      *    RÈCUPÈRER LES LIENS P/P
+      *    R√©CUP√©RER LES LIENS P/P
       *
            MOVE 'N'                     TO IND-TRT-LPP
       *    OUVERTURE CURSEUR DE RECHERCHE
@@ -3644,7 +3634,7 @@ MCHA+            TCLI-C-STUT-FISC-ETR = '02'
                  PERFORM 2117-SELECT-CLP-INF
       *    Ecriture adresse
                  PERFORM 2117-SELECT-ADR-INF
-      *    Alimentation de la zone en sortie pour Ècriture
+      *    Alimentation de la zone en sortie pour √©criture
                  PERFORM 2117-RECUP-LPP-ALIM
       *    Ecriture Liens personne/personne
                  PERFORM 1360-ECRIRE-OUT
@@ -3665,7 +3655,7 @@ MCHA+            TCLI-C-STUT-FISC-ETR = '02'
       *
       * Initialisation
            MOVE 'N'                     TO IND-TRT-LPP
-      * ParamËtre d'appel
+      * Param√®tre d'appel
            MOVE 'OP'                    TO ACCE-TYPE-REQUETE
            MOVE '01'                    TO ACCE-NOM-FONCTION
       * Alimentation de clause Where
@@ -3688,13 +3678,13 @@ MCHA+            TCLI-C-STUT-FISC-ETR = '02'
            .
       *                      ***                 * *         * *   ** *
       *===================================================*
-      * RECHERCHE INFORMATIONS LORS DE LA PRÈSENCE
+      * RECHERCHE INFORMATIONS LORS DE LA PR√©SENCE
       *===================================================*
        2117-SELECT-CLP-INF.
       *
-      * RÈCUPÈRER LES INFORMATIONS DU CLIENT PHYSIQUE
+      * R√©CUP√©RER LES INFORMATIONS DU CLIENT PHYSIQUE
       *
-      * ParamËtre d'appel
+      * Param√®tre d'appel
            MOVE 'SE'                    TO ACCE-TYPE-REQUETE
            MOVE '01-SEL'                TO ACCE-NOM-FONCTION
       * Alimentation de clause Where
@@ -3716,13 +3706,13 @@ MCHA+            TCLI-C-STUT-FISC-ETR = '02'
       *                      ***                 * *         * *   ** *
       *                      ***                 * *         * *   ** *
       *===================================================*
-      * RECHERCHE INFORMATIONS LORS DE LA PRÈSENCE
+      * RECHERCHE INFORMATIONS LORS DE LA PR√©SENCE
       *===================================================*
        2117-SELECT-ADR-INF.
       *
-      * RÈCUPÈRER LES INFORMATIONS DU CLIENT PHYSIQUE
+      * R√©CUP√©RER LES INFORMATIONS DU CLIENT PHYSIQUE
       *
-      * ParamËtre d'appel
+      * Param√®tre d'appel
            MOVE 'SE'                    TO ACCE-TYPE-REQUETE
            MOVE '01-SEL'                TO ACCE-NOM-FONCTION
       * Alimentation de clause Where
@@ -3751,7 +3741,7 @@ MCHA+            TCLI-C-STUT-FISC-ETR = '02'
       *
       * LECTURE CURSEUR
       *
-      * ParamËtre d'appel
+      * Param√®tre d'appel
            MOVE 'FE'                    TO ACCE-TYPE-REQUETE
            MOVE '01'                    TO ACCE-NOM-FONCTION
 
@@ -3777,52 +3767,52 @@ MCHA+            TCLI-C-STUT-FISC-ETR = '02'
       * =============================================================  *
        2117-RECUP-LPP-ALIM.
       *
-      *    Ecritrure ligne identifiant BÈnÈficiaire
+      *    Ecritrure ligne identifiant B√©n√©ficiaire
       *
       *    Initialisation
            MOVE SPACE                  TO   EL10-G-DATA-TET-END
 
       *    Code enregistrement
            MOVE '20'                   TO   EL10-C-ENR
-      *    Identifiant de lentitÈ dÈclarante
+      *    Identifiant de lentit√© d√©clarante
            MOVE TCNT-I-IDENT-CPT       TO   EL10-I-IDENT
-      *    N∞ Ligne /Identifiant
+      *    N¬∞ Ligne /Identifiant
            IF WS-I-IDENT NOT = TCNT-I-IDENT-CPT
               MOVE 1                   TO   EL10-N-LIG-IDENT
            ELSE
               ADD 1                    TO   EL10-N-LIG-IDENT
            END-IF
            MOVE TCNT-I-IDENT-CPT       TO   WS-I-IDENT
-      *    EntitÈ concernÈe
+      *    Entit√© concern√©e
            MOVE 'BNF'                  TO   EL10-C-ENTIT
       *    Unique KPI
            MOVE TCLI-I-UNIQ-KPI        TO   EL10-I-UNIQ-KPI
                                        OF   EL10-G-DATA-DET-BNF
-      *    L'identifiant TIN ou NIF du bÈnÈficiaire (co-titulaire)
+      *    L'identifiant TIN ou NIF du b√©n√©ficiaire (co-titulaire)
            MOVE TCLP-C-REF-GIIN        TO   EL10-C-REF-GIIN
                                        OF   EL10-G-DATA-DET-BNF
-MCHA+ *    Le titre civilitÈ du bÈnÈficiaire (co-titulaire)
+MCHA+ *    Le titre civilit√© du b√©n√©ficiaire (co-titulaire)
 MCHA+      MOVE TCLP-C-TITRE-CVLTE     TO   EL10-C-TITRE-CVLTE-F
                                        OF   EL10-G-DATA-DET-BNF
-      *    Le rem patronymique du bÈnÈficiaire (co-titulaire)
+      *    Le rem patronymique du b√©n√©ficiaire (co-titulaire)
            MOVE TCLP-L-NOM-NAISS       TO   EL10-L-NOM-NAISS
                                        OF   EL10-G-DATA-DET-BNF
-      *    Le prÈnom patronymique du bÈnÈficiaire (co-titulaire)
+      *    Le pr√©nom patronymique du b√©n√©ficiaire (co-titulaire)
            MOVE TCLP-L-PRNOM           TO   EL10-L-PRNOM
                                        OF   EL10-G-DATA-DET-BNF
-      *    La date de naissance du bÈnÈficiaire (co-titulaire)
+      *    La date de naissance du b√©n√©ficiaire (co-titulaire)
            MOVE TCLP-D-NAISS           TO   EL10-D-NAISS
                                        OF   EL10-G-DATA-DET-BNF
       *    Code pays ISO de l'adresse
            MOVE TADR-C-PAYS-ADR        TO   EL10-C-PAYS-ADR
                                        OF   EL10-G-DATA-DET-BNF
-      *    La commune de l'adresse du bÈnÈficiaire (co-titulaire
+      *    La commune de l'adresse du b√©n√©ficiaire (co-titulaire
            MOVE TADR-L-COMM-ADR        TO   EL10-L-COMM-ADR
                                        OF   EL10-G-DATA-DET-BNF
            .
       *                         *****                               *  *
 150978*========================================================*
-"     * RESTITUTION ET ÈCRITURE DES INFORMATIONS DU RECALCITANT
+"     * RESTITUTION ET √©CRITURE DES INFORMATIONS DU RECALCITANT
 "     *========================================================*
 "      3000-RESTIT-CLR.
 "     *
@@ -3849,7 +3839,7 @@ MCHA+1*    ALIMENTATION DE CLIENTS RECALCITRANTS
 "          PERFORM 1360-ECRIRE-OUT
 "          .
 "
-"     * LECTURE DE LA TABLE RÈCALCITRANT
+"     * LECTURE DE LA TABLE R√©CALCITRANT
 "     * =============================================================  *
 "      3100-LECTURE-CLR.
 "     *
@@ -3937,10 +3927,10 @@ MCHA? *          ADD  1  TO WS-CPT-CNT-LUS
 "
 "     *    Code enregistrement
 "          MOVE '30'                   TO   EL10-C-ENR
-"     *    Identifiant de lentitÈ dÈclarante
+"     *    Identifiant de lentit√© d√©clarante
 150978*    MOVE TCLR-I-IDENT-END       TO   EL10-I-IDENT
 150978     MOVE TCLR-I-IDENT-TYP-REC   TO   EL10-I-IDENT
-"     *    N∞ Ligne /Identifiant
+"     *    N¬∞ Ligne /Identifiant
 "          MOVE 1                      TO   EL10-N-LIG-IDENT
 "     *
 "          MOVE 'CLR'                  TO   EL10-C-ENTIT
@@ -3949,7 +3939,7 @@ MCHA? *          ADD  1  TO WS-CPT-CNT-LUS
 "                                      OF   EL10-G-DATA-INF-CLR
 MCHA+-     MOVE AI11-C-REF-BLOC-RECAL  TO   EL10-C-REF-BLOC-RLC-INIT
 "                                      OF   EL10-G-DATA-INF-CLR
-"     *    Type de rÈcalcitrant
+"     *    Type de r√©calcitrant
 "          MOVE TCLR-C-TYPE-RECAL      TO   EL10-C-TYPE-RECAL
 "                                      OF   EL10-G-DATA-INF-CLR
 "     *    ANNEE FISCALE
@@ -3964,7 +3954,7 @@ MCHA+-     MOVE AI11-C-REF-BLOC-RECAL  TO   EL10-C-REF-BLOC-RLC-INIT
 "     *    Montant
 "          MOVE TCLR-M-MNT             TO   EL10-M-MNT
 "                                      OF   EL10-G-DATA-INF-CLR
-"     *    Nombre de dÈcimales
+"     *    Nombre de d√©cimales
 "          MOVE TCLR-Q-NBR-DEC         TO   EL10-Q-NBR-DEC
 "                                      OF   EL10-G-DATA-INF-CLR
 "          .
@@ -3974,7 +3964,7 @@ MCHA+-     MOVE AI11-C-REF-BLOC-RECAL  TO   EL10-C-REF-BLOC-RLC-INIT
 "     *===================================================*
 "      3120-ALIM-INF-RBR.
 "     *
-"     *  ==> ALIMENTATION DES DONNEES DES BLOCS RÈCALCITRANTS
+"     *  ==> ALIMENTATION DES DONNEES DES BLOCS R√©CALCITRANTS
 "
 151197     MOVE SPACES                  TO EL10-G-DATA-DET-RBR
 "
@@ -3995,10 +3985,10 @@ MCHA+-     MOVE AI11-C-REF-BLOC-RECAL  TO   EL10-C-REF-BLOC-RLC-INIT
 "     *  ==> IDENTIFIANT INTERNE DU FICHIER DE REPORTING
 "          MOVE WS-I-IDENT-REF-REP      TO EL10-I-IDENT-REF-REP
 "                                       OF EL10-G-DATA-DET-RBR
-"     *  ==> IDENTIFIANT INTERNE DU RÈCALCITRANT
+"     *  ==> IDENTIFIANT INTERNE DU R√©CALCITRANT
 "          MOVE AI11-I-IDENT-TYPE-REC   TO EL10-I-IDENT-TYP-REC
 "                                       OF EL10-G-DATA-DET-RBR
-"     *  ==> RÈFÈRENCE DU BLOC RÈCALCITRANT
+"     *  ==> R√©F√©RENCE DU BLOC R√©CALCITRANT
 "          MOVE WS-I-REF-BLOC-CLR       TO EL10-C-REF-BLOC-RECAL
 "                                       OF EL10-G-DATA-DET-RBR
 "          .
@@ -4016,7 +4006,7 @@ MCHA+-     MOVE AI11-C-REF-BLOC-RECAL  TO   EL10-C-REF-BLOC-RLC-INIT
 "          .
 "
 "     *========================================================*
-"     * RESTITUTION ET ÈCRITURE DES INFORMATIONS DU ENQUEUE
+"     * RESTITUTION ET √©CRITURE DES INFORMATIONS DU ENQUEUE
 "     *========================================================*
 "      4100-RESTIT-ENQUEUE.
 "     *
@@ -4047,17 +4037,17 @@ MCHA+-     MOVE AI11-C-REF-BLOC-RECAL  TO   EL10-C-REF-BLOC-RLC-INIT
 "     *===================================================*
 "      4110-ALIM-INF-FID.
 "     *
-"     *    Alimentation de la rÈfÈrence du fichier
+"     *    Alimentation de la r√©f√©rence du fichier
 "     *    MOVE "FATCA1"               TO   WS-TYPE-FATCA
 "     *                                OF   WS-I-REF-FIC
-"     *  ==> ALIMENTATION DES DONNEES DES BLOCS RÈCALCITRANTS
+"     *  ==> ALIMENTATION DES DONNEES DES BLOCS R√©CALCITRANTS
 "
 151197     MOVE SPACES                  TO EL10-G-DATA-DET-FID
 151197                                     EL10-G-IDENT-ENREG
 "
 "          MOVE '40'                    TO EL10-C-ENR
 "
-151197*    Identifiant de lentitÈ dÈclarante
+151197*    Identifiant de lentit√© d√©clarante
 151197     MOVE WS-I-IDENT-END-SV       TO EL10-I-IDENT
 "
 "          MOVE 1                       TO EL10-N-LIG-IDENT
@@ -4071,10 +4061,10 @@ MCHA+-     MOVE AI11-C-REF-BLOC-RECAL  TO   EL10-C-REF-BLOC-RLC-INIT
 "     *  ==> LE NOM DE LA TABLE A METTRE A JOUR
 "          MOVE 'TBFIDFUS'              TO EL10-NOM-TABLE
 "                                       OF EL10-G-DATA-DET-FID
-"     *      EntitÈ dÈclarante
+"     *      Entit√© d√©clarante
 150978     MOVE  WS-I-IDENT-END-SV      TO EL10-I-IDENT-END
 "                                       OF EL10-G-DATA-DET-FID
-"     *      AnnÈe fiscale
+"     *      Ann√©e fiscale
 "          MOVE  WS-A-APPL              TO EL10-A-APPL
 "                                       OF EL10-G-DATA-DET-FID
 "
@@ -4082,54 +4072,54 @@ MCHA+-     MOVE AI11-C-REF-BLOC-RECAL  TO   EL10-C-REF-BLOC-RLC-INIT
 "          MOVE  WS-I-IDENT-REF-REP     TO EL10-I-IDENT-REF-REP
 "                                       OF EL10-G-DATA-DET-FID
 MCHA+-     IF SYSIN-TYPE-FATCA = 'FATCA1 ' OR 'FATCA11'
-"     *      RÈfÈrence initial du fichier dÈclaratif
+"     *      R√©f√©rence initial du fichier d√©claratif
 "             MOVE  WS-I-REF-FIC           TO EL10-I-REF-FIC-INIT
 "                                         OF EL10-G-DATA-DET-FID
 
-"     *      Date du fichier dÈclaratif initial
+"     *      Date du fichier d√©claratif initial
 "             MOVE W-DATE-TIMESTAMP        TO EL10-D-REF-FIC-INIT
 "                                         OF EL10-G-DATA-DET-FID
 "          ELSE
-"     *      RÈfÈrence initial du fichier dÈclaratif
+"     *      R√©f√©rence initial du fichier d√©claratif
 "             MOVE  WS-I-REF-FIC-INIT      TO EL10-I-REF-FIC-INIT
 "                                         OF EL10-G-DATA-DET-FID
 "
-"     *      Date du fichier dÈclaratif initial
+"     *      Date du fichier d√©claratif initial
 "             MOVE  WS-D-REF-FIC-INIT      TO EL10-D-REF-FIC-INIT
 "                                         OF EL10-G-DATA-DET-FID
 MCHA+-     END-IF
-"     *      RÈfÈrence du fichier dÈclaratif
+"     *      R√©f√©rence du fichier d√©claratif
 "          MOVE  WS-I-REF-FIC           TO EL10-I-REF-FIC
 "                                       OF EL10-G-DATA-DET-FID
 "
-"     *      N∞ Agent
+"     *      N¬∞ Agent
 MCHA?      MOVE  99999                  TO EL10-N-AGENT
 "                                       OF EL10-G-DATA-DET-FID
 "
-"     *      Nom agent Èmetteur
+"     *      Nom agent √©metteur
 "          MOVE  'XXXXXXX'              TO EL10-NOM-EMET
 "                                       OF EL10-G-DATA-DET-FID
 "
-"     *      RÈfÈrence attribuÈe par l'administration fiscale
+"     *      R√©f√©rence attribu√©e par l'administration fiscale
 MCHA?      MOVE  'XXXXXXXX'             TO EL10-I-REF-ADM
 "                                       OF EL10-G-DATA-DET-FID
 "
-"     *      ClÈ de hachage
+"     *      Cl√© de hachage
 MCHA?      MOVE  'XXXXXXX'              TO EL10-C-CLE-HACH
 "                                       OF EL10-G-DATA-DET-FID
 "
-"     *      Date accusÈe rÈception
+"     *      Date accus√©e r√©ception
 MCHA?      MOVE  W-D-SYSTEME-ISO        TO EL10-D-ACCUSE
 "                                       OF EL10-G-DATA-DET-FID
 "
-"     *      Nombre de personnes dÈclarÈes
+"     *      Nombre de personnes d√©clar√©es
 "          MOVE  WS-Q-PERS-DECL         TO EL10-Q-PERS-DECL
 "                                       OF EL10-G-DATA-DET-FID
 "
-"     *      Nombre de contrats dÈclarÈs
+"     *      Nombre de contrats d√©clar√©s
 "          MOVE  WS-Q-CONTRAT-DECL      TO EL10-Q-CONTRAT-DECL
 "                                       OF EL10-G-DATA-DET-FID
-"     *    Type de dÈclaration
+"     *    Type de d√©claration
 "
 MCHA!!     IF WS-C-MOD-REPORT = '1'
 "            MOVE  '01'                   TO EL10-C-TYPE-DECL
@@ -4179,19 +4169,19 @@ MCHA!!       IF SYSIN-TYPE-FATCA13 = 'FATCA31I ' OR 'FATCA31I1'
 "            END-IF
 MCHA+      END-IF
 "
-"     *      Montant total de solde dÈclarÈ
+"     *      Montant total de solde d√©clar√©
 "          MOVE  WS-M-TOT-SOL-DECL      TO EL10-M-TOT-SOL-DECL
 "                                       OF EL10-G-DATA-DET-FID
 "
-"     *      Montant total d'intÈrÍt dÈclarÈ
+"     *      Montant total d'int√©r√™t d√©clar√©
 "          MOVE  WS-M-TOT-INT-DECL      TO EL10-M-TOT-INT-DECL
 "                                       OF EL10-G-DATA-DET-FID
 "
-"     *      Montant total de solde dÈclarÈ
+"     *      Montant total de solde d√©clar√©
 "          MOVE  WS-M-TOT-CES-DECL      TO EL10-M-TOT-CES-DECL
 "                                       OF EL10-G-DATA-DET-FID
 "
-"     *      Montant total autre montant dÈclarÈ
+"     *      Montant total autre montant d√©clar√©
 "          MOVE  WS-M-TOT-M-DECL        TO EL10-M-TOT-M-DECL
 "                                       OF EL10-G-DATA-DET-FID
 "
@@ -4207,17 +4197,17 @@ MCHA+      END-IF
 "
 "          MOVE '90'                    TO EL10-C-ENR
 "
-151197*    Identifiant de lentitÈ dÈclarante
+151197*    Identifiant de lentit√© d√©clarante
 151197     MOVE WS-I-IDENT-END-SV       TO EL10-I-IDENT
 "
 "          MOVE 1                       TO EL10-N-LIG-IDENT
 "
 "          MOVE 'END'                   TO EL10-C-ENTIT
 "
-"     *    COMPTEUR DE NOMBRE DE COMPTES TRAITÈS                        00027000
+"     *    COMPTEUR DE NOMBRE DE COMPTES TRAIT√©S                        00027000
 "          MOVE WS-Q-CONTRAT-DECL       TO EL10-N-CPT
 "                                       OF EL10-G-DATA-ENQ-END
-"     *    COMPTEUR DE NOMBRE DE CLIENTS TRAITÈS                        00027000
+"     *    COMPTEUR DE NOMBRE DE CLIENTS TRAIT√©S                        00027000
 "          MOVE WS-Q-PERS-DECL          TO EL10-N-CLT
 "                                       OF EL10-G-DATA-ENQ-END
 "     *    COMPTEUR DE NOMBRE DE RECALCITRANTS TRAITES                  00027000
@@ -4875,7 +4865,7 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
                  MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
                  MOVE WS-LIGNE-DECO1     TO      INAB-L-DISP (6)
       *
-      *       2100 : FICHIER EN ENTRÈE VIDE
+      *       2100 : FICHIER EN ENTR√©E VIDE
       *
               WHEN       2100
                  MOVE    7               TO      INAB-Q-LIST-DISP
@@ -4884,7 +4874,7 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
                                          TO      WS-LIGNE-ANO10
                  MOVE WS-CODE-ABEND      TO      WS-LIGNE-ANO11
                  MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (2)
-                 MOVE '*=> FICHIER EN ENTRÈE VIDE'
+                 MOVE '*=> FICHIER EN ENTR√©E VIDE'
                                          TO      WS-LIGNE-ANO21
                  MOVE WS-LIGNE-ANO2      TO      INAB-L-DISP (3)
                  MOVE WS-LIGNE-DECO1     TO      INAB-L-DISP (4)
@@ -4894,7 +4884,7 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
                  MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
                  MOVE WS-LIGNE-DECO1     TO      INAB-L-DISP (6)
       *
-      *       2200 : PB TCHNIQUE DE FICHIER EN ENTRÈE
+      *       2200 : PB TCHNIQUE DE FICHIER EN ENTR√©E
       *
               WHEN       2200
                  MOVE    7               TO      INAB-Q-LIST-DISP
@@ -4903,7 +4893,7 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
                                          TO      WS-LIGNE-ANO10
                  MOVE WS-CODE-ABEND      TO      WS-LIGNE-ANO11
                  MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (2)
-                 MOVE '*=> PB TCHNIQUE DE FICHIER EN ENTRÈE'
+                 MOVE '*=> PB TCHNIQUE DE FICHIER EN ENTR√©E'
                                          TO      WS-LIGNE-ANO21
                  MOVE WS-LIGNE-ANO2      TO      INAB-L-DISP (3)
                  MOVE WS-LIGNE-DECO1     TO      INAB-L-DISP (4)
@@ -4915,7 +4905,7 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
       *
       *  VALEUR D'ABEND INCONNUE DANS LE PROGRAMME
       *
-150978*       2400 : PB TCHNIQUE DE FICHIER EN ENTRÈE
+150978*       2400 : PB TCHNIQUE DE FICHIER EN ENTR√©E
 "     *
 "             WHEN       2400
 "                MOVE    7               TO      INAB-Q-LIST-DISP
@@ -4924,7 +4914,7 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
 "                                        TO      WS-LIGNE-ANO10
 "                MOVE WS-CODE-ABEND      TO      WS-LIGNE-ANO11
 "                MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (2)
-"                MOVE '*=> PB TCHNIQUE DE FICHIER EN ENTRÈE'
+"                MOVE '*=> PB TCHNIQUE DE FICHIER EN ENTR√©E'
 "                                        TO      WS-LIGNE-ANO21
 "                MOVE WS-LIGNE-ANO2      TO      INAB-L-DISP (3)
 "                MOVE WS-LIGNE-DECO1     TO      INAB-L-DISP (4)
@@ -4947,7 +4937,7 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
 "                                        TO      WS-LIGNE-ANO21
 "     *
 "     *
-"     *       2600 : ProblËme de rÈcupÈration de sÈquence
+"     *       2600 : Probl√®me de r√©cup√©ration de s√©quence
 "     *
 "             WHEN       2600
 "                MOVE    7               TO      INAB-Q-LIST-DISP
@@ -4956,10 +4946,10 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
 "                                        TO      WS-LIGNE-ANO10
 "                MOVE WS-CODE-ABEND      TO      WS-LIGNE-ANO11
 "                MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (2)
-"                MOVE '*=> ProblËme de rÈcupÈration de sÈquence'
+"                MOVE '*=> Probl√®me de r√©cup√©ration de s√©quence'
 "                                        TO      WS-LIGNE-ANO21
 150978*
-151197*       2700 : ProblËme de rÈcupÈration de sÈquence
+151197*       2700 : Probl√®me de r√©cup√©ration de s√©quence
 151197*
 151197        WHEN       2700
 151197           MOVE    7               TO      INAB-Q-LIST-DISP
@@ -4968,7 +4958,7 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
 151197                                   TO      WS-LIGNE-ANO10
 151197           MOVE WS-CODE-ABEND      TO      WS-LIGNE-ANO11
 151197           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (2)
-151197           MOVE '*=> ProblËme d''appel au MFUSTLCC'
+151197           MOVE '*=> Probl√®me d''appel au MFUSTLCC'
 151197                                   TO      WS-LIGNE-ANO21
 151197*
       *  VALEUR D'ABEND INCONNUE DANS LE PROGRAMME
@@ -5017,7 +5007,7 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
 
            MOVE WS-LIGNE-DECO1  TO      BILA-L-DISP (06)
 
-      * NOMBRE D'ENREGISTREMENTS LUS EN ENTRÈE
+      * NOMBRE D'ENREGISTREMENTS LUS EN ENTR√©E
            MOVE WS-CPT-AIG-LUS
                                 TO      WS-FIN-PART1
            MOVE '*  NOMBRE D''ENREG. LUS TOTAL          : '
@@ -5025,7 +5015,7 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
            MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
            MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (07)
 
-150978* NOMBRE D'ENREGISTREMENTS LUS EN ENTRÈE TYPE 10
+150978* NOMBRE D'ENREGISTREMENTS LUS EN ENTR√©E TYPE 10
 150978     MOVE WS-CPT-AIG-LUS-10
 150978                          TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE D''ENREG. LUS DE TYPE CPT/CLT: '
@@ -5033,77 +5023,77 @@ MCHA++           MOVE WS-LIGNE-ANO1      TO      INAB-L-DISP (5)
 150978     MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
 150978     MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (08)
 150978
-150978* NOMBRE D'ENREGISTREMENTS LUS EN ENTRÈE TYPE 20
+150978* NOMBRE D'ENREGISTREMENTS LUS EN ENTR√©E TYPE 20
 150978     MOVE WS-CPT-AIG-LUS-20
 150978                          TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE D''ENREG. LUS DE TYPE RECAL  : '
 150978                          TO      WS-LN-LIB-FIN
 150978     MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
 150978     MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (09)
-      * NOMBRE D'ENREGISTREMENTS INSÈRÈES VIA LE MFUSTANO
+      * NOMBRE D'ENREGISTREMENTS INS√©R√©ES VIA LE MFUSTANO
            MOVE WS-CPT-ECRIT    TO      WS-FIN-PART1
            MOVE '*  NOMBRE ECRITURE EN SORTIE          : '
                                 TO      WS-LN-LIB-FIN
            MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
            MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (10)
 
-150978* NOMBRE D'ENREGISTREMENTS INSÈRÈES
+150978* NOMBRE D'ENREGISTREMENTS INS√©R√©ES
 150978     MOVE WS-EDT1-ECRIT   TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE ECRITURE EN SORTIE DFUSLS11 : '
 150978                          TO      WS-LN-LIB-FIN
 150978     MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
 150978     MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (11)
 150978
-150978* NOMBRE D'ENREGISTREMENTS INSÈRÈES
+150978* NOMBRE D'ENREGISTREMENTS INS√©R√©ES
 150978     MOVE WS-EDT2-ECRIT   TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE ECRITURE EN SORTIE DFUSLS12 : '
 150978                          TO      WS-LN-LIB-FIN
 150978     MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
 150978     MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (12)
 150978
-150978* NOMBRE D'ENREGISTREMENTS INSÈRÈES
+150978* NOMBRE D'ENREGISTREMENTS INS√©R√©ES
 150978     MOVE WS-EDT3-ECRIT   TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE ECRITURE EN SORTIE DFUSLS13 : '
 150978                          TO      WS-LN-LIB-FIN
 150978     MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
 150978     MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (13)
 150978
-150978* NOMBRE D'ENREGISTREMENTS INSÈRÈES
+150978* NOMBRE D'ENREGISTREMENTS INS√©R√©ES
 150978     MOVE WS-EDT4-ECRIT   TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE ECRITURE EN SORTIE DFUSLS14 : '
 150978                          TO      WS-LN-LIB-FIN
 150978     MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
 150978     MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (14)
 150978
-150978* NOMBRE D'ENREGISTREMENTS INSÈRÈES
+150978* NOMBRE D'ENREGISTREMENTS INS√©R√©ES
 150978     MOVE WS-EDT5-ECRIT   TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE ECRITURE EN SORTIE DFUSLS15 : '
 150978                          TO      WS-LN-LIB-FIN
 150978     MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
 150978     MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (15)
 150978
-150978* NOMBRE D'ENREGISTREMENTS INSÈRÈES
+150978* NOMBRE D'ENREGISTREMENTS INS√©R√©ES
 150978     MOVE WS-EDT6-ECRIT   TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE ECRITURE EN SORTIE DFUSLS16 : '
 150978                          TO      WS-LN-LIB-FIN
 150978     MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
 150978     MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (16)
 150978
-150978* NOMBRE D'ENREGISTREMENTS INSÈRÈES
+150978* NOMBRE D'ENREGISTREMENTS INS√©R√©ES
 150978     MOVE WS-EDT7-ECRIT   TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE ECRITURE EN SORTIE DFUSLS17 : '
 150978                          TO      WS-LN-LIB-FIN
 150978     MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
 150978     MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (17)
 150978
-150978* NOMBRE D'ENREGISTREMENTS INSÈRÈES
+150978* NOMBRE D'ENREGISTREMENTS INS√©R√©ES
 150978     MOVE WS-EDT8-ECRIT   TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE ECRITURE EN SORTIE DFUSLS18 : '
 150978                          TO      WS-LN-LIB-FIN
 150978     MOVE WS-LIGNE-FIN0   TO      WS-LN-VAL-FIN
 150978     MOVE WS-LIGNE-FIN    TO      BILA-L-DISP (18)
 150978
-150978* NOMBRE D'ENREGISTREMENTS INSÈRÈES
+150978* NOMBRE D'ENREGISTREMENTS INS√©R√©ES
 150978     MOVE WS-EDT9-ECRIT   TO      WS-FIN-PART1
 150978     MOVE '*  NOMBRE ECRITURE EN SORTIE DFUSLS19 : '
 150978                          TO      WS-LN-LIB-FIN
