@@ -22,7 +22,9 @@ https://code.google.com/p/legstar-xsd2cob/
 #### XML tags indenting
 
 IN : 
+
 <...><...><...>...</...><...>...</...></...><...>
+
 OUT:
 
 <...>
@@ -32,20 +34,23 @@ OUT:
   <...>
 <...>
 
-#### Namespaces
+#### Namespace
+
 IN:
 <racine>         + ftc + urn:oecd:ties:fatca:v1
-OUT :
+OUT:
 <racine xmlns:ftc="urn:oecd:ties:fatca:v1">
 
-#### Schema (xsi)
+#### Schema
+
 IN:
 <racine>         + urn:oecd:ties:fatca:v1 FatcaXML_v1.1.xsd
 OUT :
 <racine xsi:schemaLocation="urn:oecd:ties:fatca:v1 FatcaXML_v1.1.xsd">
 
-####
-IN : Prefixes
+#### Prefixes
+
+IN :
   <MessageSpec>
     <SendingCompanyIN>98Q96B.00000.LE.250</SendingCompanyIN>
     <TransmittingCountry>FR</TransmittingCountry>
@@ -54,4 +59,55 @@ OUT :
     <sfa:SendingCompanyIN>98Q96B.00000.LE.250</sfa:SendingCompanyIN>
     <sfa:TransmittingCountry>FR</sfa:TransmittingCountry>
 
+#### Attributes
+IN :
+<AccountBalance>
+  <tech-attr-req-currCode>EUR </tech-attr-req-currCode>
+</AccountBalance>
+
+OUT :
+<AccountBalance currCode="EUR">
+</AccountBalance>
+
+#### Text
+
+IN :
+<AccountBalance>
+  <tech-text>9000000000000.00</tech-text>
+</AccountBalance>
+
+OUT :
+<AccountBalance>9000000000000000.00</AccountBalance>
+
+#### Eléments vides
+
+IN :
+<...>
+  <...>
+    <...></...>
+    <...>...</...>
+  <...>
+<...>
+OUT:
+<...>
+  <...>
+    <...>...</...>
+  <...>
+<...>
+
+8/ Reserved Words
+
+IN :
+<R-Address></R-Address>
+<R-Type></R-Type>
+<R-Title></R-Title>
+OUT :
+<Address></Address>
+<Type></Type>
+<Title></Title>
+
+#### XML Declaration
+
+OUT :
+<?xml version="1.0" encoding="UTF-8"?>
 
