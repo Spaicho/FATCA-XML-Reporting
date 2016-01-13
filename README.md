@@ -18,7 +18,11 @@ https://code.google.com/p/legstar-xsd2cob/
 
 ## MFUSXL00.cbl
 
-#### XML tags indenting
+#### features :
+
+![features](img/fatca2.png)
+![features](img/fatca3.png)
+
 
 IN : 
 
