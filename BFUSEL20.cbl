@@ -190,7 +190,7 @@
 
        WORKING-STORAGE SECTION.
 
-
+       copy FATCA. 
 
       *   *******************************
       *   *  variables pour préfixes    *
