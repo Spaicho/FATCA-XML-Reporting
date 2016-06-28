@@ -1,0 +1,86 @@
+*******MVC74550 MLZF 020501 161029 LAFITTE
+*******MVC74550 XXXX 130600 060234 USER STC
+      ******************************************************************
+      *    APPLICATION MESSALIA            NOM CLAUSE COPY : MVC74550
+      *-----------------------------------------------------------------
+      *    FICHIER DES DONNEES CLIENT EN ENTREE
+      *    NOM SYMBOLIQUE : FILC
+      *
+      *    LG ENREG =  (150)          MAJ : 05-03-09  VERSION: 3
+      *-----------------------------------------------------------------
+      * 05 03 09 :TYPDEC ET JODENV EN X AU LIEU DE 9 (EVITER 0C7)
+      * 08/04/2009 RELIVRE PACKAGE COMMUN
+      *===> ENREGISTREMENT DETAIL  TYPE = '01'
+      *
+      *    TYPENR   -  TYPE D'ENREGISTREMENT                  9(02) '01'
+      *    CDBQCP   -  CODE BANQUE '30003'                    9(05)
+      *    NUCOMP   -  NUMERO DE COMPTE                       9(16)
+      *    CDGUGE   -  CODE GUICHET GESTIONNAIRE              9(05)
+      *    NUCLGU   -  NUMERO CLIENT-GUICHET                  9(16)
+      *       CDGUCG     CODE GUICHET D'OUVERTURE CG          9(05)
+      *       NUCLSG     NUMERO DE CG SUR 11 POS              9(11)
+      *    TYPMOD   -  TYPE DE MODIFICATION                   X(01)
+      *    'M' MODIFICATION 'C' CREATION 'C'
+      *    DADEMO   -  DATE DE MODIFICATION= AAAAMMJJ         9(08)
+      *    TYPABO   -  TYPE D'ABONNEMENT   = A Q OU H         X(01)
+      *    JODENV   -  JOUR D'ENVOI        = 0 1 2 3 4 5      X(01)
+      *    HEDENV   -  HEURE D'ENVOI       = 0 9 12 16        9(02)
+      *    TYPDEC   -  TYPE DE DECLENCHEMENT = 0 1 2          X(01)
+      *       0=ABONNEMENT QUOTIDIEN OU HEBDOMADAIRE
+      *         AUCUNE ZONE SUIVANTE RENSEIGNEE
+      *       1 ALARME SUR SOLDE LES 4 ZONES SUIVANTES SONT RENS
+      *       2 ALARME SUR MVT   LES 3 ZONES SUIVANTES SONT RENS
+      *    SIDUMO   -  SIGNE DU MONTANT    = + OU -           X(01)
+      *    VADUMO   -  VALEUR DU MONTANT   =                  9(15)
+      *    CDDEVI   -  CODE DEVISE         = EUR OU FRF       X(03)
+      *    SEDECL   -  SENS DE DECLENCHEMENT       S OU I     X(01)
+      *    TPMEPR   -  TOP MESSAGE PROMOTIONNEL    0 OU 1     9(01)
+      *    TPSMS1   -  TOP PRESENCE CANAL SMS1     0 OU 1     9(01)
+      *    NUTEL1   -  NUMERO DE PORTABLE CANAL SMS           9(10)
+      *    TPSMS2   -  TOP PRESENCE CANAL SMS2     0 OU 1     9(01)
+      *    NUTEL2   -  NUMERO DE PORTABLE CANAL SMS2          9(10)
+      *    FILLER   -                                         X(49)
+      *
+      *===> ENREGISTREMENT DE FIN  TYPE = '99'
+      *
+      *    TYPENR   -  TYPE D'ENREGISTREMENT                  9(02) '99'
+      *    DADEEX   -  DATE DE L'EXTRACTION SSAAMMJJ          9(08)
+      *    NBRENR      NBRE D'ENREG TYPE 01                   9(09)
+      ******************************************************************
+      *--------------------- DETAIL DE L'ENREGISTREMENT TYPE 0
+        05  (FILC)-01-ENR.
+          10  (FILC)-01-TYPENR        PIC   9(02).
+          10  (FILC)-01-CDBQCP        PIC   9(05).
+          10  (FILC)-01-NUCOMP        PIC   9(16).
+          10  (FILC)-01-CDGUGE        PIC   9(05).
+          10  (FILC)-01-NUCLGU.
+            15  (FILC)-01-CDGUCG      PIC   9(05).
+            15  (FILC)-01-NUCLSG      PIC   9(11).
+          10  (FILC)-01-TYPMOD        PIC   X(01).
+          10  (FILC)-01-MODIF.
+            15  (FILC)-01-DADEMO        PIC   9(08).
+            15  (FILC)-01-TYPABO        PIC   X(01).
+            15  (FILC)-01-JODENV        PIC   X(01).
+            15  (FILC)-01-HEDENV        PIC   9(02).
+            15  (FILC)-01-TYPDEC        PIC   X(01).
+            15  (FILC)-01-SIDUMO        PIC   X(01).
+            15  (FILC)-01-VADUMO        PIC   9(15).
+            15  (FILC)-01-CDDEVI        PIC   X(03).
+            15  (FILC)-01-SEDECL        PIC   X(01).
+            15  (FILC)-01-TPMEPR        PIC   X(01).
+            15  (FILC)-01-TPSMS1        PIC   9(01).
+            15  (FILC)-01-NUTEL1        PIC   9(10).
+            15  (FILC)-01-TPSMS2        PIC   9(01).
+            15  (FILC)-01-NUTEL2        PIC   9(10).
+            15  FILLERM                 PIC   X(49).
+          10  (FILC)-01-SUSPE REDEFINES (FILC)-01-MODIF.
+            15  (FILC)-01-NUMOB1        PIC   9(10).
+            15  (FILC)-01-DASUCO        PIC   9(08).
+            15  FILLERS                 PIC   X(87).
+
+      *--------------------- DETAIL DE L'ENREGISTREMENT TYPE 1
+        05  (FILC)-99-ENR REDEFINES (FILC)-01-ENR.
+          10  (FILC)-99-TYPENR        PIC   9(02).
+          10  (FILC)-99-DADEEX        PIC   9(08).
+          10  (FILC)-99-NBENR         PIC   9(09).
+          10  FILLER                  PIC   X(131).

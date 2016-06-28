@@ -1,0 +1,1243 @@
+      ***************************************************************
+      *   APPLICATION : MESSALIA PRi       06/02/2009 16h           *
+      *   PROGRAMME   : MVC74550                                    *
+      *   FONCTION    : EXTRACTION DES CLIENTS DEVANT RECEVOIR UN   *
+      *                 COURRIER CAP18                              *
+      *
+      ***************************************************************
+      *                  HISTORIQUE DES MODIFICATIONS               *
+      *-------------------------------------------------------------*
+      *   DATE     I      OBJET DES MODIFICATIONS        I AUTEUR   *
+      *-------------------------------------------------------------*
+      * 09/01/2009 I CREATION DU PROGRAMME               I RTA      *
+      * 19/02/2009 I amelioration crg                    I RTA      *
+      * 05/03/2009 I typdec et jodenv en x (pbm 0c7)     I RTA      *
+      * 23/03/2009 I test numtel2=06xxx et anoficli      I RTA      *
+      *            I ajout code devise enreg 200         I RTA      *
+      * 08/04/2009 I RELIVRE PACKAGE COMMUN              I RTA      *
+      * 09/04/2009 I ajout code banque dans clesil       I RTA      *
+      * 15/06/2015 I Demonstration CCC                   I TLU      *
+      ***************************************************************
+      *
+      ***************************************************************
+      * recommandations qarp
+      ***************************************************************
+      *   MODULES APPELES :                                         *
+      *  - DSNTIAR : MODULE DE RECHERCHE DU TEXTE CORRESPONDANT     *
+      *                A UN SQLCODE                                 *
+      *  - SY00045 : MODULE DE RECUPERATION DU NOM DU JOB ET STEP   *
+      *  - SY00065 : MODULE D'ABEND PROGRAMME                       *
+      *  - PDG0000P: SERVICE PDG  46/3/1607                         *
+      *      RESTITUTION ADRESSE LIEE A UN numero client guichet    *
+      *                                                             *
+      ***************************************************************
+      *   FICHIERS EN ENTREE :                                      *
+      *    - fichier des courriers                                  *
+      *                                                             *
+      *   FICHIERS EN SORTIE :                                      *
+      *    - DD00001C   : COMPTE-RENDU GESTIONNAIRE                 *
+      *    - DD00001S   : FICHIER DES CLIENTS DEVANT RECEVOIR UN    *
+      *                   COURRIER CAP18                            *
+      *                                                             *
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. MVC74550.
+       AUTHOR. RTA.
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+      *SOURCE-COMPUTER. IBM-3090 WITH DEBUGGING MODE.
+       SOURCE-COMPUTER. IBM-3090.
+
+       INPUT-OUTPUT  SECTION.
+       FILE-CONTROL.
+      **** FICHIER SEQUENTIEL INITIALISATION DES LETTRES CLIENTS
+           SELECT FILC      ASSIGN TO UT-E-DD74550A.
+
+      **** FICHIER DES REJETS
+           SELECT FREJ     ASSIGN TO UT-S-DD74550R.
+
+      **** FICHIER DES COMPTE-RENDU
+           SELECT fic-crg      ASSIGN TO DD74550G
+           FILE STATUS IS FS-crg.
+
+      * fichier courriers pour doc1
+           SELECT FIC-COU      ASSIGN TO DD74550D
+           FILE STATUS IS FS-COU.
+
+      * fichier des pays
+           SELECT FIC-PAY      ASSIGN TO DD74550P.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  FILC
+           RECORDING MODE IS F
+           LABEL RECORD STANDARD
+           BLOCK CONTAINS 0
+           DATA RECORD FILC-ENR.
+       01  FILC-ENR             PIC  X(150).
+
+      *
+       FD  FREJ
+           RECORDING MODE IS F
+           BLOCK 0
+           LABEL RECORD STANDARD
+           DATA RECORD FREJ-ENR.
+       01  FREJ-ENR                  PIC  X(150).
+
+      * ----- FICHIER COMPTE-RENDU GESTIONNAIRE - SORTIE
+       FD   FIC-crg
+            RECORDING MODE IS F
+            LABEL RECORD STANDARD
+            BLOCK CONTAINS 0.
+       01   ENREG-crg   PIC X(133).
+
+      * ----- FICHIER des pays - entree
+       FD   FIC-pay
+            RECORDING MODE IS F
+            LABEL RECORD STANDARD
+            BLOCK CONTAINS 0.
+       01   ENREG-pay   PIC X(30).
+
+      * ----- FICHIER DES COURRIERS CLIENTS (CAP18) - SORTIE
+       FD   FIC-COU
+            RECORDING MODE IS F
+            LABEL RECORD STANDARD
+            BLOCK CONTAINS 0.
+       01   ENREG-COU   PIC X(255).
+
+       WORKING-STORAGE SECTION.
+
+      ******************************************
+      *   DESCRIPTION DE FICHIERS              *
+      ******************************************
+      * ----- FICHIER DES COURRIERS CLIENTS
+       01  ENREGISTREMENT-COU.
+        COPY mvc7455B REPLACING ==(MVC-LET)== BY ==ENR-COU==.
+
+       01  W11-FILC-ENR.
+           COPY 'MVC74550'  REPLACING ==(FILC)== BY ==FILC==.
+
+      * ----- FICHIER 'COMPTE RENDU GESTIONNAIRE'
+       01  ENREGISTREMENT-crg.
+           COPY MVC00001 REPLACING ==(PRE)== BY ==ENR-CRG-==.
+
+      * fichier des pays charge en table
+       01  tabpay.
+         05 enrpay occurs 500.
+            10  codpay  pic x(2).
+            10  numpay  pic x(3).
+            10  libpay  pic x(25).
+
+      * ----- FILE STATUS DES FICHIERS
+       01  FS-crg              PIC X(2) VALUE '00'.
+       01  FS-COU              PIC X(2) VALUE '00'.
+
+      *************************************************************
+      *   VARIABLES POUR MODULES EXTERNES                         *
+      *************************************************************
+      * ----- ZONES D'APPEL DYNAMIQUE DES SOUS-PROGRAMME
+       01  SY00045             PIC X(07)  VALUE 'SY00045'.
+       01  SY00065             PIC X(07)  VALUE 'SY00065'.
+       01  PDG00000            PIC X(08)  VALUE 'PDG00000'.
+
+      * ----- ZONE DE LIEN AVEC SY00045 (RECUPERATION INFOS JCL)
+       01  ZONE-DSNAME.
+            COPY SY0045.
+
+      * ----- ZONE DE LIEN AVEC SY00065 (PROGRAMME D'ABANDON)
+       01  COD-ABEND           PIC  S9(2) COMP VALUE +0.
+
+      * ----- ZONE DE LIEN AVEC PDG
+       01  W-PDG-QUESTION-REPONSE.
+         05  W-PDG-QUESTION.
+           10  W-PDG-IRTAPPL               PIC X(005).
+           10  W-PDG-IDUSER                PIC X(008).
+           10  W-PDG-REFABO                PIC X(005).
+           10  W-PDG-QAR.
+             15  W-PDG-IDQUEST             PIC X(005).
+             15  W-PDG-IDACCES             PIC X(005).
+             15  W-PDG-IDREPON             PIC X(005).
+           10  W-PDG-NBROCC-MAX            PIC 9(003).
+           10  W-PDG-INSUITE               PIC X(001).
+           10  W-PDG-NBROCC-ARS            PIC 9(003).
+           10  W-PDG-VIDE                  PIC X(100) VALUE SPACE.
+           10  W-PDG-CLE.
+             15  W-PDG-CLE-DEBUT.
+               20  W-PDG-CDBQCG            PIC 9(005).
+               20  W-PDG-CDGUCG            PIC 9(005).
+               20  W-PDG-NU-ORDRE          PIC 9(004) .
+               20  W-PDG-NUCLSC            PIC 9(007).
+               20  W-PDG-TYPADR            PIC 9(003).
+               20  W-PDG-CLE-DEBUT-FIN     PIC X(226).
+           15  W-PDG-CLE-FIN             PIC X(250).
+         05  W-PDG-REPONSE.
+           10  W-PDG-CODRET                PIC X(005).
+           10  W-PDG-NBROCC-RET            PIC 9(003).
+           10  W-PDG-DATA.
+             15  W-PDG-ADDR                PIC X(038).
+             15  W-PDG-ADDR-LINE-2         PIC X(038).
+             15  W-PDG-ADDR-LINE-3         PIC X(038).
+             15  W-PDG-RUE                 PIC X(038).
+             15  W-PDG-PROVINCE            PIC X(038).
+             15  W-PDG-ZIPCODE             PIC 9(010).
+             15  W-PDG-CITY                PIC X(027).
+             15  W-PDG-COUNTRY             PIC X(002).
+
+      *************************************************************
+      *   VARIABLES DE TRAVAIL                                    *
+      *************************************************************
+      * ----- VALEURS PROVENANT DU JCL
+       01  W-JOB               PIC X(8).
+       01  W-STEP              PIC X(8).
+       01  W-NOM-PROG          PIC X(8).
+       01  W-NOM-JOB-MACHINE   PIC X(8).
+
+      * ----- VARIABLES UTILES EN CAS D'ABANDON PROGRAMME
+       01  MESS-ABEND          PIC X(100) VALUE SPACES.
+
+      * ----- VARIABLES GARDANT LES DATES ET HEURES DE TRAITEMENT
+       01  W-DATE-SYST.
+           10 W-DATE-SYST-DATE.
+             15 W-DATE-SYST-DATE-SSAA      PIC 9(4) VALUE 0.
+             15 W-DATE-SYST-DATE-MM        PIC 9(2) VALUE 0.
+             15 W-DATE-SYST-DATE-JJ        PIC 9(2) VALUE 0.
+           10 W-DATE-SYST-HEURE.
+             15 W-DATE-SYST-HEURE-HH       PIC 9(2) VALUE 0.
+             15 W-DATE-SYST-HEURE-MM       PIC 9(2) VALUE 0.
+             15 W-DATE-SYST-HEURE-SS       PIC 9(2) VALUE 0.
+             15 W-DATE-SYST-HEURE-CC       PIC 9(2) VALUE 0.
+           10  FILLER                      PIC X(5).
+
+       01  W-DATE-TRT.
+           10 W-DATE-TRT-DEBUT.
+             15 W-DATE-TRT-DEBUT-JJ        PIC X(2) VALUE SPACES.
+             15 W-DATE-TRT-DEBUT-MM        PIC X(2) VALUE SPACES.
+             15 W-DATE-TRT-DEBUT-SSAA      PIC X(4) VALUE SPACES.
+             15 W-DATE-TRT-DEBUT-HH        PIC X(2) VALUE SPACES.
+             15 W-DATE-TRT-DEBUT-MN        PIC X(2) VALUE SPACES.
+             15 W-DATE-TRT-DEBUT-SS        PIC X(2) VALUE SPACES.
+           10 W-DATE-TRT-FIN.
+             15 W-DATE-TRT-FIN-JJ          PIC X(2) VALUE SPACES.
+             15 W-DATE-TRT-FIN-MM          PIC X(2) VALUE SPACES.
+             15 W-DATE-TRT-FIN-SSAA        PIC X(4) VALUE SPACES.
+             15 W-DATE-TRT-FIN-HH          PIC X(2) VALUE SPACES.
+             15 W-DATE-TRT-FIN-MN          PIC X(2) VALUE SPACES.
+             15 W-DATE-TRT-FIN-SS          PIC X(2) VALUE SPACES.
+
+      * compteurs
+       01  indpay                 PIC  9(05)   VALUE  ZEROES.
+       01  CPT-ENRLU              PIC  9(05)   VALUE  ZEROES.
+
+       01   CPT-ANOMALIE  PIC 9(05)    VALUE  ZEROES.
+
+      *----------------------------------------
+      * DESCRIPTION DES DONNEES
+      * QUI VONT APPARAITRE SUR LES COURRIERS
+      *----------------------------------------
+      *
+       01  detail-DT-JOUR.
+               10  detail-DT-JJ               PIC X(02).
+               10  FILLER                     PIC X(01)   VALUE '/'.
+               10  detail-DT-MM               PIC X(02).
+               10  FILLER                     PIC X(01)   VALUE '/'.
+               10  detail-DT-SSAA             PIC X(04).
+       01  W-CLIENT-POSTE.
+           05  W-AG-NOM                    PIC X(26).
+           05  FILLER                      PIC X(01).
+           05  W-AG-CD                     PIC 9(05).
+
+      * SAUVEGARDE DU CODE POSTAL
+           05 CDPOST.
+                 10 CDPOST-C1         PIC 9(01).
+                 10 CDPOST-C2         PIC 9(05).
+
+      *---------------------------------------------------
+      * ZONES DE DATES
+      *---------------------------------------------------
+      ****FORMATS DE DATES POSSIBLES
+      **   DATE SOUS-FORME GREGORIENNE
+      *01  W-DATE.
+           05  D1-GREG                PIC  9(08)   VALUE  ZEROES.
+           05  D1-JJMMAAAA      REDEFINES D1-GREG.
+               10  D1-JJ              PIC  9(02).
+               10  D1-MM              PIC  9(02).
+               10  D1-AAAA            PIC  9(04).
+
+      *--< ZONES DE CONVERSION DE DATES
+       05  FILLER           PIC X(12)  VALUE  'COPY SY00043'.
+       03  ARG2.
+           COPY   SY0043B  .
+           05  D3-AAAAMMJJ.
+               10  D3-AAAA            PIC  9(04)   VALUE  ZEROES.
+               10  D3-MM              PIC  9(02)   VALUE  ZEROES.
+               10  D3-JJ              PIC  9(02)   VALUE  ZEROES.
+           05  D4-AAMMJJ.
+               10  D4-AA              PIC  9(02)   VALUE  ZEROES.
+               10  D4-MM              PIC  9(02)   VALUE  ZEROES.
+               10  D4-JJ              PIC  9(02)   VALUE  ZEROES.
+
+      *  CURRENT DATE
+       01  CURRENT-DATE-370       PIC X(21) VALUE SPACES.
+       01  DECOMPO REDEFINES CURRENT-DATE-370.
+           05  CD-SSAA            PIC  X(04).
+           05  CD-MM              PIC  X(02).
+           05  CD-JJ              PIC  X(02).
+           05  CD-HE              PIC  X(02).
+           05  CD-MI              PIC  X(02).
+           05  CD-SE              PIC  X(02).
+           05  FILLER             PIC  X(07).
+      * ----- AUTRES VARIABLES DE TRAVAIL
+       01 dates-travail.
+         05  W08-D3-AAAAMMJJ.
+                10  W08-D3-AAAA        PIC  9(04)   VALUE  ZEROES.
+                10  W08-D3-MM          PIC  9(02)   VALUE  ZEROES.
+                10  W08-D3-JJ          PIC  9(02)   VALUE  ZEROES.
+
+            05  W08-D4-AAMMJJ.
+                10  W08-D4-AA          PIC  9(02)   VALUE  ZEROES.
+                10  W08-D4-MM          PIC  9(02)   VALUE  ZEROES.
+                10  W08-D4-JJ          PIC  9(02)   VALUE  ZEROES.
+
+       01  TOP-FIN-ABON        PIC 9(1) VALUE ZERO.
+           88 W-FIN-ABON       VALUE 1.
+       01  W-IND-ABON          PIC S9(4) COMP.
+       01  W-NB-COURRIER-TOTAL PIC 9(7)  VALUE ZERO.
+       01  W-NB-COURRIER-RECYC PIC 9(7)  VALUE ZERO.
+       01  W-NB-COURRIER-ABONN PIC 9(7)  VALUE ZERO.
+       01  W-NB-COURRIER-MODIF PIC 9(7)  VALUE ZERO.
+       01  W-NB-COURRIER-SUSPE PIC 9(7)  VALUE ZERO.
+       01  W-NB-COURRIER-FR    PIC 9(7)  VALUE ZERO.
+       01  W-NB-COURRIER-ETR   PIC 9(7)  VALUE ZERO.
+
+       01 W-PDG                PIC 9(1)  VALUE 0.
+             88  W-PDG-OK        VALUE 1.
+             88  W-PDG-NOK       VALUE 2.
+       01 W-PAYS               PIC 9(1)  VALUE 0.
+             88  W-PAYS-OK       VALUE 1.
+             88  W-PAYS-NOK      VALUE 2.
+
+       01  W-DATE-F.
+           10 W-DATE-JJ        PIC 9(2).
+           10 FILLER           PIC X(1) VALUE '/'.
+           10 W-DATE-MM        PIC 9(2).
+           10 FILLER           PIC X(1) VALUE '/'.
+           10 W-DATE-SSAA      PIC 9(4).
+
+       01  W-CDPAIA PIC X(2).
+       01  w-lipays pic x(25).
+       01  W-CDPSGI PIC 9(3).
+
+      *---------------------------------------------------
+      * INDICATEURS DE TRAITEMENT
+      *---------------------------------------------------
+       01  WSS-INTRAIT.
+      **** INDICATEUR D'ERREUR D'OUVERTURE DES FICHIERS SEQUENTIELS
+           05  FIC-SEQ-OUVERTS        PIC  X   VALUE ZERO .
+      **** INDICATEUR DE TRAITEMENT A VIDE
+           05  TRT-VIDE               PIC  X   VALUE ZERO .
+      **** INDICATEUR DE FIN DE fichier PAYS
+           05  FIN-FIC-PAY           PIC  X   VALUE ZERO .
+             88  FIN-PAY                       VALUE '1'.
+      **** INDICATEUR PAYS TROUVE ou PAS
+           05  TOP-PAYS-TROUVE       PIC  X   VALUE ZERO .
+             88  W-PAYS-TROUVE                 VALUE '1'.
+
+      **** INDICATEUR D'ABANDON PROGRAMME
+           05  ABEND                  PIC  X   VALUE ZERO .
+               88  ABANDON                     VALUE '1'.
+
+      **** INDICATEUR D'ANOMALIE
+           05  ANOMALIE               PIC  X   VALUE ZERO .
+           05  ANOFICLI               PIC  X   VALUE ZERO .
+
+      **** INDICATEUR DE FIN DE TRAITEMENT
+
+           05  FIC-TEST-FIN           PIC  X   VALUE ZERO .
+             88  FIN-fic                       VALUE '1'.
+
+       01 un-x             PIC X(1) VALUE 'X'.
+       01 unE-ETOILE       PIC X(1) VALUE '*'.
+
+      *---------------------------------------------------
+      * LIGNE DE COMPTE RENDU
+      *---------------------------------------------------
+      *------- DESCRIPTION LIGNES D'ENTETE -----------------*
+
+       01  LIG-VIDE.
+           05  FILLER          PIC X(80)   VALUE   SPACES.
+      *
+       01  LG01-TIT.
+           05  FILLER     PIC X(03)   VALUE SPACES.
+           05  FILLER     PIC X(69)   VALUE ALL '*'.
+           05  FILLER     PIC X(08)   VALUE SPACES.
+      *
+       01  LG02-TIT.
+           05  FILLER     PIC X(03)   VALUE SPACES.
+           05  FILLER     PIC X(01)   VALUE ALL '*'.
+           05  FILLER     PIC X(67)   VALUE SPACES.
+           05  FILLER     PIC X(01)   VALUE ALL '*'.
+           05  FILLER     PIC X(08)   VALUE SPACES.
+           05  FILLER     PIC X(06)   VALUE SPACES.
+      *
+       01  LG03-TIT.
+           05  FILLER     PIC X(03)   VALUE SPACES.
+           05  FILLER     PIC X(01)   VALUE '*'.
+           05  FILLER     PIC X(06)   VALUE SPACES.
+           05  LIB1-LG03  PIC X(30).
+           05  LIB2-LG03  PIC X(30).
+           05  FILLER     PIC X       VALUE  ' '.
+           05  FILLER     PIC X(01)   VALUE '*'.
+           05  FILLER     PIC X(08)   VALUE SPACES.
+      *
+       01  LG04-TIT.
+           05  FILLER     PIC X(03)   VALUE SPACES.
+           05  FILLER     PIC X(01)   VALUE '*'.
+           05  FILLER     PIC X(06)   VALUE SPACES.
+           05  FILLER     PIC X(10)   VALUE 'DATE    : '.
+           05  LG05-JJ    PIC 99.
+           05  FILLER     PIC X(01)   VALUE '/'.
+           05  LG05-MM    PIC 99.
+           05  FILLER     PIC X(01)   VALUE '/'.
+           05  LG05-AAAA  PIC 9999.
+           05  FILLER     PIC X(41)   VALUE SPACES.
+           05  FILLER     PIC X(01)   VALUE '*'.
+           05  FILLER     PIC X(08)   VALUE SPACES.
+
+      *
+       01  LG03-ENT.
+           05  FILLER     PIC X(10)   VALUE SPACES.
+           05  FILLER     PIC X(17)   VALUE 'HEURE DE DEBUT : '.
+           05  LG06-HD    PIC X(02).
+           05  FILLER     PIC X(01)   VALUE 'H'.
+           05  LG06-MD    PIC X(02).
+           05  FILLER     PIC X(01)   VALUE 'M'.
+           05  LG06-SD    PIC X(02).
+           05  FILLER     PIC X(01)   VALUE 'S'.
+           05  FILLER     PIC X(05)   VALUE SPACES.
+           05  FILLER     PIC X(17)   VALUE 'HEURE DE FIN   : '.
+           05  LG06-HF    PIC X(02).
+           05  FILLER     PIC X(01)   VALUE 'H'.
+           05  LG06-MF    PIC X(02).
+           05  FILLER     PIC X(01)   VALUE 'M'.
+           05  LG06-SF    PIC X(02).
+           05  FILLER     PIC X(01)   VALUE 'S'.
+           05  FILLER     PIC X(13)   VALUE SPACES.
+      *
+      * EDITION DE COMPTEUR
+      * ------------------------------
+
+      * EDITION D'UNE LIGNE DE COMMENTAIRE QUELCONQUE
+      *---------------------------------------------------
+       01  LIG-COMMENTAIRE.
+           05  FILLER          PIC X       VALUE  ' '.
+           05  LIB-COMMENTAIRE PIC X(79)   VALUE   SPACES.
+
+      *************************************************************
+      *   DESCRIPTION DES TABLES ET CURSEURS                      *
+      *************************************************************
+
+       LINKAGE SECTION.
+       01  W-LINK-PARAM.
+           10 FILLER                          PIC S9(4) COMP.
+           10 W-LINK-DATE-JOUR.
+              15 W-LINK-DATE-JOUR-SS           PIC X(02).
+              15 W-LINK-DATE-JOUR-AA           PIC X(02).
+              15 W-LINK-DATE-JOUR-MM           PIC X(02).
+              15 W-LINK-DATE-JOUR-JJ           PIC X(02).
+
+       PROCEDURE DIVISION USING W-LINK-PARAM.
+
+      DDECLARATIVES.
+      DS001 SECTION. USE FOR DEBUGGING ON ALL PROCEDURES.
+      DP001.         DISPLAY 'MVC74550 - ' DEBUG-NAME.
+      DEND DECLARATIVES.
+
+      *************************************************************
+      *   PROGRAMME PRINCIPAL                                     *
+      *************************************************************
+
+           PERFORM  100-INIT-TRAIT  THRU   100-INIT-TRAIT-F.
+
+           IF  TRT-VIDE = '0'
+              PERFORM   200-TRAIT-CLI   THRU    200-TRAIT-CLI-F
+                                        UNTIL ABANDON OR FIN-FIC
+           END-IF.
+
+           PERFORM   400-CPT-RENDU    THRU    400-CPT-RENDU-F.
+           PERFORM   500-FIN-TRAIT    THRU    500-FIN-TRAIT-F.
+           MOVE ZERO TO  RETURN-CODE.
+
+           STOP RUN.
+
+      **********************************************
+      *    INITIALISATION DU TRAITEMENT            *
+      **********************************************
+       100-INIT-TRAIT.
+      *--------------*
+
+           PERFORM   110-INIT-GENE     THRU    110-INIT-GENE-F.
+           PERFORM   115-chgt-pays     THRU    115-chgt-pays-F.
+           PERFORM   120-CPTR-GENE     THRU    120-CPTR-GENE-F.
+           PERFORM   130-PREM-LECT     THRU    130-PREM-LECT-F.
+
+       100-INIT-TRAIT-F.
+           EXIT.
+
+      *------------------------------------------*
+      *            INITIALISATION GENERALE
+      *------------------------------------------*
+       110-INIT-GENE.
+      *-------------*
+
+           OPEN INPUT  FILC.
+           OPEN OUTPUT FREJ.
+           OPEN OUTPUT FIC-CRG.
+           OPEN OUTPUT FIC-COU.
+           MOVE  '1' TO FIC-SEQ-OUVERTS.
+           MOVE FUNCTION CURRENT-DATE TO CURRENT-DATE-370.
+           PERFORM TRT-RECUPERER-INFOS-JCL.
+
+       110-INIT-GENE-F.
+           EXIT.
+      *
+      * chargement du fichier des pays en memoire
+      *
+       115-chgt-pays.
+      *-------------*
+
+      D    DISPLAY "DEBUT CHARGEMENT" INDPAY.
+           OPEN INPUT  fic-pay.
+
+           READ  FIc-pay AT END   MOVE '1' TO FIN-FIC-PAY.
+           MOVE 0 TO INDPAY.
+
+           PERFORM UNTIL FIN-FIC-PAY  = '1'
+             ADD 1 TO INDPAY
+             MOVE ENREG-PAY TO enrpay(INDPAY)
+
+             READ  FIC-PAY AT END   MOVE '1' TO FIN-FIC-PAY
+             END-READ
+           end-perform.
+           close fic-pay.
+      D    Display "table chargee " indpay.
+       115-chgt-pays-F.
+           EXIT.
+
+      *
+      ** APPEL INITIAL AU COMPTE RENDU
+      *
+       120-CPTR-GENE.
+      *
+           MOVE 'EDITION DES COURRIERS MESSALIA'  TO LIB1-LG03.
+           MOVE SPACES TO           LIB2-LG03.
+           IF W-STEP = 'STP74550'
+             MOVE ' MODIFICATION DE CONTRATS' TO LIB2-LG03
+           END-IF.
+      *
+           IF W-STEP = 'STP74551'
+             MOVE ' SUSPENSION DE CONTRATS' TO LIB2-LG03
+           END-IF.
+      *
+           MOVE    CD-SSAA            TO   LG05-AAAA
+           MOVE    CD-MM              TO   LG05-MM
+           MOVE    CD-JJ              TO   LG05-JJ
+           MOVE    CD-HE              TO   LG06-HD
+           MOVE    CD-MI              TO   LG06-MD
+           MOVE    CD-SE              TO   LG06-SD
+      *
+           WRITE  enreg-crg FROM   LIG-VIDE.
+           WRITE  enreg-crg FROM   LG01-TIT.
+           WRITE  enreg-crg FROM   LG03-TIT.
+           WRITE  enreg-crg FROM   LG02-TIT.
+           WRITE  enreg-crg FROM   LG04-TIT.
+           WRITE  enreg-crg FROM   LG02-TIT.
+           WRITE  enreg-crg FROM   LG01-TIT.
+
+       120-CPTR-GENE-F.
+           EXIT.
+
+      *--------------------------------------------------------*
+      *        PREMIERE(S LECTURE(S) FICHIERS D'ENTREE
+      *--------------------------------------------------------*
+       130-PREM-LECT.
+      *--------------*
+
+           READ  FILC    INTO  w11-FILC-ENR
+                         AT END   MOVE '1' TO TRT-VIDE
+                                  MOVE '1' TO fic-TEST-FIN.
+      *  test de fin
+           if FILC-01-TYPENR = '99'
+             MOVE '1' TO fic-TEST-FIN
+             MOVE '1' TO TRT-VIDE
+           end-if.
+
+       130-PREM-LECT-F.
+           EXIT.
+
+      *********************************
+      *   TRAITEMENT NORMAL           *
+      *********************************
+       200-TRAIT-CLI.
+      *-------------*
+
+           MOVE ZERO TO ANOFICLI.
+
+           ADD  1  TO  CPT-ENRLU.
+      * recherche adresse client
+           PERFORM 210-RECH-ADR-CLIENT THRU  210-RECH-ADR-CLIENT-F.
+
+           IF ANOFICLI = '1'
+      * ANOMALIE SUR LE CLIENT : ON LE REJETTE POUR RECYCLAGE EVENTUEL
+              ADD   1  TO  CPT-ANOMALIE
+              ADD 1 TO  W-NB-COURRIER-RECYC
+              WRITE FREJ-enr   FROM    filc-ENR
+             GO TO 200-suite
+           END-IF.
+
+      * entete pour tous les courriers
+           PERFORM 220-ENTETE-COURRIER THRU 220-ENTETE-COURRIER-F
+      D    DISPLAY 'TYPMOD : '  FILC-01-TYPMOD
+           EVALUATE FILC-01-TYPMOD
+             WHEN 'M'
+              perform 250-DETAIL-COURRIER THRU 250-detail-courrier-F
+             WHEN 'S'
+              perform 270-DETAIL-COURRIER THRU 270-detail-courrier-F
+      *  message dans la sysout, on ne traite pas
+             WHEN OTHER  DISPLAY 'ANOMALIE TYPMOD :' FILC-01-TYPMOD
+           END-EVALUATE.
+
+       200-suite.
+
+      * lecture suivante
+           READ  FILC    INTO  w11-FILC-ENR
+                         AT END   MOVE '1' TO fic-TEST-FIN
+                         GO TO 200-TRAIT-CLI-F.
+           if FILC-01-TYPENR = '99'
+             MOVE '1' TO fic-TEST-FIN
+           end-if.
+       200-TRAIT-CLI-F.
+           EXIT.
+
+      *-------------------------------*
+      ** RECHERCHE ADRESSE CLIENT
+      *-------------------------------*
+       210-RECH-ADR-CLIENT.
+
+      *******************************
+      *   APPELER LE SERVICE PDG    *
+      *******************************
+           INITIALIZE W-PDG-QUESTION-REPONSE
+           MOVE 'A1334'                  TO W-PDG-IRTAPPL
+           MOVE 'MV74550'           TO W-PDG-IDUSER
+           MOVE '00065'             TO W-PDG-REFABO
+           MOVE '00046'             TO W-PDG-IDQUEST
+           MOVE '00003'             TO W-PDG-IDACCES
+           MOVE '01607'             TO W-PDG-IDREPON
+           MOVE 1                   TO W-PDG-NBROCC-MAX
+           MOVE 'N'                 TO W-PDG-INSUITE
+           MOVE 1                   TO W-PDG-NBROCC-ARS
+           MOVE SPACES              TO W-PDG-VIDE
+           MOVE '0000'              TO W-PDG-nu-ordre.
+           MOVE FILC-01-CDBQCP      TO W-PDG-CDBQCG
+           MOVE FILC-01-CDGUCG      TO W-PDG-CDGUCG
+           MOVE FILC-01-NUCLSG      TO W-PDG-NUclsc
+           MOVE 001                 TO W-PDG-TYPADR
+
+           CALL PDG00000 USING W-PDG-QUESTION-REPONSE
+
+      D    DISPLAY '======== APPEL QAR 46-03-1607'
+      D    DISPLAY '==================== QUESTION           '
+      D    DISPLAY 'W-PDG-CDBQCG      : ' W-PDG-CDBQCG
+      D    DISPLAY 'W-PDG-CDGUCG      : ' W-PDG-CDGUCG
+      D    DISPLAY 'W-PDG-NUlcsg      : ' W-PDG-NUclsc
+      D    DISPLAY 'W-PDG-typadr      : ' W-PDG-TYPADR
+      D    DISPLAY '==================== REPONSE            '
+      D    DISPLAY 'W-PDG-CODRET      : ' W-PDG-CODRET
+      D    DISPLAY 'W-PDG-NBROCC-RET  : ' W-PDG-NBROCC-RET
+      D    DISPLAY 'W-PDG-ADDR        : ' W-PDG-ADDR
+      D    DISPLAY 'W-PDG-ADDR-LINE-2 : ' W-PDG-ADDR-LINE-2
+      D    DISPLAY 'W-PDG-ADDR-LINE-3 : ' W-PDG-ADDR-LINE-3
+      D    DISPLAY 'W-PDG-RUE         : ' W-PDG-RUE
+      D    DISPLAY 'W-PDG-PROVINCE    : ' W-PDG-PROVINCE
+      D    DISPLAY 'W-PDG-ZIPCODE     : ' W-PDG-ZIPCODE
+      D    DISPLAY 'W-PDG-CITY        : ' W-PDG-CITY
+      D    DISPLAY 'W-PDG-COUNTRY     : ' W-PDG-COUNTRY
+      D    DISPLAY '==================== FIN APPEL QAR'
+
+      D    IF W-PDG-CODRET = '00000'
+      D       display "retour pdg " W-PDG-CODRET
+      D    end-if.
+           IF W-PDG-CODRET NOT = '00000'
+             IF W-PDG-CODRET = '00001'
+
+      * ----- SI L'ADRESSE DE TYPE 001 N'A PAS ETE TROUVEE
+      * ----- ON RECHERCHE UNE ADRESSE DE TYPE 003
+               MOVE 003 TO W-PDG-TYPADR
+               CALL PDG00000 USING W-PDG-QUESTION-REPONSE
+
+               IF W-PDG-CODRET NOT = '00000'
+                 IF W-PDG-CODRET = '00001'
+                   INITIALIZE ENR-crg-TEXTE
+                   STRING
+                     '  * CODRET=00001 - '
+                     'NUCLSC INEXISTANT CHEZ PDG : '
+                     W-PDG-CDBQCG
+                     W-PDG-CDGUCG
+                     W-PDG-NUCLSC
+                   DELIMITED BY SIZE INTO ENR-crg-TEXTE
+                   WRITE ENREG-crg   FROM ENR-crg-TEXTE
+                   move '1' to anoficli
+                 ELSE
+      D            DISPLAY '    ===== W-PDG-CODRET : ' W-PDG-CODRET
+                   INITIALIZE ENR-crg-TEXTE
+                   STRING
+                     'CODE RETOUR PDG : ' W-PDG-CODRET
+                     W-PDG-CDBQCG
+                     W-PDG-CDGUCG
+                     W-PDG-NUclsc
+                   DELIMITED BY SIZE  INTO ENR-crg-TEXTE
+                   WRITE ENREG-crg    FROM ENR-crg-TEXTE
+
+                   MOVE 'ERREUR  : APPEL PDG ADRESSE QAR=59-31-846'
+                   TO MESS-ABEND
+                   move '1' to anoficli
+                 END-IF
+               END-IF
+             ELSE
+      D        DISPLAY '    ===== W-PDG-CODRET : ' W-PDG-CODRET
+               INITIALIZE ENR-crg-TEXTE
+               STRING
+                 'CODE RETOUR PDG : ' W-PDG-CODRET
+                 'POUR ' W-PDG-CDBQCG
+                         W-PDG-CDGUCG
+                         W-PDG-NUclsc
+               DELIMITED BY SIZE  INTO ENR-crg-TEXTE
+               WRITE ENREG-crg    FROM ENR-crg-TEXTE
+
+               MOVE 'ERREUR  : APPEL PDG ADRESSE QAR=46- 3-1607'
+               TO MESS-ABEND
+               move '1' to anoficli
+             END-IF
+           END-IF.
+            EXIT.
+
+       210-RECH-ADR-CLIENT-F.
+           EXIT.
+
+      ************************************************************
+      * ECRIRE LE DETAIL DU FICHIER EN SORTIE  ENREG 0000 , 0100 *
+      ************************************************************
+       220-entete-COURRIER SECTION.
+       DEBUT.
+           INITIALIZE ENR-COU-LET-CLI
+      D    DISPLAY 'ECRITURE DETAIL ENTREE'
+      *
+      * ENREGISTREMENT "0000"
+      *
+           ADD 1 TO W-NB-COURRIER-TOTAL
+           MOVE '0000'  TO ENR-COU-CDENR
+           EVALUATE FILC-01-TYPMOD
+              WHEN 'M'
+                  MOVE '001' TO ENR-COU-0000-CDETAT
+                  ADD 1 TO W-NB-COURRIER-MODIF
+              WHEN 'S'
+                  MOVE '002' TO ENR-COU-0000-CDETAT
+                  ADD 1 TO W-NB-COURRIER-SUSPE
+              WHEN 'C'
+                  MOVE '003' TO ENR-COU-0000-CDETAT
+                  ADD 1 TO W-NB-COURRIER-ABONN
+              WHEN OTHER
+      * preciser nucompa ou ligne fichier
+                  display 'anomalie code ' FILC-01-TYPMOD
+
+           END-EVALUATE
+      *
+      *    CONSTITUTION DE LA CLE SILRODE POUR LE CLIENT :
+      *
+           MOVE 'A'      TO ENR-COU-0000-CLESIL-COURRIER
+           MOVE 'G'      TO ENR-COU-0000-CLESIL-BANQUE
+
+           SET W-PAYS-OK TO TRUE
+           IF w-pdg-country = 'FR'
+               ADD 1 TO W-NB-COURRIER-FR
+               STRING '0' W-PDG-ZIPCODE(1:5)
+               DELIMITED BY SIZE
+               INTO ENR-COU-0000-CLESIL-CDPOST
+           ELSE
+               ADD 1 TO W-NB-COURRIER-ETR
+               PERFORM 600-TRT-rech-pays THRU 600-TRT-rech-pays-F
+      * en retour W-CDPSGI  w-lipays
+               STRING '   ' W-CDPSGI
+               DELIMITED BY SIZE
+               INTO ENR-COU-0000-CLESIL-CDPOST
+           END-IF
+      * RTA ajout code banque 09 04 2009
+           MOVE FILC-01-CDBQCP      TO ENR-COU-0000-CLESIL-CDBQ.
+           MOVE FILC-01-CDGUCG TO ENR-COU-0000-CLESIL-CDGU.
+
+      *     reconstituer clesil
+      * 00000 + NUMERO DE CLIENT AVEC CLE --> X(11)
+           STRING '00000' FILC-01-NUCLSG
+             DELIMITED BY SIZE  INTO ENR-COU-0000-CLESIL-NUCL
+
+      D    display 'clesil-nucl ' ENR-COU-0000-CLESIL-NUCL 'F'
+      * CODE ADRESSE
+             MOVE '0'          TO ENR-COU-0000-CLESIL-CDADR
+             MOVE ZEROES       TO ENR-COU-0000-CLESIL-FILLER1
+      * FIN DE LA CLE STANDARD
+             MOVE 'O'          TO ENR-COU-0000-CLESIL-URGENCE
+             MOVE '00'         TO ENR-COU-0000-CLESIL-LGENR
+             MOVE ZEROES       TO ENR-COU-0000-CLESIL-CLESECOND
+             MOVE SPACES       TO ENR-COU-0000-CLESIL-FILLER2
+             MOVE 'S'          TO ENR-COU-0000-CLESIL-CDRECTO
+             MOVE '1'          TO ENR-COU-0000-CLESIL-CDBAC
+             MOVE '00'         TO ENR-COU-0000-CLESIL-NUORDRE
+             MOVE '999'        TO ENR-COU-0000-CLESIL-COUPURE
+             MOVE SPACES       TO ENR-COU-0000-CLESIL-FILLER3
+             MOVE SPACES       TO ENR-COU-0000-FILLER
+      d      display 'ecriture enr 0000 : 'ENR-COU-LET-CLI
+             WRITE  ENREG-COU FROM ENR-COU-LET-CLI
+      *
+      * ENREGISTREMENT "0100"
+      *
+             INITIALIZE ENR-COU-LET-CLI
+             MOVE '0100'        TO ENR-COU-CDENR
+      D      DISPLAY 'ADR PDG ' W-PDG-ADDR
+      D      DISPLAY 'ADR LIN2' W-PDG-ADDR-LINE-2
+             MOVE W-PDG-ADDR        TO ENR-COU-0100-ADR-CLI(1)
+             MOVE W-PDG-ADDR-LINE-2 TO ENR-COU-0100-ADR-CLI(2)
+             MOVE W-PDG-ADDR-LINE-3 TO ENR-COU-0100-ADR-CLI(3)
+             MOVE W-PDG-RUE         TO ENR-COU-0100-ADR-CLI(4)
+
+             move w-pdg-country to w-cdpaia.
+             IF w-pdg-country = 'FR'
+               MOVE   W-PDG-PROVINCE TO ENR-COU-0100-ADR-CLI(5)
+               STRING W-PDG-ZIPCODE(1:5) ' ' W-PDG-CITY
+               DELIMITED BY SIZE INTO ENR-COU-0100-ADR-CLI(6)
+             ELSE
+      * etranger : adr5 = code pays + ville
+               STRING  W-CDPSGI '   ' W-PDG-CITY
+               DELIMITED BY SIZE INTO ENR-COU-0100-ADR-CLI(5)
+               MOVE  w-LIPAYS TO ENR-COU-0100-ADR-CLI(6)
+             END-IF
+
+      D      DISPLAY 'ADR 6 =' ENR-COU-0100-ADR-CLI(6)
+
+      *      MOVE FILC-01-CDGUGE TO ENR-COU-0100-AGENCE
+
+             MOVE UNE-ETOILE TO  ENR-COU-0100-ETOILE
+      D      DISPLAY 'ECRITURE 0100'
+      D      DISPLAY 'ENR ' ENR-COU-LET-CLI
+             WRITE  ENREG-COU  FROM ENR-COU-LET-CLI.
+
+       220-ENTETE-COURRIER-F.
+            EXIT.
+
+      ********************************************
+      *   ECRIRE LE DETAIL DU FICHIER EN SORTIE  *
+      *     ENREGISTREMENTS 0200                 *
+      ********************************************
+       250-detail-COURRIER SECTION.
+       DEBUT.
+      * ENREGISTREMENT "0200"
+           INITIALIZE ENR-COU-LET-CLI
+           MOVE '0200'          TO ENR-COU-CDENR
+           MOVE FILC-01-nucomp(1:5) TO ENR-COU-0200-GUICH-ORIG-CAVPRI
+           MOVE FILC-01-NUcomp(6:11) TO ENR-COU-0200-NUM-CAVPRI
+
+      D    DISPLAY 'MOVE 9 : ' filc-01-NUCLGU
+
+      *FORMATTAGE DE LA DATE
+            MOVE   FILC-01-DADEMO     TO   W08-D3-AAAAMMJJ.
+            MOVE   W08-D3-JJ          TO   W-DATE-JJ.
+            MOVE   W08-D3-MM          TO   W-DATE-MM.
+            MOVE   W08-D3-AAAA        TO   W-DATE-SSAA.
+            MOVE   W-DATE-F           TO   enr-cou-0200-DADEMO.
+
+      D    DISPLAY 'MOVE 10 : ' enr-cou-0200-DADEMO
+      * NUMERO DE TELEPHONE 1 : ZONE D'ARRIVEE FORMATTEE
+           MOVE     FILC-01-NUTEL1     TO   enr-cou-0200-NUTEL1.
+      D    DISPLAY 'MOVE 11 : ' ENR-COU-0200-NUTEL1
+           IF FILC-01-NUTEL2(1:2) = '06'
+              MOVE  FILC-01-NUTEL2   TO   enr-cou-0200-NUTEL2
+           END-IF
+      D    DISPLAY 'MOVE 12 : ' enr-cou-0200-NUTEL2
+      *
+      * FILC-01-TYPABO : INFO LIE AU TYPE D'ABONNEMENT
+      D    DISPLAY 'MOVE 13 : ' FILC-01-TYPABO
+           MOVE  SPACE TO   enr-cou-0200-ABOQUO
+           MOVE  SPACE TO   enr-cou-0200-ABOHEB
+           MOVE  SPACE TO   enr-cou-0200-ABOEVT
+           EVALUATE  FILC-01-TYPABO
+      * HEBDOMADAIRE
+              WHEN  'H'
+               MOVE un-x  TO   enr-cou-0200-ABOHEB
+               MOVE '0' TO FILC-01-TYPDEC
+      * QUOTIDIEN
+              WHEN  'Q'
+               MOVE un-x  TO   enr-cou-0200-ABOQUO
+               MOVE '0' TO FILC-01-TYPDEC
+      * ALARME
+              WHEN  'A' MOVE un-x  TO   enr-cou-0200-ABOEVT
+              WHEN OTHER DISPLAY 'ANOMALIE TYPABO :' FILC-01-TYPABO
+           END-EVALUATE.
+
+      D    DISPLAY 'MOVE 14 : jodenv : ' FILC-01-JODENV
+
+           MOVE  SPACE TO   enr-cou-0200-mardi
+           MOVE  SPACE TO   enr-cou-0200-mercredi
+           MOVE  SPACE TO   enr-cou-0200-Jeudi
+           MOVE  SPACE TO   enr-cou-0200-vendredi
+           MOVE  SPACE TO   enr-cou-0200-samedi
+           EVALUATE  FILC-01-JODENV
+      * valeurs : 0, 2 3 4 5 6
+              WHEN  '0'  MOVE  space TO   enr-cou-0200-mardi
+              WHEN  '2'  MOVE  un-x  TO   enr-cou-0200-mardi
+              WHEN  '3'  MOVE  un-x  TO   enr-cou-0200-mercredi
+              WHEN  '4'  MOVE  un-x  TO   enr-cou-0200-Jeudi
+              when  '5'  MOVE  un-x  TO   enr-cou-0200-vendredi
+              when  '6'  MOVE  un-x  TO   enr-cou-0200-samedi
+              WHEN OTHER DISPLAY 'ANOMALIE TYPMOD :' FILC-01-JODENV
+           END-EVALUATE.
+
+      D    DISPLAY 'MOVE 15 : ' FILC-01-HEDENV
+
+           MOVE  SPACE TO   enr-cou-0200-09h
+           MOVE  SPACE TO   enr-cou-0200-12h
+           MOVE  SPACE TO   enr-cou-0200-16h
+           evaluate filc-01-hedenv
+      * valeurs : 0, 9, 12, 16
+                 WHEN   0    MOVE  SPACE TO   enr-cou-0200-09h
+                 WHEN   9    MOVE  un-x  TO   enr-cou-0200-09h
+                 WHEN   12   MOVE  un-x  TO   enr-cou-0200-12h
+                 WHEN   16   MOVE  un-x  TO   enr-cou-0200-16H
+
+               WHEN OTHER DISPLAY 'ANOMALIE hedenv :' FILC-01-hedenv
+            END-EVALUATE.
+
+      D    DISPLAY 'MOVE 16 : ' FILC-01-TYPDEC ':'
+      D    DISPLAY 'MOVE 17 : ' FILC-01-SEDECL ':'
+           MOVE  SPACE TO   enr-cou-0200-SUR-SOLDE
+           MOVE  SPACE TO   enr-cou-0200-SUR-mouvement
+           MOVE  SPACE TO   enr-cou-0200-hausse
+           MOVE  SPACE TO   ENR-COU-0200-BAISSE
+
+      *  typdec : type de declenchement
+      * 0 : aucune zone n'est renseignee
+      * 1 : solde, les 4 zones sont renseignees
+      * 2 : mouvement, les 3 zones sont renseignees
+
+           EVALUATE  FILC-01-TYPDEC
+              WHEN  '0'
+      D         DISPLAY 'FILC-01-TYPDEC = 0'
+                MOVE  SPACE TO   enr-cou-0200-SUR-SOLDE
+                MOVE  SPACE TO   enr-cou-0200-SUR-mouvement
+      * pas de case a cocher
+      * ne rien alimenter
+              WHEN  '1'
+                  MOVE  un-x  TO   enr-cou-0200-SUR-SOLDE
+      D           DISPLAY 'FILC-01-TYPDEC = 1'
+      * alimenter ENR-COU-0200-mnt-seuil
+                  PERFORM 1323-MONTANT THRU 1323-MONTANT-F
+      D           DISPLAY 'FILC-01-TYPDEC = 1'
+      * le code devis : FILC-01-CDDEVI non utilis{ en dur
+                  IF   FILC-01-SEDECL = 'S'
+                       MOVE  un-x  TO   enr-cou-0200-HAUSSE
+                       MOVE SPACE  TO   enr-cou-0200-BAISSE
+                  ELSE
+                       MOVE SPACE  TO   enr-cou-0200-HAUSSE
+                       MOVE  un-x  TO   enr-cou-0200-BAISSE
+                  END-IF
+
+              WHEN  '2'
+      D           DISPLAY 'FILC-01-TYPDEC = 2'
+                  MOVE  un-x  TO   enr-cou-0200-sur-mouvement
+                  PERFORM 1323-MONTANT THRU 1323-MONTANT-F
+      D           DISPLAY 'FILC-01-TYPDEC = 2'
+                  MOVE  SPACE TO   enr-cou-0200-HAUSSE
+                  MOVE  SPACE TO   enr-cou-0200-BAISSE
+
+              WHEN OTHER DISPLAY 'ANOMALIE TYPMOD :' FILC-01-TYPdec
+           END-EVALUATE.
+
+      D    DISPLAY 'FILC-01-TPMEPR = ' FILC-01-TPMEPR
+      * valeur O/N
+           MOVE  SPACE TO   enr-cou-0200-opt-in
+           MOVE  SPACE TO   enr-cou-0200-opt-out
+           EVALUATE  FILC-01-TPMEPR
+              WHEN  'O'  MOVE  un-x  TO   enr-cou-0200-opt-in
+      D                  DISPLAY 'FILC-01-TPMEPR = N'
+
+              WHEN  'N'  MOVE  un-x  TO   ENR-COU-0200-opt-out
+      D                  DISPLAY 'FILC-01-TPMEPR = O'
+           END-EVALUATE.
+
+      *    DISPLAY 'W02-TOP-ANOMALIE = ' W02-TOP-ANOMALIE
+
+           MOVE UNE-ETOILE TO  ENR-cou-0200-ETOILE
+      D    Display 'ENREG 0200'
+           WRITE  ENREG-COU FROM ENR-COU-LET-CLI.
+       250-DETAIL-COURRIER-F.
+            EXIT.
+
+       1323-MONTANT.
+            IF FILC-01-SIDUMO = '-'
+      D        DISPLAY 'FILC-01-SIDUMO = - '
+               MULTIPLY FILC-01-VADUMO BY -1
+                     giving enr-cou-0200-mnt-seuil
+            ELSE
+      D        DISPLAY 'FILC-01-SIDUMO NOT = - '
+               MOVE  FILC-01-VADUMO    TO  enr-cou-0200-mnt-seuil
+            END-IF.
+            MOVE 'EUR' TO enr-cou-0200-cod-dev.
+       1323-MONTANT-F.
+            EXIT.
+
+      **************************************************************
+      * Ecrire les enreg du fichier en sortie pour les SUSPENSIONS *
+      **************************************************************
+
+       270-detail-COURRIER      SECTION.
+       DEBUT.
+           INITIALIZE ENR-COU-LET-CLI.
+           MOVE '0300'    TO ENR-COU-CDENR.
+      D    DISPLAY 'ECRITURE 0300'  FILC-01-NUMOB1
+           MOVE FILC-01-NUMOB1
+                        TO ENR-COU-0300-NUMOBS.
+
+      * dans le courrier propose, pas de date
+      * mettre la date systeme
+           PERFORM TRT-RECUPERER-DATEHEURE-SYSTEM
+           MOVE W-DATE-SYST-DATE-JJ  TO   W-DATE-JJ.
+           MOVE W-DATE-SYST-DATE-MM  TO   W-DATE-MM.
+           MOVE W-DATE-SYST-DATE-SSAA TO  W-DATE-SSAA.
+           MOVE   W-DATE-F           TO   enr-cou-0300-DASUCO.
+
+           MOVE UNE-ETOILE TO ENR-COU-0300-ETOILE.
+      D    display 'enr ' enr-cou-let-cli.
+           WRITE  ENREG-COU FROM ENR-COU-LET-CLI.
+
+       270-detail-COURRIER-F.
+            EXIT.
+
+       400-CPT-RENDU.
+      *  ECRITURE DE LA FIN DE L'ENTETE.
+           MOVE FUNCTION CURRENT-DATE TO CURRENT-DATE-370.
+           MOVE    CD-HE              TO   LG06-HF
+           MOVE    CD-MI              TO   LG06-MF
+           MOVE    CD-SE              TO   LG06-SF
+           WRITE  enreg-crg FROM   LIG-VIDE.
+           WRITE  enreg-crg FROM   LG03-ENT.
+           WRITE  enreg-crg FROM   LIG-VIDE.
+
+      *  ECRITURE DU CORPS DU FICHIER COMPTE-RENDU        *
+
+      * ----- NOMBRE DE COURRIERS AU TOTAL
+           MOVE ' NB TOTAL DE COURRIERS ' TO ENR-crg-DETAIL-LIB
+           MOVE  CPT-ENRLU                TO ENR-crg-DETAIL-CPT
+           WRITE ENREG-crg          FROM ENR-crg-DETAIL
+
+      * ----- NOMBRE DE COURRIERS AU TOTAL
+      *    MOVE ' NB TOTAL DE COURRIERS ' TO ENR-crg-DETAIL-LIB
+      *    MOVE  W-NB-COURRIER-TOTAL      TO ENR-crg-DETAIL-CPT
+      *    WRITE ENREG-crg          FROM ENR-crg-DETAIL
+
+      * ----- NOMBRE DE COURRIERS DE CONFIRMATION DE MODIFICATION
+           IF W-STEP = 'STP74550'
+             MOVE ' NB DE COURRIERS DE MODIFICATION DE CONTRAT'
+                                     TO ENR-crg-DETAIL-LIB
+             MOVE  W-NB-COURRIER-MODIF TO ENR-crg-DETAIL-CPT
+             WRITE ENREG-crg          FROM ENR-crg-DETAIL
+           END-IF.
+
+      * ----- NOMBRE DE COURRIERS DE SUSPENSION DE CONTRAT
+           IF W-STEP = 'STP74551'
+             MOVE ' NB DE COURRIERS DE SUSPENSION DE CONTRAT '
+                                     TO ENR-crg-DETAIL-LIB
+             MOVE  W-NB-COURRIER-SUSPE TO ENR-crg-DETAIL-CPT
+             WRITE ENREG-crg          FROM ENR-crg-DETAIL
+           END-IF.
+
+           MOVE ' <--NB DE REJETS '  TO ENR-crg-DETAIL-LIB
+           MOVE  W-NB-COURRIER-RECYC    TO ENR-crg-DETAIL-CPT
+           WRITE ENREG-crg          FROM ENR-crg-DETAIL
+
+           MOVE ' NB DE COURRIERS FRANCE ' TO ENR-crg-DETAIL-LIB
+           MOVE  W-NB-COURRIER-FR      TO ENR-crg-DETAIL-CPT
+           WRITE ENREG-crg          FROM ENR-crg-DETAIL
+
+           MOVE ' NB DE COURRIERS ETRANGER' TO ENR-crg-DETAIL-LIB
+           MOVE  W-NB-COURRIER-ETR     TO ENR-crg-DETAIL-CPT
+           WRITE ENREG-crg          FROM ENR-crg-DETAIL
+
+      * ----- COMPOSITION DE LA FIN DU FICHIER
+           MOVE SPACES              TO ENREG-crg
+           WRITE ENREG-crg
+           WRITE ENREG-crg          FROM ENR-crg-FIN-TRT-OK.
+       400-CPT-RENDU-F.
+            EXIT.
+
+       500-FIN-TRAIT.
+      *    ----------------------------------
+      **   FERMETURE DES FICHIERS SEQUENTIELS
+      *    ----------------------------------
+           IF  FIC-SEQ-OUVERTS = 1
+                 CLOSE filc
+                 CLOSE FREJ
+                 CLOSE FIC-CRG
+           END-IF.
+           perform TRT-FERMER-FICHIER-COU.
+
+       500-FIN-TRAIT-F.
+           EXIT.
+
+      ***********************************************
+      *   RECHERCHE DU CODE et libelle pays         *
+      ***********************************************
+       600-TRT-rech-pays SECTION.
+       DEBUT.
+      * Critere : recherche numero de pays et libelle a partir
+      *  du code pays  exe fr  --> 001 france
+      * on alimente w-lipays et w-cdpsgi
+
+              MOVE 1 TO INDPAY.
+              MOVE '0' TO TOP-PAYS-TROUVE.
+              set  W-PAYS-NOK TO TRUE
+
+              PERFORM UNTIL INDPAY > 500 OR W-PAYS-TROUVE
+                 IF CODPAY(INDPAY) = w-pdg-country
+                   MOVE  NUMPAY(INDPAY) TO W-CDPSGI
+                   MOVE  LIBPAY(INDPAY) TO W-LIPAYS
+                   MOVE '1' TO TOP-PAYS-TROUVE
+                   Set W-PAYS-OK TO TRUE
+                 END-IF
+
+                ADD 1 TO INDPAY
+              END-PERFORM.
+
+       600-TRT-rech-pays-F.
+            EXIT.
+
+      *************************************************************
+      *   FERMER LE FICHIER EN SORTIE                             *
+      *************************************************************
+       TRT-FERMER-FICHIER-COU SECTION.
+       DEBUT.
+           CLOSE FIC-COU
+      D    DISPLAY 'CLOSE      FS-COU=' FS-COU
+           IF FS-COU NOT = '00'
+             MOVE 'ERREUR      : CLOSE FIC-COU'
+             TO MESS-ABEND
+             MOVE 05 TO COD-ABEND
+             PERFORM TRT-ABANDONNER
+           END-IF.
+       FIN. EXIT.
+
+      *************************************************************
+      *   ECRIRE LES DONNEES POUR CAUSE D'ABANDON DANS LE FICHIER *
+      *   crg (LORSQU'IL Y A UN ABEND)                            *
+      *************************************************************
+       TRT-ECRIRE-crg-ABEND SECTION.
+       DEBUT.
+      * ----- COMPOSITION DU CORPS DU FICHIERS
+           MOVE  MESS-ABEND     TO   ENR-crg-ABEND-LIB
+           WRITE ENREG-crg      FROM ENR-crg-ABEND-5
+           MOVE  COD-ABEND      TO   ENR-crg-ABEND-CODE
+           WRITE ENREG-crg      FROM ENR-crg-ABEND-1.
+            EXIT.
+
+      *************************************************************
+      *   FERMER LE FICHIER COMPTE RENDU GESTIONNAIRE             *
+      *************************************************************
+       TRT-FERMER-FICHIER-crg SECTION.
+       DEBUT.
+           CLOSE FIC-crg
+           IF FS-crg NOT = '00'
+             MOVE 'ERREUR      : CLOSE FIC-crg'
+             TO MESS-ABEND
+             MOVE 07 TO COD-ABEND
+             PERFORM TRT-ABANDONNER
+           END-IF.
+            EXIT.
+
+      *************************************************************
+      *   RECUPERER LA DATE ET L'HEURE SYSTEME                    *
+      *************************************************************
+       TRT-RECUPERER-DATEHEURE-SYSTEM SECTION.
+       DEBUT.
+           MOVE FUNCTION CURRENT-DATE TO W-DATE-SYST.
+       FIN. EXIT.
+
+      *************************************************************
+      *   RECUPERER LA DATE ET L'HEURE SYSTEME DE FIN DE          *
+      *   TRAITEMENT                                              *
+      *************************************************************
+       TRT-RECUP-DATEHEURE-SYSTEM-FIN SECTION.
+       DEBUT.
+            PERFORM TRT-RECUPERER-DATEHEURE-SYSTEM
+            MOVE W-DATE-SYST-HEURE-HH  TO W-DATE-TRT-FIN-HH
+            MOVE W-DATE-SYST-HEURE-MM  TO W-DATE-TRT-FIN-MN
+            MOVE W-DATE-SYST-HEURE-SS  TO W-DATE-TRT-FIN-SS
+            MOVE W-DATE-SYST-DATE-JJ   TO W-DATE-TRT-FIN-JJ
+            MOVE W-DATE-SYST-DATE-MM   TO W-DATE-TRT-FIN-MM
+            MOVE W-DATE-SYST-DATE-SSAA TO W-DATE-TRT-FIN-SSAA.
+       FIN. EXIT.
+
+      *************************************************************
+      *   RECUPERER CERTAINES INFORMATIONS EN PROVENANCE DU JCL   *
+      *************************************************************
+      * ----- ENTREE
+      *       - NEANT
+      * ----- SORTIE
+      *       - W-JOB             : NOM DU JOB
+      *       - W-STEP            : NOM DU STEP
+      *       - W-NOM-PROG        : NOM DU PROGRAMME
+      *       - W-NOM-JOB-MACHINE : NOM DU JOB MACHINE
+      *************************************************************
+
+       TRT-RECUPERER-INFOS-JCL SECTION.
+       DEBUT.
+           MOVE SPACES TO ZONE-DSNAME
+           CALL SY00045 USING ZONE-DSNAME
+           IF SY45-CODRET NOT = 0
+             AND SY45-CODRET NOT = 1
+      * ----- ERREUR D'APPEL AU MODULE
+             MOVE 'ERREUR      : APPEL AU MODULE SY00045'
+             TO MESS-ABEND
+             MOVE 08 TO COD-ABEND
+             PERFORM TRT-ABANDONNER
+           END-IF
+           MOVE SY45-JOB     TO W-JOB
+           MOVE SY45-STEP    TO W-STEP
+           MOVE SY45-NOMPROG TO W-NOM-PROG
+           MOVE SY45-JID     TO W-NOM-JOB-MACHINE.
+       FIN. EXIT.
+
+      *************************************************************
+      *   ABANDONNNER LE TRAITEMENT                               *
+      *************************************************************
+       TRT-ABANDONNER SECTION.
+       DEBUT.
+      * ----- ABEND 06 : PB OUVERTURE FICHIER crg
+      * ----- IMPOSSIBLE DONC D'ECRIRE DANS LE FICHIER crg
+            IF COD-ABEND NOT = 06
+      * ----- EN CAS DE PLANTAGE, IL FAUT FINIR D'ECRIRE L'ENTETE
+      * ----- DANS LE FICHIER crg ET Y ECRIRE L'ABEND
+      * ----- SAUF POUR L'ABEND 07 : PB FERMETURE FICHIER crg
+              IF COD-ABEND NOT = 07
+                PERFORM TRT-RECUP-DATEHEURE-SYSTEM-FIN
+              END-IF
+              PERFORM TRT-ECRIRE-crg-ABEND
+      * ----- ABEND 07 : PB FERMETURE FICHIER crg
+      * ----- NE PAS RAPPELLER TRT-FERMER-FICHIER-crg
+              IF COD-ABEND NOT = 07
+                PERFORM TRT-FERMER-FICHIER-crg
+              END-IF
+            END-IF
+      * ----- ON PLANTE LE PROGRAMME
+            CALL  SY00065  USING  COD-ABEND
+            STOP RUN.
+       FIN. EXIT.
+
+      *************************************************************
+
